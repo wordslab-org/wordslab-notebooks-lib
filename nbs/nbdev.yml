@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "wordslab-notebooks-lib"
+  site-url: "https://wordslab-org.github.io/wordslab-notebooks-lib"
+  description: "Python library to help with AI usage in  wordslab-notebokks"
+  repo-branch: main
+  repo-url: "https://github.com/wordslab-org/wordslab-notebooks-lib"

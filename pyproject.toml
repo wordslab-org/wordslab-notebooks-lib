@@ -1,0 +1,67 @@
+[project]
+name="wordslab-notebooks-lib"
+version = "0.1.0"
+description = "Add your project description here"
+requires-python=">=3.9"
+dependencies = [
+    "ipywidgets==8.1.8",
+    "pandas==2.3.3",
+    "scikit-learn==1.7.2",
+    "fastai==2.8.5",
+    "nbdev==2.4.6",
+    "ollama==0.6.1",
+    "openai==2.8.1",
+    "jupyter-ai-magics==2.31.6",
+    "langchain-ollama==0.3.10",
+    "langchain-openai==0.3.35"
+]
+
+[project.optional-dependencies]
+cpu = [
+  "torch==2.9.0",
+  "torchvision==0.24.0",
+  "torchaudio==2.9.0"
+]
+cuda = [
+  "torch==2.9.0",
+  "torchvision==0.24.0",
+  "torchaudio==2.9.0",
+  "vllm==0.11.2"
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel==7.1.0",
+]
+
+[tool.uv]
+conflicts = [
+  [
+    { extra = "cpu" },
+    { extra = "cuda" },
+  ],
+]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu129", extra = "cuda" },
+]
+torchvision = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu129", extra = "cuda" },
+]
+torchaudio = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu129", extra = "cuda" },
+]
+
+[[tool.uv.index]]
+name="wordslab-notebooks-lib"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name="wordslab-notebooks-lib"
+url = "https://download.pytorch.org/whl/cu129"
+explicit = true
