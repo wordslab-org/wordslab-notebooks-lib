@@ -5,4 +5,7 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://wordslab-org.github.io',
                 'git_url': 'https://github.com/wordslab-org/wordslab-notebooks-lib',
                 'lib_path': 'wordslab_notebooks_lib'},
-  'syms': {'wordslab_notebooks_lib.core': {'wordslab_notebooks_lib.core.foo': ('core.html#foo', 'wordslab_notebooks_lib/core.py')}}}
+  'syms': { 'wordslab_notebooks_lib.core': { 'wordslab_notebooks_lib.core.WordslabNotebooks': ( 'core.html#wordslabnotebooks',
+                                                                                                'wordslab_notebooks_lib/core.py'),
+                                             'wordslab_notebooks_lib.core.WordslabNotebooks.__init__': ( 'core.html#wordslabnotebooks.__init__',
+                                                                                                         'wordslab_notebooks_lib/core.py')}}}

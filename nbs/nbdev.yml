@@ -4,6 +4,6 @@ project:
 website:
   title: "wordslab-notebooks-lib"
   site-url: "https://wordslab-org.github.io/wordslab-notebooks-lib"
-  description: "Python library to help with AI usage in  wordslab-notebokks"
+  description: "Python library to help with AI usage in wordslab-notebooks"
   repo-branch: main
   repo-url: "https://github.com/wordslab-org/wordslab-notebooks-lib"
