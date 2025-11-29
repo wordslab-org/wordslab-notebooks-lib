@@ -2,4 +2,8 @@ include settings.ini
 include LICENSE
 include CONTRIBUTING.md
 include README.md
+include package.json
+include tsconfig.json
+graft wordslab_notebooks_lib/labextension
+graft src
 recursive-exclude * __pycache__
