@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Install dependencies – wordslab-notebooks-lib</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-000f0825b9c55ed21d14970d810c14a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Install dependencies – wordslab-notebooks-lib">
+<meta property="og:description" content="Python library to help with AI usage in wordslab-notebooks">
+<meta property="og:site_name" content="wordslab-notebooks-lib">
+<meta name="twitter:title" content="Install dependencies – wordslab-notebooks-lib">
+<meta name="twitter:description" content="Python library to help with AI usage in wordslab-notebooks">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">wordslab-notebooks-lib</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./notebook_context.html">Install dependencies</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.core</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notebook_context.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Install dependencies</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#jupyter-kernels-detailed-technical-implementation" id="toc-jupyter-kernels-detailed-technical-implementation" class="nav-link active" data-scroll-target="#jupyter-kernels-detailed-technical-implementation">Jupyter Kernels detailed technical implementation</a>
+  <ul class="collapse">
+  <li><a href="#format_for_llm" id="toc-format_for_llm" class="nav-link" data-scroll-target="#format_for_llm">format_for_llm</a></li>
+  <li><a href="#get_notebook_context_sync" id="toc-get_notebook_context_sync" class="nav-link" data-scroll-target="#get_notebook_context_sync">get_notebook_context_sync</a></li>
+  <li><a href="#get_notebook_context" id="toc-get_notebook_context" class="nav-link" data-scroll-target="#get_notebook_context">get_notebook_context</a></li>
+  <li><a href="#notebookcontextmanager" id="toc-notebookcontextmanager" class="nav-link" data-scroll-target="#notebookcontextmanager">NotebookContextManager</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="notebook_context.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Install dependencies</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="jupyter-kernels-detailed-technical-implementation" class="level2">
+<h2 class="anchored" data-anchor-id="jupyter-kernels-detailed-technical-implementation">Jupyter Kernels detailed technical implementation</h2>
+<p>https://chatgpt.com/share/692bea08-4510-8004-b9ab-c02feeb97c08</p>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/notebook_context.py#L83" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="format_for_llm" class="level3">
+<h3 class="anchored" data-anchor-id="format_for_llm">format_for_llm</h3>
+<blockquote class="blockquote">
+<pre><code> format_for_llm (include_outputs=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/notebook_context.py#L80" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_notebook_context_sync" class="level3">
+<h3 class="anchored" data-anchor-id="get_notebook_context_sync">get_notebook_context_sync</h3>
+<blockquote class="blockquote">
+<pre><code> get_notebook_context_sync ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/notebook_context.py#L77" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_notebook_context" class="level3">
+<h3 class="anchored" data-anchor-id="get_notebook_context">get_notebook_context</h3>
+<blockquote class="blockquote">
+<pre><code> get_notebook_context ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/notebook_context.py#L11" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="notebookcontextmanager" class="level3">
+<h3 class="anchored" data-anchor-id="notebookcontextmanager">NotebookContextManager</h3>
+<blockquote class="blockquote">
+<pre><code> NotebookContextManager ()</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<div id="1fb055a9-a2f7-44f5-8a17-ede49afd3304" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-11-29T15:03:10.448387Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-11-29T15:03:10.448223Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-11-29T15:03:15.618621Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-11-29T15:03:15.617120Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-11-29T15:03:10.448376Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>get_notebook_context_sync()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_9690/2177990006.py:14: DeprecationWarning: The `ipykernel.comm.Comm` class has been deprecated. Please use the `comm` module instead.For creating comms, use the function `from comm import create_comm`.
+  self._comm = Comm(target_name=self.comm_target)
+Exception in callback Task.__step()
+handle: &lt;Handle Task.__step()&gt;
+Traceback (most recent call last):
+  File "/home/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+RuntimeError: cannot enter context: &lt;_contextvars.Context object at 0x7ac34b311b40&gt; is already entered
+Task was destroyed but it is pending!
+task: &lt;Task pending name='Task-4' coro=&lt;_async_in_context.&lt;locals&gt;.run_in_context() done, defined at /home/workspace/wordslab-notebooks-lib/.venv/lib/python3.12/site-packages/ipykernel/utils.py:57&gt; wait_for=&lt;Task pending name='Task-5' coro=&lt;Kernel.shell_main() running at /home/workspace/wordslab-notebooks-lib/.venv/lib/python3.12/site-packages/ipykernel/kernelbase.py:590&gt; cb=[Task.__wakeup()]&gt; cb=[ZMQStream._run_callback.&lt;locals&gt;._log_error() at /home/workspace/wordslab-notebooks-lib/.venv/lib/python3.12/site-packages/zmq/eventloop/zmqstream.py:563]&gt;
+/home/workspace/wordslab-notebooks-lib/.venv/lib/python3.12/site-packages/pygments/style.py:66: RuntimeWarning: coroutine 'Kernel.shell_main' was never awaited
+  def colorformat(text):
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+Task was destroyed but it is pending!
+task: &lt;Task pending name='Task-5' coro=&lt;Kernel.shell_main() running at /home/workspace/wordslab-notebooks-lib/.venv/lib/python3.12/site-packages/ipykernel/kernelbase.py:590&gt; cb=[Task.__wakeup()]&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">CancelledError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/home/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/tasks.py:520</span>, in <span class="ansi-cyan-fg">wait_for</span><span class="ansi-blue-fg">(fut, timeout)</span>
+<span class="ansi-green-fg">    519</span> <span style="font-weight:bold;color:rgb(0,135,0)">async</span> <span style="font-weight:bold;color:rgb(0,135,0)">with</span> timeouts.timeout(timeout):
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">520</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span style="font-weight:bold;color:rgb(0,135,0)">await</span> fut
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/home/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/futures.py:289</span>, in <span class="ansi-cyan-fg">Future.__await__</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg">    288</span>     <span style="color:rgb(0,135,0)">self</span>._asyncio_future_blocking = <span style="font-weight:bold;color:rgb(0,135,0)">True</span>
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">289</span>     <span style="font-weight:bold;color:rgb(0,135,0)">yield</span> <span style="color:rgb(0,135,0)">self</span>  <span style="font-style:italic;color:rgb(95,135,135)"># This tells Task to wait for completion.</span>
+<span class="ansi-green-fg">    290</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> <span style="color:rgb(0,135,0)">self</span>.done():
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/home/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/tasks.py:385</span>, in <span class="ansi-cyan-fg">Task.__wakeup</span><span class="ansi-blue-fg">(self, future)</span>
+<span class="ansi-green-fg">    384</span> <span style="font-weight:bold;color:rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">385</span>     <span class="ansi-yellow-bg">future</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">result</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    386</span> <span style="font-weight:bold;color:rgb(0,135,0)">except</span> <span style="font-weight:bold;color:rgb(215,95,95)">BaseException</span> <span style="font-weight:bold;color:rgb(0,135,0)">as</span> exc:
+<span class="ansi-green-fg">    387</span>     <span style="font-style:italic;color:rgb(95,135,135)"># This may also be a cancellation.</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/home/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/futures.py:197</span>, in <span class="ansi-cyan-fg">Future.result</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg">    196</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="color:rgb(0,135,0)">self</span>._state == _CANCELLED:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">197</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="color:rgb(0,135,0)">self</span>._make_cancelled_error()
+<span class="ansi-green-fg">    198</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="color:rgb(0,135,0)">self</span>._state != _FINISHED:
+
+<span class="ansi-red-fg">CancelledError</span>: 
+
+The above exception was the direct cause of the following exception:
+
+<span class="ansi-red-fg">TimeoutError</span>                              Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 30</span>, in <span class="ansi-cyan-fg">NotebookContextManager.get_notebook_context</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg">     29</span> <span style="font-weight:bold;color:rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">30</span>     result = <span style="font-weight:bold;color:rgb(0,135,0)">await</span> asyncio.wait_for(future, timeout=<span class="ansi-green-fg">5.0</span>)
+<span class="ansi-green-fg">     31</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> result
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/home/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/tasks.py:519</span>, in <span class="ansi-cyan-fg">wait_for</span><span class="ansi-blue-fg">(fut, timeout)</span>
+<span class="ansi-green-fg">    517</span>         <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">TimeoutError</span> <span style="font-weight:bold;color:rgb(0,135,0)">from</span><span style="color:rgb(188,188,188)"> </span><span class="ansi-blue-fg ansi-bold">exc</span>
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">519</span> <span style="font-weight:bold;color:rgb(0,135,0)">async</span> <span style="font-weight:bold;color:rgb(0,135,0)">with</span> timeouts.timeout(timeout):
+<span class="ansi-green-fg">    520</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span style="font-weight:bold;color:rgb(0,135,0)">await</span> fut
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/home/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/timeouts.py:115</span>, in <span class="ansi-cyan-fg">Timeout.__aexit__</span><span class="ansi-blue-fg">(self, exc_type, exc_val, exc_tb)</span>
+<span class="ansi-green-fg">    112</span>     <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="color:rgb(0,135,0)">self</span>._task.uncancel() &lt;= <span style="color:rgb(0,135,0)">self</span>._cancelling <span style="font-weight:bold;color:rgb(175,0,255)">and</span> exc_type <span style="font-weight:bold;color:rgb(175,0,255)">is</span> exceptions.CancelledError:
+<span class="ansi-green-fg">    113</span>         <span style="font-style:italic;color:rgb(95,135,135)"># Since there are no new cancel requests, we're</span>
+<span class="ansi-green-fg">    114</span>         <span style="font-style:italic;color:rgb(95,135,135)"># handling this.</span>
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">115</span>         <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">TimeoutError</span> <span style="font-weight:bold;color:rgb(0,135,0)">from</span><span style="color:rgb(188,188,188)"> </span><span class="ansi-blue-fg ansi-bold">exc_val</span>
+<span class="ansi-green-fg">    116</span> <span style="font-weight:bold;color:rgb(0,135,0)">elif</span> <span style="color:rgb(0,135,0)">self</span>._state <span style="font-weight:bold;color:rgb(175,0,255)">is</span> _State.ENTERED:
+
+<span class="ansi-red-fg">TimeoutError</span>: 
+
+During handling of the above exception, another exception occurred:
+
+<span class="ansi-red-fg">TimeoutError</span>                              Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">get_notebook_context_sync</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 76</span>, in <span class="ansi-cyan-fg">get_notebook_context_sync</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">     75</span> <span style="font-weight:bold;color:rgb(0,135,0)">def</span><span style="color:rgb(188,188,188)"> </span><span class="ansi-blue-fg">get_notebook_context_sync</span>():
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">76</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">_manager</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">get_notebook_context_sync</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 43</span>, in <span class="ansi-cyan-fg">NotebookContextManager.get_notebook_context_sync</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg">     40</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">ImportError</span>(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">nest_asyncio is required. Install with: pip install nest_asyncio</span><span class="ansi-yellow-fg">"</span>)
+<span class="ansi-green-fg">     42</span> loop = asyncio.get_event_loop()
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">43</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">loop</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">run_until_complete</span><span class="ansi-yellow-bg">(</span><span style="color:rgb(0,135,0)" class="ansi-yellow-bg">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">get_notebook_context</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/home/workspace/wordslab-notebooks-lib/.venv/lib/python3.12/site-packages/nest_asyncio.py:98</span>, in <span class="ansi-cyan-fg">_patch_loop.&lt;locals&gt;.run_until_complete</span><span class="ansi-blue-fg">(self, future)</span>
+<span class="ansi-green-fg">     95</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> f.done():
+<span class="ansi-green-fg">     96</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">RuntimeError</span>(
+<span class="ansi-green-fg">     97</span>         <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">Event loop stopped before Future completed.</span><span class="ansi-yellow-fg">'</span>)
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">98</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">f</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">result</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/home/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/futures.py:202</span>, in <span class="ansi-cyan-fg">Future.result</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg">    200</span> <span style="color:rgb(0,135,0)">self</span>.__log_traceback = <span style="font-weight:bold;color:rgb(0,135,0)">False</span>
+<span class="ansi-green-fg">    201</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="color:rgb(0,135,0)">self</span>._exception <span style="font-weight:bold;color:rgb(175,0,255)">is</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> <span style="font-weight:bold;color:rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">202</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="color:rgb(0,135,0)">self</span>._exception.with_traceback(<span style="color:rgb(0,135,0)">self</span>._exception_tb)
+<span class="ansi-green-fg">    203</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span style="color:rgb(0,135,0)">self</span>._result
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/home/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/tasks.py:316</span>, in <span class="ansi-cyan-fg">Task.__step_run_and_handle_result</span><span class="ansi-blue-fg">(***failed resolving arguments***)</span>
+<span class="ansi-green-fg">    314</span>         result = coro.send(<span style="font-weight:bold;color:rgb(0,135,0)">None</span>)
+<span class="ansi-green-fg">    315</span>     <span style="font-weight:bold;color:rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">316</span>         result = <span class="ansi-yellow-bg">coro</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">throw</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">exc</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    317</span> <span style="font-weight:bold;color:rgb(0,135,0)">except</span> <span style="font-weight:bold;color:rgb(215,95,95)">StopIteration</span> <span style="font-weight:bold;color:rgb(0,135,0)">as</span> exc:
+<span class="ansi-green-fg">    318</span>     <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="color:rgb(0,135,0)">self</span>._must_cancel:
+<span class="ansi-green-fg">    319</span>         <span style="font-style:italic;color:rgb(95,135,135)"># Task is cancelled right before coro stops.</span>
+
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 33</span>, in <span class="ansi-cyan-fg">NotebookContextManager.get_notebook_context</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg">     31</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> result
+<span class="ansi-green-fg">     32</span> <span style="font-weight:bold;color:rgb(0,135,0)">except</span> asyncio.TimeoutError:
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">33</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">TimeoutError</span>(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Failed to receive notebook context from frontend</span><span class="ansi-yellow-fg">"</span>)
+
+<span class="ansi-red-fg">TimeoutError</span>: Failed to receive notebook context from frontend</pre>
+</div>
+</div>
+</div>
+<div id="33c2006f-cf39-4931-a15c-f80cd64f7f36" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-11-29T15:08:03.525971Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-11-29T15:08:03.525507Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-11-29T15:08:03.528867Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-11-29T15:08:03.528203Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-11-29T15:08:03.525955Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ipykernel.kernelbase <span class="im">import</span> Kernel</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="27389931-fd67-48e4-ba84-251d8dcca9b2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-11-29T15:09:52.743035Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-11-29T15:09:52.742834Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-11-29T15:09:52.745542Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-11-29T15:09:52.744941Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-11-29T15:09:52.743024Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>session <span class="op">=</span> Kernel.instance().session</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="2284a784-efe2-4d40-8f07-d091ed2ae9ac" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-11-29T15:11:25.734917Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-11-29T15:11:25.734756Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-11-29T15:11:25.738208Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-11-29T15:11:25.737597Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-11-29T15:11:25.734907Z&quot;}}" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>session.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>180</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/wordslab-org\.github\.io\/wordslab-notebooks-lib");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
