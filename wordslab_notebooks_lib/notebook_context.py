@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['NotebookContextManager', 'get_notebook_context', 'get_notebook_context_sync', 'format_for_llm']
 
-# %% ../nbs/01_notebook_context.ipynb 2
+# %% ../nbs/01_notebook_context.ipynb 4
 import asyncio
 from ipykernel.comm import Comm
 from IPython import get_ipython
