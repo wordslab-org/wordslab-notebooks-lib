@@ -8,34 +8,46 @@
     "jupyterlab-extension",
     "wordslab-notebooks"
   ],
+  "homepage": "https://github.com/wordslab-org/wordslab-notebooks-lib",
+  "bugs": {
+    "url": "https://github.com/wordslab-org/wordslab-notebooks-lib/issues"
+  },
   "license": "Apache-2.0",
   "author": "Laurent Prud'hon",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wordslab-org/wordslab-notebooks-lib.git"
+  },
   "scripts": {
-    "build": "jlpm run build:lib && jlpm run build:labextension",
+    "build": "jlpm build:lib && jlpm build:labextension",
     "build:lib": "tsc",
     "build:labextension": "jupyter labextension build .",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "clean": "jlpm clean:lib && jlpm clean:labextension",
+    "clean:lib": "rm -rf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rm -rf wordslab_notebooks_lib/labextension"
   },
   "dependencies": {
     "@jupyterlab/application": "^4.0.0",
     "@jupyterlab/notebook": "^4.0.0",
-    "@jupyterlab/services": "^7.0.0",
-    "react": "^18.2.0"
+    "@jupyterlab/services": "^7.0.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^4.0.0",
     "@types/json-schema": "^7.0.0",
-    "@types/react": "^18.2.0",
+    "@types/react": "^18.0.0",
     "typescript": "~5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "jupyterlab": {
     "extension": true,
     "outputDir": "wordslab_notebooks_lib/labextension",
-    "sharedPackages": {},
     "_build": {
-      "load": "static/remoteEntry.88b90b1769884a3681df.js",
+      "load": "static/remoteEntry.b0519d09abed1781d6c4.js",
       "extension": "./extension"
     }
   }

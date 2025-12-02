@@ -6,7 +6,8 @@ import { INotebookTracker } from '@jupyterlab/notebook';
 import { IKernelConnection } from '@jupyterlab/services/lib/kernel/kernel';
 
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: 'wordslab-notebooks-extension',
+  id: 'wordslab-notebooks-extension:plugin',    
+  description: 'JupyterLab extension for wordslab-notebooks',
   autoStart: true,
   requires: [INotebookTracker],
   activate: (app: JupyterFrontEnd, notebookTracker: INotebookTracker) => {
