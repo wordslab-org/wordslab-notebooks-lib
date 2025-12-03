@@ -2,8 +2,8 @@ import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
-import { INotebookTracker } from '@jupyterlab/notebook';
-import { IKernelConnection } from '@jupyterlab/services/lib/kernel/kernel';
+import { INotebookTracker, NotebookActions, NotebookPanel } from '@jupyterlab/notebook';
+import { ICodeCellModel } from '@jupyterlab/cells';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'wordslab-notebooks-extension:plugin',    
@@ -11,81 +11,107 @@ const plugin: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   requires: [INotebookTracker],
   activate: (app: JupyterFrontEnd, notebookTracker: INotebookTracker) => {
-    console.log('Wordslab notebooks extension activated - laps');
+    console.log('Wordslab notebooks extension activated');
 
-    const activeComms = new Map<IKernelConnection, any>();
+    // ---------
+    // Track executing cells in all notebooks
+      
+    const executingCells = new Map<string, string>(); // notebook path -> cell ID
 
-    notebookTracker.currentChanged.connect(() => {
-      const widget = notebookTracker.currentWidget;
-      if (!widget) return;
-
-      const kernel = widget.sessionContext.session?.kernel;
-      if (!kernel) return;
-
-      if (!activeComms.has(kernel)) {
-        setupCommForKernel(kernel);
-      }
+    NotebookActions.executionScheduled.connect((sender, args) => {
+      const { notebook, cell } = args;
+      
+      const panel = notebookTracker.find(panel => panel?.content === notebook);
+      if (!panel) return;
+      
+      const notebookPath = panel.sessionContext.path;
+      const cellId = cell.model.id;
+      executingCells.set(notebookPath, cellId);
+      
+      console.log(`Cell ${cellId} executing in notebook ${notebookPath}`);
+      
+      // Clear when execution completes
+      const onStateChanged = () => {
+          if ((cell.model as ICodeCellModel).executionCount !== null) {
+            executingCells.delete(notebookPath);
+            console.log(`Cell ${cellId} finished executing in notebook ${notebookPath}`);
+            cell.model.stateChanged.disconnect(onStateChanged);
+          }
+        };        
+      cell.model.stateChanged.connect(onStateChanged);
     });
 
-    function setupCommForKernel(kernel: IKernelConnection) {
-      kernel.registerCommTarget('notebook_context_comm', (comm, msg) => {
-        console.log('Comm opened from kernel');
-        activeComms.set(kernel, comm);
+    // ---------
+    // Register a comm target for all running kernels
+      
+    const registeredKernels = new Set<string>();
 
-        comm.onMsg = (msg) => {
-          if (msg.content.data.action === 'request_cells') {
-            const cellsData = gatherNotebookCells();
-            comm.send({ cells: cellsData });
-          }
-        };
+    const registerCommTarget = (panel: NotebookPanel) => {
+      const session = panel.sessionContext;
+      if (!session) return;
+    
+      const setupKernel = () => {
+        const kernel = session.session?.kernel;
+        if (!kernel || registeredKernels.has(kernel.id)) return;
+    
+        registeredKernels.add(kernel.id);
+    
+        kernel.registerCommTarget('wordslab_notebook_comm', (comm, openMsg) => {
+          console.log('Comm opened:', {
+            commId: comm.commId,
+            targetName: openMsg.content.target_name,
+            openMsgData: openMsg.content.data,
+            notebookPath: session.path
+          });
+    
+          comm.onMsg = (msg) => {
+            console.log('Comm message received:', {
+              commId: comm.commId,
+              msgData: msg.content.data
+            });
 
-        comm.onClose = () => {
-          activeComms.delete(kernel);
-        };
-      });
-    }
-
-    function gatherNotebookCells() {
-      const widget = notebookTracker.currentWidget;
-      if (!widget) return [];
-
-      const notebook = widget.content;
-      const cells = [];
-
-      for (let i = 0; i < notebook.model!.cells.length; i++) {
-        const cell = notebook.model!.cells.get(i);
-        
-        const cellData: any = {
-          type: cell.type,
-          source: cell.sharedModel.source,
-          execution_count: null,
-          outputs: []
-        };
-
-        if (cell.type === 'code') {
-          cellData.execution_count = (cell as any).executionCount;
-          
-          const outputs = (cell as any).outputs;
-          for (let j = 0; j < outputs.length; j++) {
-            const output = outputs.get(j);
-            cellData.outputs.push({
-              output_type: output.type,
-              data: output.data,
-              text: output.text
+          const data = msg.content.data as any;
+          if (data.request === 'get_notebook_data') {
+            const notebookPath = session.path;
+            const cellId = executingCells.get(notebookPath);
+            const notebookJson = panel.model?.toJSON();
+            
+            comm.send({
+              notebook: notebookJson,
+              cell_id: cellId
+            } as any);
+            
+            console.log('Sent notebook data:', {
+              notebookPath,
+              cellId,
+              cellCount: (notebookJson as any)?.cells?.length
             });
           }
+          };
+        });
+    
+        console.log(`Comm target registered for kernel ${kernel.id} (${session.path})`);
+      };
+    
+      // Handle kernel changes (including restarts and initial connection)
+      session.kernelChanged.connect((sender, args) => {
+        // Clean up old kernel
+        if (args.oldValue) {
+          registeredKernels.delete(args.oldValue.id);
+          console.log(`Kernel ${args.oldValue.id} removed from registry`);
         }
-
-        cells.push(cellData);
-      }
-
-      return cells;
-    }
-
-    const currentKernel = notebookTracker.currentWidget?.sessionContext.session?.kernel;
-    if (currentKernel) {
-      setupCommForKernel(currentKernel);
-    }
+        // Register new kernel
+        if (args.newValue) {
+          setupKernel();
+        }
+      });
+    
+      // Register if kernel already exists
+      session.ready.then(() => setupKernel());
+    };
+    
+    notebookTracker.forEach(panel => registerCommTarget(panel));
+    notebookTracker.widgetAdded.connect((sender, panel) => registerCommTarget(panel));
   }
 };
 
