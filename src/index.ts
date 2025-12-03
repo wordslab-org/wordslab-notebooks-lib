@@ -15,9 +15,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     // ---------
     // Track executing cells in all notebooks
-      
-    const executingCells = new Map<string, string>(); // notebook path -> cell ID
 
+    const executingCells = new Map<string, string[]>(); // notebook path -> array of cell IDs
+    
     NotebookActions.executionScheduled.connect((sender, args) => {
       const { notebook, cell } = args;
       
@@ -26,18 +26,27 @@ const plugin: JupyterFrontEndPlugin<void> = {
       
       const notebookPath = panel.sessionContext.path;
       const cellId = cell.model.id;
-      executingCells.set(notebookPath, cellId);
       
-      console.log(`Cell ${cellId} executing in notebook ${notebookPath}`);
+      // Add to queue when a cell execution is scheduled
+      if (!executingCells.has(notebookPath)) {
+        executingCells.set(notebookPath, []);
+      }
+      executingCells.get(notebookPath)!.push(cellId);
       
-      // Clear when execution completes
+      console.log(`Cell ${cellId} queued for execution in ${notebookPath}. Queue:`, executingCells.get(notebookPath));
+
       const onStateChanged = () => {
-          if ((cell.model as ICodeCellModel).executionCount !== null) {
-            executingCells.delete(notebookPath);
-            console.log(`Cell ${cellId} finished executing in notebook ${notebookPath}`);
-            cell.model.stateChanged.disconnect(onStateChanged);
+        if ((cell.model as ICodeCellModel).executionCount !== null) {
+          // Remove from front of queue when a cell execution is finished
+          const queue = executingCells.get(notebookPath);
+          if (queue) {
+            const removed = queue.shift();
+            console.log(`Cell ${removed} finished in ${notebookPath}. Queue:`, queue);
           }
-        };        
+          cell.model.stateChanged.disconnect(onStateChanged);
+        }
+      };
+      
       cell.model.stateChanged.connect(onStateChanged);
     });
 
@@ -73,7 +82,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
           const data = msg.content.data as any;
           if (data.request === 'get_notebook_data') {
             const notebookPath = session.path;
-            const cellId = executingCells.get(notebookPath);
+            const queue = executingCells.get(notebookPath);
+            const cellId = queue && queue.length > 0 ? queue[0] : undefined;
             const notebookJson = panel.model?.toJSON();
             
             comm.send({

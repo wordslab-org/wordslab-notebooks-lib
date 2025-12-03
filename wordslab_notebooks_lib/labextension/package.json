@@ -32,8 +32,7 @@
   "dependencies": {
     "@jupyterlab/application": "^4.0.0",
     "@jupyterlab/notebook": "^4.0.0",
-    "@jupyterlab/services": "^7.0.0",
-    "uuid": "^9.0.0"
+    "@jupyterlab/services": "^7.0.0"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^4.0.0",
@@ -48,7 +47,7 @@
     "extension": true,
     "outputDir": "wordslab_notebooks_lib/labextension",
     "_build": {
-      "load": "static/remoteEntry.5986b3324f17758b47f6.js",
+      "load": "static/remoteEntry.4f66689c13629ba3dea0.js",
       "extension": "./extension"
     }
   }
