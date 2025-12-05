@@ -47,7 +47,7 @@
     "extension": true,
     "outputDir": "wordslab_notebooks_lib/labextension",
     "_build": {
-      "load": "static/remoteEntry.4f66689c13629ba3dea0.js",
+      "load": "static/remoteEntry.ab76d9a9b23bdbc264f4.js",
       "extension": "./extension"
     }
   }

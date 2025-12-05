@@ -34,9 +34,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
       executingCells.get(notebookPath)!.push(cellId);
       
       console.log(`Cell ${cellId} queued for execution in ${notebookPath}. Queue:`, executingCells.get(notebookPath));
-
+    
+      // Capture the execution count before execution
+      const previousCount = (cell.model as ICodeCellModel).executionCount;
+    
       const onStateChanged = () => {
-        if ((cell.model as ICodeCellModel).executionCount !== null) {
+        const currentCount = (cell.model as ICodeCellModel).executionCount;
+        // Check if execution count changed to a new non-null value
+        if (currentCount !== null && currentCount !== previousCount) {
           // Remove from front of queue when a cell execution is finished
           const queue = executingCells.get(notebookPath);
           if (queue) {
