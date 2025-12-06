@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Functions to gather context for your LLM from the current notebook cells, files, documents, urls.">
+
+<title>wordslab-notebooks-lib.context – wordslab-notebooks-lib</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-000f0825b9c55ed21d14970d810c14a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="wordslab-notebooks-lib.context – wordslab-notebooks-lib">
+<meta property="og:description" content="Functions to gather context for your LLM from the current notebook cells, files, documents, urls.">
+<meta property="og:site_name" content="wordslab-notebooks-lib">
+<meta name="twitter:title" content="wordslab-notebooks-lib.context – wordslab-notebooks-lib">
+<meta name="twitter:description" content="Functions to gather context for your LLM from the current notebook cells, files, documents, urls.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">wordslab-notebooks-lib</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./context.html">wordslab-notebooks-lib.context</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.core</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./context.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">wordslab-notebooks-lib.context</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.chat</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.tools</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./docs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.docs</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#notebook-cells" id="toc-notebook-cells" class="nav-link active" data-scroll-target="#notebook-cells">Notebook cells</a>
+  <ul class="collapse">
+  <li><a href="#jupyterlab-frontend-extension" id="toc-jupyterlab-frontend-extension" class="nav-link" data-scroll-target="#jupyterlab-frontend-extension">Jupyterlab frontend extension</a></li>
+  <li><a href="#python-extension-client" id="toc-python-extension-client" class="nav-link" data-scroll-target="#python-extension-client">Python extension client</a></li>
+  <li><a href="#get_notebook_data" id="toc-get_notebook_data" class="nav-link" data-scroll-target="#get_notebook_data">get_notebook_data</a></li>
+  <li><a href="#get_mime_text" id="toc-get_mime_text" class="nav-link" data-scroll-target="#get_mime_text">get_mime_text</a></li>
+  <li><a href="#cell2out" id="toc-cell2out" class="nav-link" data-scroll-target="#cell2out">cell2out</a></li>
+  <li><a href="#cell2xml" id="toc-cell2xml" class="nav-link" data-scroll-target="#cell2xml">cell2xml</a></li>
+  <li><a href="#nb2xml" id="toc-nb2xml" class="nav-link" data-scroll-target="#nb2xml">nb2xml</a></li>
+  <li><a href="#get_notebook_context" id="toc-get_notebook_context" class="nav-link" data-scroll-target="#get_notebook_context">get_notebook_context</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="context.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">wordslab-notebooks-lib.context</h1>
+</div>
+
+<div>
+  <div class="description">
+    Functions to gather context for your LLM from the current notebook cells, files, documents, urls.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="notebook-cells" class="level2">
+<h2 class="anchored" data-anchor-id="notebook-cells">Notebook cells</h2>
+<p>A Jupyter notebook is a convenient way to build context for a LLM one cell after the other: you are working in a fully editable conversation, where each conversation step can be generated by code if needed.</p>
+<p>To collect the text of all previous cells from within a python code cell of the current notebook, we need to collaborate with a Jupyterlab frontend extension: - the Jupyterlab frontend extension is a Javascript function defined in this package: <code>src\index.ts</code>, which runs in the web browser of the user - it calls the Jupyterlab Javascript API to access the current notebook contents and track which cell is running - it listens to messages sent by the notebook kernel, and sends the current notebook contents and active cell id when requested</p>
+<p>The python function: <a href="https://wordslab-org.github.io/wordslab-notebooks-lib/context.html#get_notebook_data"><code>get_notebook_data()</code></a> can be called in any code cell of the notebook: - it runs in the kernel on the Jupyterlab server marchine - it send a message to the Jupyterlab frontend extension - it gets back the “notebook” contents (dict) and the current “cell_id” (string) - it returns these two values as a Python dictionary</p>
+<p>This is the raw notebook data but you need to convert it to a compact string representation to pass it to your LLM.</p>
+<p>The Python function: <a href="https://wordslab-org.github.io/wordslab-notebooks-lib/context.html#get_notebook_context"><code>get_notebook_context()</code></a>: - get the notebook contents and current cell id by calling get_notebook_data() - truncate the notebook contents just above the current cell (to mimic an ongoing conversation) - converts everything to a single compact string, delimiting cell with XML tags which are easy to parse for the LLM</p>
+<p>If you want to use any of these two functions, you will first need to install the Jupyterlab frontend extension: - activate your Jupyterlab python virtual environment - pip install wordslab-notebooks-lib - restart your Jupyterlab server</p>
+<p>The extension is already pre-installed if you work in the wordslab-notebooks environment.</p>
+<p>The Jupyterlab extension is reloaded and re-initialized each time you refresh your browser page: - to check is the extension is installed and running, look at the browser console and llok for the message ‘Wordslab notebooks extension activated’ - hit the refresh button if you encounter a bug and the extension stops working</p>
+<section id="jupyterlab-frontend-extension" class="level3">
+<h3 class="anchored" data-anchor-id="jupyterlab-frontend-extension">Jupyterlab frontend extension</h3>
+<p>The source code of the Jupyterlab frontend extension can be found in the following files:</p>
+<p>Typescript source code, dependencies, and compilation config:</p>
+<ul>
+<li><code>src/index.ts</code></li>
+<li><code>package.json</code></li>
+<li><code>tsconfig.json</code></li>
+<li><code>.yarnrc.yml</code></li>
+</ul>
+<p>Python package integration:</p>
+<ul>
+<li><code>MANIFEST.in</code> -&gt; graft wordslab_notebooks_lib/labextension</li>
+</ul>
+<p>This how the compiled Javascript extension is embedded in the Python package.</p>
+<ul>
+<li><code>wordslab_notebooks_lib\__init__.py</code> -&gt; def _jupyter_labextension_paths()</li>
+</ul>
+<p>This is what Jupyterlab uses at extension development time to find the Jupyterlab extension in a python module.</p>
+<ul>
+<li><code>pyproject.toml</code> -&gt; classifiers = [ “Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt” ]</li>
+</ul>
+<p>This is what Jupyterlab uses at extension deployment time to find the python packages with Jupyterlab extensions.</p>
+<section id="understand-jupyterlab-kernels-and-frontend-extensions" class="level4">
+<h4 class="anchored" data-anchor-id="understand-jupyterlab-kernels-and-frontend-extensions">Understand Jupyterlab kernels and frontend extensions</h4>
+<p>Jupyter kernels technical implementation details</p>
+<p>https://chatgpt.com/share/692bea08-4510-8004-b9ab-c02feeb97c08</p>
+<p>Jupyterlab extension development tutorial</p>
+<p>https://jupyterlab.readthedocs.io/en/latest/extension/extension_tutorial.html</p>
+</section>
+<section id="build-the-jupyterlab-frontend-extension" class="level4">
+<h4 class="anchored" data-anchor-id="build-the-jupyterlab-frontend-extension">Build the Jupyterlab frontend extension</h4>
+<p>Open a Terminal</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">$WORDSLAB_WORKSPACE</span>/wordslab-notebooks-lib</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ../../jupyterlab/.venv/bin/activate</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Install dependencies</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">jlpm</span> clean</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">jlpm</span> install</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Build TypeScript extension</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">jlpm</span> build</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="test-the-extension-in-development-mode" class="level4">
+<h4 class="anchored" data-anchor-id="test-the-extension-in-development-mode">Test the extension in development mode</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install in development mode</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> pip install <span class="at">-e</span> .</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ../../jupyterlab/.venv/bin/activate</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Register the extension with JupyterLab during development</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">jupyter</span> labextension develop . <span class="at">--overwrite</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify extension is found</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ex">jupyter</span> labextension list</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Start JupyterLab</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ex">jupyter</span> lab</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>After installing the extension in development mode once, you can iterate very fast: - update the code in <code>src/index.ts</code> - build the extension with <code>jlpm build</code> - refresh the Jupyterlab single page app in your browser - test the updated extension</p>
+<p>No need to reinstall the extension or to restart Jupyterlab itself, just refrehs your browser page.</p>
+</section>
+<section id="publish-the-extension-to-pypi-when-ready" class="level4">
+<h4 class="anchored" data-anchor-id="publish-the-extension-to-pypi-when-ready">Publish the extension to pypi when ready</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ../../jupyterlab/.venv/bin/activate</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Make sure the frontend extension is built</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">jlpm</span> build</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .venv/bin/activate</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Export notebooks to Python modules</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">nbdev_export</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare for release</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ex">nbdev_prepare</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Publish to PyPI</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ex">nbdev_pypi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="python-extension-client" class="level3">
+<h3 class="anchored" data-anchor-id="python-extension-client">Python extension client</h3>
+<section id="get-notebook-contents" class="level4">
+<h4 class="anchored" data-anchor-id="get-notebook-contents">Get notebook contents</h4>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/context.py#L17" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="get_notebook_data" class="level3">
+<h3 class="anchored" data-anchor-id="get_notebook_data">get_notebook_data</h3>
+<blockquote class="blockquote">
+<pre><code> get_notebook_data (timeout=0.5)</code></pre>
+</blockquote>
+<div id="21bd5abf-7507-4f84-874e-52bfdf53ba1c" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span>  <span class="cf">await</span> get_notebook_data()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>data[<span class="st">"cell_id"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'21bd5abf-7507-4f84-874e-52bfdf53ba1c'</code></pre>
+</div>
+</div>
+<div id="7d2d4d5c-c7f4-4325-a4dc-60eca3090763" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span>  <span class="cf">await</span> get_notebook_data()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>data[<span class="st">"cell_id"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'7d2d4d5c-c7f4-4325-a4dc-60eca3090763'</code></pre>
+</div>
+</div>
+<div id="51a7be30-8758-4fdb-ae44-af3e1db751c6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span>  <span class="cf">await</span> get_notebook_data()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>notebook_content_dict <span class="op">=</span> data[<span class="st">"notebook"</span>]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>executing_cell_id <span class="op">=</span> data[<span class="st">"cell_id"</span>]</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>executing_cell_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'51a7be30-8758-4fdb-ae44-af3e1db751c6'</code></pre>
+</div>
+</div>
+<section id="explore-notebook-format" class="level4">
+<h4 class="anchored" data-anchor-id="explore-notebook-format">Explore notebook format</h4>
+<p>https://nbformat.readthedocs.io/en/latest/format_description.html</p>
+<div id="fa0f1ea6-7a2d-4346-acc6-0fd87d27bef9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>nb <span class="op">=</span> nbformat.from_dict(notebook_content_dict)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>code_language <span class="op">=</span> nb.metadata.language_info.name</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"&gt; "</span> <span class="op">+</span> code_language <span class="op">+</span> <span class="st">" notebook"</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cell <span class="kw">in</span> nb.cells:</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> cell.<span class="bu">id</span> <span class="op">==</span> executing_cell_id: <span class="cf">break</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    is_markdown <span class="op">=</span> cell.cell_type <span class="op">==</span> <span class="st">"markdown"</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    is_code <span class="op">=</span> cell.cell_type <span class="op">==</span> <span class="st">"code"</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    is_raw <span class="op">=</span> cell.cell_type <span class="op">==</span> <span class="st">"raw"</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"---------------------"</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"cell"</span>, cell.<span class="bu">id</span>, cell.cell_type)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"---------------------"</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> is_markdown:</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(cell.source[:<span class="dv">100</span>])</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> is_code:</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"```</span><span class="sc">{</span>code_language<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span> <span class="op">+</span> cell.source[:<span class="dv">100</span>] <span class="op">+</span> <span class="st">"</span><span class="ch">\n</span><span class="st">```"</span>)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> is_raw:</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(cell.source[:<span class="dv">100</span>])</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> is_code <span class="kw">and</span> cell.execution_count<span class="op">&gt;</span><span class="dv">0</span> <span class="kw">and</span> <span class="bu">len</span>(cell.outputs)<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"---------------------"</span>)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"cell outputs"</span>, cell.<span class="bu">id</span>, cell.execution_count)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"---------------------"</span>)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> output <span class="kw">in</span> cell.outputs:</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> output.output_type <span class="op">==</span> <span class="st">"stream"</span>:</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"&lt;</span><span class="sc">{</span>output<span class="sc">.</span>name<span class="sc">}</span><span class="ss">&gt;"</span>)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(output.text[:<span class="dv">100</span>])</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"&lt;/</span><span class="sc">{</span>output<span class="sc">.</span>name<span class="sc">}</span><span class="ss">&gt;"</span>)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> output.output_type <span class="op">==</span> <span class="st">"display_data"</span>:</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;display&gt;"</span>)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="st">"data"</span> <span class="kw">in</span> output:</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;data&gt;"</span>)</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">repr</span>(output.data)</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;/data&gt;"</span>)</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="st">"metadata"</span> <span class="kw">in</span> output <span class="kw">and</span> <span class="bu">len</span>(output.metadata)<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;metadata&gt;"</span>)</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">repr</span>(output.metadata)</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;/metadata&gt;"</span>)</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;/display&gt;"</span>)</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> output.output_type <span class="op">==</span> <span class="st">"execute_result"</span>:</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;result&gt;"</span>)</span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="st">"data"</span> <span class="kw">in</span> output:</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;data&gt;"</span>)</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(output.data)</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;/data&gt;"</span>)</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="st">"metadata"</span> <span class="kw">in</span> output <span class="kw">and</span> <span class="bu">len</span>(output.metadata)<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;metadata&gt;"</span>)</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(output.metadata)</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;/metadata&gt;"</span>)</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;/result&gt;"</span>)</span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> output.output_type <span class="op">==</span> <span class="st">"error"</span>:</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;error&gt;"</span>)</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(output.ename)</span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(output.evalue)</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> frame <span class="kw">in</span> output.traceback:</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(frame)</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;/error&gt;"</span>)</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"---------------------"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&gt; python notebook
+---------------------
+cell 9d8a6aa0-8f58-4860-bcc1-2bfbdcb438b6 markdown
+---------------------
+# wordslab-notebooks-lib.context
+
+&gt; Functions to gather context for your LLM from the current notebo
+---------------------
+cell 845d409b-9d48-4b97-9af6-63143b61e9fa code
+---------------------
+```python
+#| default_exp context
+```
+---------------------
+cell ece4d545-8f78-4232-82fb-e837ea0185e4 code
+---------------------
+```python
+#| export
+import asyncio
+from ipykernel.comm import Comm
+
+import nbformat
+from fastcore.utils import
+```
+---------------------
+cell 0ff6fbdc-4a54-4e29-acbb-07529df8cfdd markdown
+---------------------
+## Notebook cells
+
+A Jupyter notebook is a convenient way to build context for a LLM one cell after 
+---------------------
+cell da7ecd61-80f6-4a00-a795-6866d62b32bb markdown
+---------------------
+### Jupyterlab frontend extension
+
+The source code of the Jupyterlab frontend extension can be found
+---------------------
+cell 4178ac20-4612-4c8d-8d48-0fd2d2605aa9 markdown
+---------------------
+#### Understand Jupyterlab kernels and frontend extensions
+
+Jupyter kernels technical implementation
+---------------------
+cell 7a4146ce-96e0-4c13-9296-67374c833560 markdown
+---------------------
+#### Build the Jupyterlab frontend extension
+
+Open a Terminal
+
+```bash
+cd $WORDSLAB_WORKSPACE/wordsl
+---------------------
+cell 6a891df5-84b9-4579-a1ec-18fd7a13ebc2 markdown
+---------------------
+#### Test the extension in development mode
+
+```bash
+# Install in development mode
+uv pip install -e
+---------------------
+cell 4015b0d9-71a2-4580-812e-320bd5025656 markdown
+---------------------
+#### Publish the extension to pypi when ready
+
+```bash
+source ../../jupyterlab/.venv/bin/activate
+
+#
+---------------------
+cell 23982115-b16f-4487-b08f-20643d9f76ba markdown
+---------------------
+### Python extension client
+---------------------
+cell 6d27dc68-7d77-40dd-9155-2a26003afda5 markdown
+---------------------
+#### Get notebook contents
+---------------------
+cell ab0de899-1755-4252-8cab-20a59f705263 code
+---------------------
+```python
+#| export
+async def get_notebook_data(timeout=0.5):
+    future = asyncio.Future()
+    
+    def on_ms
+```
+---------------------
+cell 21bd5abf-7507-4f84-874e-52bfdf53ba1c code
+---------------------
+```python
+data =  await get_notebook_data()
+data["cell_id"]
+```
+---------------------
+cell outputs 21bd5abf-7507-4f84-874e-52bfdf53ba1c 4
+---------------------
+&lt;result&gt;
+  &lt;data&gt;
+{'text/plain': "'21bd5abf-7507-4f84-874e-52bfdf53ba1c'"}
+  &lt;/data&gt;
+&lt;/result&gt;
+---------------------
+---------------------
+cell 7d2d4d5c-c7f4-4325-a4dc-60eca3090763 code
+---------------------
+```python
+data =  await get_notebook_data()
+data["cell_id"]
+```
+---------------------
+cell outputs 7d2d4d5c-c7f4-4325-a4dc-60eca3090763 5
+---------------------
+&lt;result&gt;
+  &lt;data&gt;
+{'text/plain': "'7d2d4d5c-c7f4-4325-a4dc-60eca3090763'"}
+  &lt;/data&gt;
+&lt;/result&gt;
+---------------------</code></pre>
+</div>
+</div>
+</section>
+<section id="format-notebook-content-for-llms" class="level4">
+<h4 class="anchored" data-anchor-id="format-notebook-content-for-llms">Format notebook content for LLMs</h4>
+<p>Convert notebook contents to compact XML - code and format copied from <strong>toolslm by AnswerDotAI</strong>:</p>
+<p>https://github.com/AnswerDotAI/toolslm/blob/main/00_xml.ipynb</p>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/context.py#L40" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="get_mime_text" class="level3">
+<h3 class="anchored" data-anchor-id="get_mime_text">get_mime_text</h3>
+<blockquote class="blockquote">
+<pre><code> get_mime_text (data)</code></pre>
+</blockquote>
+<p><em>Get text from MIME bundle, preferring markdown over plain</em></p>
+<div id="2fdfbbcb-6f1a-48cc-958c-e43369cf5afc" class="cell">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_mime_text(data):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Get text from MIME bundle, preferring markdown over plain"</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">'text/markdown'</span> <span class="kw">in</span> data: <span class="cf">return</span> <span class="st">''</span>.join(<span class="bu">list</span>(data[<span class="st">'text/markdown'</span>]))</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">'text/plain'</span> <span class="kw">in</span> data: <span class="cf">return</span> <span class="st">''</span>.join(<span class="bu">list</span>(data[<span class="st">'text/plain'</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/context.py#L46" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cell2out" class="level3">
+<h3 class="anchored" data-anchor-id="cell2out">cell2out</h3>
+<blockquote class="blockquote">
+<pre><code> cell2out (o)</code></pre>
+</blockquote>
+<p><em>Convert single notebook output to XML format</em></p>
+<div id="d68d43c3-c650-44d6-9cd0-d57f92176888" class="cell">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cell2out(o):</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Convert single notebook output to XML format"</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">hasattr</span>(o, <span class="st">'data'</span>): </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        txt <span class="op">=</span> get_mime_text(o.data)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> txt: <span class="cf">return</span> Out(txt, mime<span class="op">=</span><span class="st">'markdown'</span> <span class="cf">if</span> <span class="st">'text/markdown'</span> <span class="kw">in</span> o.data <span class="cf">else</span> <span class="st">'plain'</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">hasattr</span>(o, <span class="st">'text'</span>):</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        txt <span class="op">=</span> o.text <span class="cf">if</span> <span class="bu">isinstance</span>(o.text, <span class="bu">str</span>) <span class="cf">else</span> <span class="st">''</span>.join(o.text)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Out(txt, <span class="bu">type</span><span class="op">=</span><span class="st">'stream'</span>, name<span class="op">=</span>o.get(<span class="st">'name'</span>, <span class="st">'stdout'</span>))</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">hasattr</span>(o, <span class="st">'ename'</span>): <span class="cf">return</span> Out(<span class="ss">f"</span><span class="sc">{</span>o<span class="sc">.</span>ename<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>o<span class="sc">.</span>evalue<span class="sc">}</span><span class="ss">"</span>, <span class="bu">type</span><span class="op">=</span><span class="st">'error'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/context.py#L57" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cell2xml" class="level3">
+<h3 class="anchored" data-anchor-id="cell2xml">cell2xml</h3>
+<blockquote class="blockquote">
+<pre><code> cell2xml (cell)</code></pre>
+</blockquote>
+<p><em>Convert notebook cell to concise XML format</em></p>
+<div id="f477df2f-ed9f-4643-a4e1-ae504b8a7ae3" class="cell">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cell2xml(cell):</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Convert notebook cell to concise XML format"</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    cts <span class="op">=</span> Source(<span class="st">''</span>.join(cell.source)) <span class="cf">if</span> <span class="bu">hasattr</span>(cell, <span class="st">'source'</span>) <span class="kw">and</span> cell.source <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    out_items <span class="op">=</span> L(<span class="bu">getattr</span>(cell,<span class="st">'outputs'</span>,[])).<span class="bu">map</span>(cell2out).<span class="bu">filter</span>()</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    outs <span class="op">=</span> []</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> out_items: outs <span class="op">=</span> Outs(<span class="op">*</span>out_items)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    parts <span class="op">=</span> [p <span class="cf">for</span> p <span class="kw">in</span> [cts, outs] <span class="cf">if</span> p]</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Cell(<span class="op">*</span>parts, <span class="bu">type</span><span class="op">=</span>cell.cell_type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/context.py#L67" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="nb2xml" class="level3">
+<h3 class="anchored" data-anchor-id="nb2xml">nb2xml</h3>
+<blockquote class="blockquote">
+<pre><code> nb2xml (nb, until_cell_id)</code></pre>
+</blockquote>
+<div id="d144cd3c-b0e2-49a4-90d1-70584eb59336" class="cell">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nb2xml(nb, until_cell_id):</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    cells_xml <span class="op">=</span> []</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> c <span class="kw">in</span> nb.cells:</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> c.<span class="bu">id</span> <span class="op">==</span> until_cell_id: <span class="cf">break</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> c.cell_type <span class="kw">in</span> (<span class="st">'code'</span>,<span class="st">'markdown'</span>):</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>            cells_xml.append(to_xml(cell2xml(c), do_escape<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>.join(cells_xml)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="5475f8bd-ebc8-4d29-9752-ed5c0c0849f6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>nb2xml(nb, executing_cell_id)[:<span class="dv">3000</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'&lt;cell type="markdown"&gt;&lt;source&gt;# wordslab-notebooks-lib.context\n\n&gt; Functions to gather context for your LLM from the current notebook cells, files, documents, urls.&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;#| default_exp context&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;#| export\nimport asyncio\nfrom ipykernel.comm import Comm\n\nimport nbformat\nfrom fastcore.utils import *\nfrom fastcore.xml import to_xml, Src, Source,Out,Outs,Cell&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;## Notebook cells\n\nA Jupyter notebook is a convenient way to build context for a LLM one cell after the other: you are working in a fully editable conversation, where each conversation step can be generated by code if needed.\n\nTo collect the text of all previous cells from within a python code cell of the current notebook, we need to collaborate with a Jupyterlab frontend extension:\n- the Jupyterlab frontend extension is a Javascript function defined in this package: `src\\index.ts`, which runs in the web browser of the user\n- it calls the Jupyterlab Javascript API to access the current notebook contents and track which cell is running\n- it listens to messages sent by the notebook kernel, and sends the current notebook contents and active cell id when requested\n\nThe python function: `get_notebook_data()` can be called in any code cell of the notebook:\n- it runs in the kernel on the Jupyterlab server marchine\n- it send a message to the Jupyterlab frontend extension\n- it gets back the "notebook" contents (dict) and the current "cell_id" (string)\n- it returns these two values as a Python dictionary\n\nThis is the raw notebook data but you need to convert it to a compact string representation to pass it to your LLM.\n\nThe Python function: `get_notebook_context()`:\n- get the notebook contents and current cell id by calling get_notebook_data()\n- truncate the notebook contents just above the current cell (to mimic an ongoing conversation)\n- converts everything to a single compact string, delimiting cell with XML tags which are easy to parse for the LLM\n\nIf you want to use any of these two functions, you will first need to install the Jupyterlab frontend extension:\n- activate your Jupyterlab python virtual environment\n- pip install wordslab-notebooks-lib\n- restart your Jupyterlab server\n\nThe extension is already pre-installed if you work in the wordslab-notebooks environment.\n\nThe Jupyterlab extension is reloaded and re-initialized each time you refresh your browser page: \n- to check is the extension is installed and running, look at the browser console and llok for the message \'Wordslab notebooks extension activated\'\n- hit the refresh button if you encounter a bug and the extension stops working&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;### Jupyterlab frontend extension\n\nThe source code of the Jupyterlab frontend extension can be found in the following files:\n\nTypescript source code, dependencies, and compilation config:\n\n- `src/index.ts`\n- `package.json`\n- `tsconfig.json`\n- `.yarnrc.yml`\n\nPython package integration:\n\n'</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/context.py#L76" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_notebook_context" class="level3">
+<h3 class="anchored" data-anchor-id="get_notebook_context">get_notebook_context</h3>
+<blockquote class="blockquote">
+<pre><code> get_notebook_context (timeout=0.5)</code></pre>
+</blockquote>
+<div id="ef18aaa0-c3b8-43c0-82fd-2796806af4d7" class="cell">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="cf">async</span> <span class="kw">def</span> get_notebook_context(timeout<span class="op">=</span><span class="fl">0.5</span>):</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> <span class="cf">await</span> get_notebook_data(timeout<span class="op">=</span>timeout)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    notebook_content <span class="op">=</span> data[<span class="st">"notebook"</span>]</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    nb <span class="op">=</span> nbformat.from_dict(notebook_content_dict)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    cell_id <span class="op">=</span> data[<span class="st">"cell_id"</span>]</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> nb2xml(nb, cell_id)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="5ca0de45-6fed-4ebd-a4ba-7c3f7dbb311a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> get_notebook_context(timeout<span class="op">=</span><span class="fl">0.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>'&lt;cell type="markdown"&gt;&lt;source&gt;# wordslab-notebooks-lib.context\n\n&gt; Functions to gather context for your LLM from the current notebook cells, files, documents, urls.&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;#| default_exp context&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;#| export\nimport asyncio\nfrom ipykernel.comm import Comm\n\nimport nbformat\nfrom fastcore.utils import *\nfrom fastcore.xml import to_xml, Src, Source,Out,Outs,Cell&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;## Notebook cells\n\nA Jupyter notebook is a convenient way to build context for a LLM one cell after the other: you are working in a fully editable conversation, where each conversation step can be generated by code if needed.\n\nTo collect the text of all previous cells from within a python code cell of the current notebook, we need to collaborate with a Jupyterlab frontend extension:\n- the Jupyterlab frontend extension is a Javascript function defined in this package: `src\\index.ts`, which runs in the web browser of the user\n- it calls the Jupyterlab Javascript API to access the current notebook contents and track which cell is running\n- it listens to messages sent by the notebook kernel, and sends the current notebook contents and active cell id when requested\n\nThe python function: `get_notebook_data()` can be called in any code cell of the notebook:\n- it runs in the kernel on the Jupyterlab server marchine\n- it send a message to the Jupyterlab frontend extension\n- it gets back the "notebook" contents (dict) and the current "cell_id" (string)\n- it returns these two values as a Python dictionary\n\nThis is the raw notebook data but you need to convert it to a compact string representation to pass it to your LLM.\n\nThe Python function: `get_notebook_context()`:\n- get the notebook contents and current cell id by calling get_notebook_data()\n- truncate the notebook contents just above the current cell (to mimic an ongoing conversation)\n- converts everything to a single compact string, delimiting cell with XML tags which are easy to parse for the LLM\n\nIf you want to use any of these two functions, you will first need to install the Jupyterlab frontend extension:\n- activate your Jupyterlab python virtual environment\n- pip install wordslab-notebooks-lib\n- restart your Jupyterlab server\n\nThe extension is already pre-installed if you work in the wordslab-notebooks environment.\n\nThe Jupyterlab extension is reloaded and re-initialized each time you refresh your browser page: \n- to check is the extension is installed and running, look at the browser console and llok for the message \'Wordslab notebooks extension activated\'\n- hit the refresh button if you encounter a bug and the extension stops working&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;### Jupyterlab frontend extension\n\nThe source code of the Jupyterlab frontend extension can be found in the following files:\n\nTypescript source code, dependencies, and compilation config:\n\n- `src/index.ts`\n- `package.json`\n- `tsconfig.json`\n- `.yarnrc.yml`\n\nPython package integration:\n\n- `MANIFEST.in` -&gt; graft wordslab_notebooks_lib/labextension\n\nThis how the compiled Javascript extension is embedded in the Python package.\n\n- `wordslab_notebooks_lib\\__init__.py` -&gt; def _jupyter_labextension_paths()\n\nThis is what Jupyterlab uses at extension development time to find the Jupyterlab extension in a python module.\n\n- `pyproject.toml` -&gt; classifiers = [ "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt" ]\n\nThis is what Jupyterlab uses at extension deployment time to find the python packages with Jupyterlab extensions.&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Understand Jupyterlab kernels and frontend extensions\n\nJupyter kernels technical implementation details\n\nhttps://chatgpt.com/share/692bea08-4510-8004-b9ab-c02feeb97c08\n\nJupyterlab extension development tutorial\n\nhttps://jupyterlab.readthedocs.io/en/latest/extension/extension_tutorial.html&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Build the Jupyterlab frontend extension\n\nOpen a Terminal\n\n```bash\ncd $WORDSLAB_WORKSPACE/wordslab-notebooks-lib\n\nsource ../../jupyterlab/.venv/bin/activate\n\n# Install dependencies\njlpm clean\njlpm install\n\n# Build TypeScript extension\njlpm build\n```&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Test the extension in development mode\n\n```bash\n# Install in development mode\nuv pip install -e .\n\nsource ../../jupyterlab/.venv/bin/activate\n\n# Register the extension with JupyterLab during development\njupyter labextension develop . --overwrite\n\n# Verify extension is found\njupyter labextension list\n\n# Start JupyterLab\njupyter lab\n```\n\nAfter installing the extension in development mode once, you can iterate very fast:\n- update the code in `src/index.ts`\n- build the extension with `jlpm build`\n- refresh the Jupyterlab single page app in your browser\n- test the updated extension\n\nNo need to reinstall the extension or to restart Jupyterlab itself, just refrehs your browser page.&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Publish the extension to pypi when ready\n\n```bash\nsource ../../jupyterlab/.venv/bin/activate\n\n# Make sure the frontend extension is built\njlpm build\n\nsource .venv/bin/activate\n\n# Export notebooks to Python modules\nnbdev_export\n\n# Prepare for release\nnbdev_prepare\n\n# Publish to PyPI\nnbdev_pypi\n```&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;### Python extension client&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Get notebook contents&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;#| export\nasync def get_notebook_data(timeout=0.5):\n    future = asyncio.Future()\n    \n    def on_msg(msg):\n        if not future.done():\n            future.set_result(msg[\'content\'][\'data\'])\n    \n    comm = Comm(target_name=\'wordslab_notebook_comm\', show_warning=False)\n    comm.on_msg(on_msg)\n    comm.send({\'request\': \'get_notebook_data\'})\n\n    try:\n        return await asyncio.wait_for(future, timeout=timeout)\n    except asyncio.TimeoutError:\n        raise TimeoutError("Failed to receive notebook context from frontend")\n\n# The first call always fails, I didn\'t find a way around it\ntry:\n    await get_notebook_data()\nexcept:\n    ...&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;data =  await get_notebook_data()\ndata["cell_id"]&lt;outs&gt;&lt;out mime="plain"&gt;\'21bd5abf-7507-4f84-874e-52bfdf53ba1c\'&lt;/out&gt;&lt;/outs&gt;&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;data =  await get_notebook_data()\ndata["cell_id"]&lt;outs&gt;&lt;out mime="plain"&gt;\'7d2d4d5c-c7f4-4325-a4dc-60eca3090763\'&lt;/out&gt;&lt;/outs&gt;&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;data =  await get_notebook_data()\nnotebook_content_dict = data["notebook"]\nexecuting_cell_id = data["cell_id"]\nexecuting_cell_id&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Explore notebook format&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;https://nbformat.readthedocs.io/en/latest/format_description.html&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;nb = nbformat.from_dict(notebook_content_dict)\n\ncode_language = nb.metadata.language_info.name\nprint("&gt; " + code_language + " notebook")\n\nfor cell in nb.cells:\n    if cell.id == executing_cell_id: break\n        \n    is_markdown = cell.cell_type == "markdown"\n    is_code = cell.cell_type == "code"\n    is_raw = cell.cell_type == "raw"\n\n    print("---------------------")\n    print("cell", cell.id, cell.cell_type)\n    print("---------------------")\n    if is_markdown:\n        print(cell.source[:100])\n    elif is_code:\n        print(f"```{code_language}\\n" + cell.source[:100] + "\\n```")\n    elif is_raw:\n        print(cell.source[:100])\n    if is_code and cell.execution_count&gt;0 and len(cell.outputs)&gt;0:\n        print("---------------------")\n        print("cell outputs", cell.id, cell.execution_count)\n        print("---------------------")\n        for output in cell.outputs:\n            if output.output_type == "stream":\n                print(f"&lt;{output.name}&gt;")\n                print(output.text[:100])\n                print(f"&lt;/{output.name}&gt;")\n            elif output.output_type == "display_data":\n                print("&lt;display&gt;")\n                if "data" in output:\n                    print("  &lt;data&gt;")\n                    repr(output.data)\n                    print("  &lt;/data&gt;")\n                if "metadata" in output and len(output.metadata)&gt;0:\n                    print("  &lt;metadata&gt;")\n                    repr(output.metadata)\n                    print("  &lt;/metadata&gt;")\n                print("&lt;/display&gt;")\n            elif output.output_type == "execute_result":\n                print("&lt;result&gt;")\n                if "data" in output:\n                    print("  &lt;data&gt;")\n                    print(output.data)\n                    print("  &lt;/data&gt;")\n                if "metadata" in output and len(output.metadata)&gt;0:\n                    print("  &lt;metadata&gt;")\n                    print(output.metadata)\n                    print("  &lt;/metadata&gt;")\n                print("&lt;/result&gt;")\n            elif output.output_type == "error":\n                print("&lt;error&gt;")\n                print(output.ename)\n                print(output.evalue)\n                for frame in output.traceback:\n                    print(frame)\n                print("&lt;/error&gt;")\n        print("---------------------")&lt;outs&gt;&lt;out type="stream" name="stdout"&gt;&gt; python notebook\n---------------------\ncell 9d8a6aa0-8f58-4860-bcc1-2bfbdcb438b6 markdown\n---------------------\n# wordslab-notebooks-lib.context\n\n&gt; Functions to gather context for your LLM from the current notebo\n---------------------\ncell 845d409b-9d48-4b97-9af6-63143b61e9fa code\n---------------------\n```python\n#| default_exp context\n```\n---------------------\ncell ece4d545-8f78-4232-82fb-e837ea0185e4 code\n---------------------\n```python\n#| export\nimport asyncio\nfrom ipykernel.comm import Comm\n\nimport nbformat\nfrom fastcore.utils import\n```\n---------------------\ncell 0ff6fbdc-4a54-4e29-acbb-07529df8cfdd markdown\n---------------------\n## Notebook cells\n\nA Jupyter notebook is a convenient way to build context for a LLM one cell after \n---------------------\ncell da7ecd61-80f6-4a00-a795-6866d62b32bb markdown\n---------------------\n### Jupyterlab frontend extension\n\nThe source code of the Jupyterlab frontend extension can be found\n---------------------\ncell 4178ac20-4612-4c8d-8d48-0fd2d2605aa9 markdown\n---------------------\n#### Understand Jupyterlab kernels and frontend extensions\n\nJupyter kernels technical implementation\n---------------------\ncell 7a4146ce-96e0-4c13-9296-67374c833560 markdown\n---------------------\n#### Build the Jupyterlab frontend extension\n\nOpen a Terminal\n\n```bash\ncd $WORDSLAB_WORKSPACE/wordsl\n---------------------\ncell 6a891df5-84b9-4579-a1ec-18fd7a13ebc2 markdown\n---------------------\n#### Test the extension in development mode\n\n```bash\n# Install in development mode\nuv pip install -e\n---------------------\ncell 4015b0d9-71a2-4580-812e-320bd5025656 markdown\n---------------------\n#### Publish the extension to pypi when ready\n\n```bash\nsource ../../jupyterlab/.venv/bin/activate\n\n#\n---------------------\ncell 23982115-b16f-4487-b08f-20643d9f76ba markdown\n---------------------\n### Python extension client\n---------------------\ncell 6d27dc68-7d77-40dd-9155-2a26003afda5 markdown\n---------------------\n#### Get notebook contents\n---------------------\ncell ab0de899-1755-4252-8cab-20a59f705263 code\n---------------------\n```python\n#| export\nasync def get_notebook_data(timeout=0.2):\n    future = asyncio.Future()\n    \n    def on_ms\n```\n---------------------\ncell 21bd5abf-7507-4f84-874e-52bfdf53ba1c code\n---------------------\n```python\ndata =  await get_notebook_data()\ndata["cell_id"]\n```\n---------------------\ncell outputs 21bd5abf-7507-4f84-874e-52bfdf53ba1c 4\n---------------------\n&lt;result&gt;\n  &lt;data&gt;\n{\'text/plain\': "\'21bd5abf-7507-4f84-874e-52bfdf53ba1c\'"}\n  &lt;/data&gt;\n&lt;/result&gt;\n---------------------\n---------------------\ncell 7d2d4d5c-c7f4-4325-a4dc-60eca3090763 code\n---------------------\n```python\ndata =  await get_notebook_data()\ndata["cell_id"]\n```\n---------------------\ncell outputs 7d2d4d5c-c7f4-4325-a4dc-60eca3090763 5\n---------------------\n&lt;result&gt;\n  &lt;data&gt;\n{\'text/plain\': "\'7d2d4d5c-c7f4-4325-a4dc-60eca3090763\'"}\n  &lt;/data&gt;\n&lt;/result&gt;\n---------------------\n&lt;/out&gt;&lt;/outs&gt;&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Format notebook content for LLMs&lt;/cell&gt;\n&lt;cell type="markdown"&gt;&lt;source&gt;Convert notebook contents to compact XML - code and format copied from **toolslm by AnswerDotAI**:\n\nhttps://github.com/AnswerDotAI/toolslm/blob/main/00_xml.ipynb&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;#| exports\ndef get_mime_text(data):\n    "Get text from MIME bundle, preferring markdown over plain"\n    if \'text/markdown\' in data: return \'\'.join(list(data[\'text/markdown\']))\n    if \'text/plain\' in data: return \'\'.join(list(data[\'text/plain\']))&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;#| exports\ndef cell2out(o):\n    "Convert single notebook output to XML format"\n    if hasattr(o, \'data\'): \n        txt = get_mime_text(o.data)\n        if txt: return Out(txt, mime=\'markdown\' if \'text/markdown\' in o.data else \'plain\')\n    if hasattr(o, \'text\'):\n        txt = o.text if isinstance(o.text, str) else \'\'.join(o.text)\n        return Out(txt, type=\'stream\', name=o.get(\'name\', \'stdout\'))\n    if hasattr(o, \'ename\'): return Out(f"{o.ename}: {o.evalue}", type=\'error\')&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;#| exports\ndef cell2xml(cell):\n    "Convert notebook cell to concise XML format"\n    cts = Source(\'\'.join(cell.source)) if hasattr(cell, \'source\') and cell.source else None\n    out_items = L(getattr(cell,\'outputs\',[])).map(cell2out).filter()\n    outs = []\n    if out_items: outs = Outs(*out_items)\n    parts = [p for p in [cts, outs] if p]\n    return Cell(*parts, type=cell.cell_type)&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;#| exports\ndef nb2xml(nb, until_cell_id):\n    cells_xml = []\n    for c in nb.cells:\n        if c.id == until_cell_id: break\n        if c.cell_type in (\'code\',\'markdown\'):\n            cells_xml.append(to_xml(cell2xml(c), do_escape=False))\n    return \'\\n\'.join(cells_xml)     &lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;nb2xml(nb, executing_cell_id)&lt;outs&gt;&lt;out mime="plain"&gt;\'&lt;cell type="markdown"&gt;&lt;source&gt;# wordslab-notebooks-lib.context\\n\\n&gt; Functions to gather context for your LLM from the current notebook cells, files, documents, urls.&lt;/cell&gt;\\n&lt;cell type="code"&gt;&lt;source&gt;#| default_exp context&lt;/cell&gt;\\n&lt;cell type="code"&gt;&lt;source&gt;#| export\\nimport asyncio\\nfrom ipykernel.comm import Comm\\n\\nimport nbformat\\nfrom fastcore.utils import *\\nfrom fastcore.xml import to_xml, Src, Source,Out,Outs,Cell&lt;/cell&gt;\\n&lt;cell type="markdown"&gt;&lt;source&gt;## Notebook cells\\n\\nA Jupyter notebook is a convenient way to build context for a LLM one cell after the other: you are working in a fully editable conversation, where each conversation step can be generated by code if needed.\\n\\nTo collect the text of all previous cells from within a python code cell of the current notebook, we need to collaborate with a Jupyterlab frontend extension:\\n- the Jupyterlab frontend extension is a Javascript function defined in this package: `src\\\\index.ts`, which runs in the web browser of the user\\n- it calls the Jupyterlab Javascript API to access the current notebook contents and track which cell is running\\n- it listens to messages sent by the notebook kernel, and sends the current notebook contents and active cell id when requested\\n\\nThe python function: `get_notebook_data()` can be called in any code cell of the notebook:\\n- it runs in the kernel on the Jupyterlab server marchine\\n- it send a message to the Jupyterlab frontend extension\\n- it gets back the "notebook" contents (dict) and the current "cell_id" (string)\\n- it returns these two values as a Python dictionary\\n\\nThis is the raw notebook data but you need to convert it to a compact string representation to pass it to your LLM.\\n\\nThe Python function: `get_notebook_context()`:\\n- get the notebook contents and current cell id by calling get_notebook_data()\\n- truncate the notebook contents just above the current cell (to mimic an ongoing conversation)\\n- converts everything to a single compact string, delimiting cell with XML tags which are easy to parse for the LLM\\n\\nIf you want to use any of these two functions, you will first need to install the Jupyterlab frontend extension:\\n- activate your Jupyterlab python virtual environment\\n- pip install wordslab-notebooks-lib\\n- restart your Jupyterlab server\\n\\nThe extension is already pre-installed if you work in the wordslab-notebooks environment.\\n\\nThe Jupyterlab extension is reloaded and re-initialized each time you refresh your browser page: \\n- to check is the extension is installed and running, look at the browser console and llok for the message \\\'Wordslab notebooks extension activated\\\'\\n- hit the refresh button if you encounter a bug and the extension stops working&lt;/cell&gt;\\n&lt;cell type="markdown"&gt;&lt;source&gt;### Jupyterlab frontend extension\\n\\nThe source code of the Jupyterlab frontend extension can be found in the following files:\\n\\nTypescript source code, dependencies, and compilation config:\\n\\n- `src/index.ts`\\n- `package.json`\\n- `tsconfig.json`\\n- `.yarnrc.yml`\\n\\nPython package integration:\\n\\n- `MANIFEST.in` -&gt; graft wordslab_notebooks_lib/labextension\\n\\nThis how the compiled Javascript extension is embedded in the Python package.\\n\\n- `wordslab_notebooks_lib\\\\__init__.py` -&gt; def _jupyter_labextension_paths()\\n\\nThis is what Jupyterlab uses at extension development time to find the Jupyterlab extension in a python module.\\n\\n- `pyproject.toml` -&gt; classifiers = [ "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt" ]\\n\\nThis is what Jupyterlab uses at extension deployment time to find the python packages with Jupyterlab extensions.&lt;/cell&gt;\\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Understand Jupyterlab kernels and frontend extensions\\n\\nJupyter kernels technical implementation details\\n\\nhttps://chatgpt.com/share/692bea08-4510-8004-b9ab-c02feeb97c08\\n\\nJupyterlab extension development tutorial\\n\\nhttps://jupyterlab.readthedocs.io/en/latest/extension/extension_tutorial.html&lt;/cell&gt;\\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Build the Jupyterlab frontend extension\\n\\nOpen a Terminal\\n\\n```bash\\ncd $WORDSLAB_WORKSPACE/wordslab-notebooks-lib\\n\\nsource ../../jupyterlab/.venv/bin/activate\\n\\n# Install dependencies\\njlpm clean\\njlpm install\\n\\n# Build TypeScript extension\\njlpm build\\n```&lt;/cell&gt;\\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Test the extension in development mode\\n\\n```bash\\n# Install in development mode\\nuv pip install -e .\\n\\nsource ../../jupyterlab/.venv/bin/activate\\n\\n# Register the extension with JupyterLab during development\\njupyter labextension develop . --overwrite\\n\\n# Verify extension is found\\njupyter labextension list\\n\\n# Start JupyterLab\\njupyter lab\\n```\\n\\nAfter installing the extension in development mode once, you can iterate very fast:\\n- update the code in `src/index.ts`\\n- build the extension with `jlpm build`\\n- refresh the Jupyterlab single page app in your browser\\n- test the updated extension\\n\\nNo need to reinstall the extension or to restart Jupyterlab itself, just refrehs your browser page.&lt;/cell&gt;\\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Publish the extension to pypi when ready\\n\\n```bash\\nsource ../../jupyterlab/.venv/bin/activate\\n\\n# Make sure the frontend extension is built\\njlpm build\\n\\nsource .venv/bin/activate\\n\\n# Export notebooks to Python modules\\nnbdev_export\\n\\n# Prepare for release\\nnbdev_prepare\\n\\n# Publish to PyPI\\nnbdev_pypi\\n```&lt;/cell&gt;\\n&lt;cell type="markdown"&gt;&lt;source&gt;### Python extension client&lt;/cell&gt;\\n&lt;cell type="markdown"&gt;&lt;source&gt;#### Get notebook contents&lt;/cell&gt;\\n&lt;cell type="code"&gt;&lt;source&gt;#| export\\nasync def get_notebook_data(timeout=0.2):\\n    future = asyncio.Future()\\n    \\n    def on_msg(msg):\\n        if not future.done():\\n            future.set_result(msg[\\\'content\\\'][\\\'data\\\'])\\n    \\n    comm = Comm(target_name=\\\'wordslab_notebook_comm\\\', show_warning=False)\\n    comm.on_msg(on_msg)\\n    comm.send({\\\'request\\\': \\\'get_notebook_data\\\'})\\n\\n    try:\\n        return await asyncio.wait_for(future, timeout=timeout)\\n    except asyncio.TimeoutError:\\n        raise TimeoutError("Failed to receive notebook context from frontend")\\n\\n# The first call always fails, I didn\\\'t find a way around it\\ntry:\\n    await get_notebook_data()\\nexcept:\\n    ...&lt;/cell&gt;\\n&lt;cell type="code"&gt;&lt;source&gt;data =  await get_notebook_data()\\ndata["cell_id"]&lt;outs&gt;&lt;out mime="plain"&gt;\\\'21bd5abf-7507-4f84-874e-52bfdf53ba1c\\\'&lt;/out&gt;&lt;/outs&gt;&lt;/cell&gt;\\n&lt;cell type="code"&gt;&lt;source&gt;data =  await get_notebook_data()\\ndata["cell_id"]&lt;outs&gt;&lt;out mime="plain"&gt;\\\'7d2d4d5c-c7f4-4325-a4dc-60eca3090763\\\'&lt;/out&gt;&lt;/outs&gt;&lt;/cell&gt;\'&lt;/out&gt;&lt;/outs&gt;&lt;/cell&gt;\n&lt;cell type="code"&gt;&lt;source&gt;#| exports\nasync def get_notebook_context(timeout=0.5):\n    data = await get_notebook_data(timeout=timeout)\n    notebook_content = data["notebook"]\n    nb = nbformat.from_dict(notebook_content_dict)\n    cell_id = data["cell_id"]\n    return nb2xml(nb, cell_id)&lt;/cell&gt;'</code></pre>
+</div>
+</div>
+<p>You can see that the content of this cell, which is below the call to get_notebook_context(), doesn’t appear in the context.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/wordslab-org\.github\.io\/wordslab-notebooks-lib");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
