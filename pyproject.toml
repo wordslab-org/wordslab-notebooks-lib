@@ -22,5 +22,13 @@ classifiers = [
 ]
 dynamic = [ "keywords", "description", "version", "dependencies", "optional-dependencies", "readme", "license", "authors", "entry-points", "scripts", "urls"]
 
+[tool.setuptools.data-files]
+"share/jupyter/labextensions/wordslab-notebooks-lib" = [
+    "wordslab_notebooks_lib/labextension/**"
+]
+"share/jupyter/labextensions/wordslab-notebooks-lib/install.json" = [
+    "install.json"
+]
+
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { file = "settings.ini" }, { file = "setup.py" }]
