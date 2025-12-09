@@ -50,7 +50,7 @@ Execute this user instruction in the context of the code cells above:
     async def __call__(self, user_instruction, timeout=1):
         notebook_context = await get_notebook_context(timeout=timeout)
         prompt = self.prompt_template.format(user_instruction=user_instruction, notebook_context=notebook_context)
-        stream = chat(model=model, messages=[{'role': 'user', 'content': prompt}], stream=True)
+        stream = chat(model=self.model, messages=[{'role': 'user', 'content': prompt}], stream=True)
         streamed_text = ""
         for chunk in stream:
             streamed_text += chunk['message']['content']    
