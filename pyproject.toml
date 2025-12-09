@@ -22,12 +22,16 @@ classifiers = [
 ]
 dynamic = [ "keywords", "description", "version", "dependencies", "optional-dependencies", "readme", "license", "authors", "entry-points", "scripts", "urls"]
 
+[tool.setuptools]
+include-package-data = true 
+
 [tool.setuptools.data-files]
 "share/jupyter/labextensions/wordslab-notebooks-lib" = [
-    "wordslab_notebooks_lib/labextension/**"
+  "wordslab_notebooks_lib/labextension/package.json",
+  "install.json"
 ]
-"share/jupyter/labextensions/wordslab-notebooks-lib/install.json" = [
-    "install.json"
+"share/jupyter/labextensions/wordslab-notebooks-lib/static" = [
+  "wordslab_notebooks_lib/labextension/static/*"
 ]
 
 [tool.uv]
