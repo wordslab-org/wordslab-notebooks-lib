@@ -1,5 +1,5 @@
 {
-  "name": "wordslab-notebooks-extension",
+  "name": "wordslab-notebooks-lib",
   "version": "0.1.0",
   "description": "JupyterLab extension for wordslab-notebooks",
   "keywords": [
@@ -47,7 +47,7 @@
     "extension": true,
     "outputDir": "wordslab_notebooks_lib/labextension",
     "_build": {
-      "load": "static/remoteEntry.4f66689c13629ba3dea0.js",
+      "load": "static/remoteEntry.97d57e417eaf8ebadeb6.js",
       "extension": "./extension"
     }
   }

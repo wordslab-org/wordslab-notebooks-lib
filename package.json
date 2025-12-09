@@ -1,5 +1,5 @@
 {
-  "name": "wordslab-notebooks-extension",
+  "name": "wordslab-notebooks-lib",
   "version": "0.1.0",
   "description": "JupyterLab extension for wordslab-notebooks",
   "keywords": [
