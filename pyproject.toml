@@ -48,5 +48,6 @@ wordslab-notebooks-lib = { workspace = true, editable = true }
 [dependency-groups]
 dev = [
     "nbdev>=2.4.6",
+    "twine>=6.2.0",
     "wordslab-notebooks-lib",
 ]
