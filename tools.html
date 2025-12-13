@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Predefined tools for LLMs">
+
+<title>wordslab-notebooks-lib.tools – wordslab-notebooks-lib</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-000f0825b9c55ed21d14970d810c14a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="wordslab-notebooks-lib.tools – wordslab-notebooks-lib">
+<meta property="og:description" content="Predefined tools for LLMs">
+<meta property="og:site_name" content="wordslab-notebooks-lib">
+<meta name="twitter:title" content="wordslab-notebooks-lib.tools – wordslab-notebooks-lib">
+<meta name="twitter:description" content="Predefined tools for LLMs">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">wordslab-notebooks-lib</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tools.html">wordslab-notebooks-lib.tools</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.core</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./context.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.context</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.chat</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tools.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">wordslab-notebooks-lib.tools</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./docs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.docs</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#solveit-exploration" id="toc-solveit-exploration" class="nav-link active" data-scroll-target="#solveit-exploration">Solveit exploration</a>
+  <ul class="collapse">
+  <li><a href="#librairies-providing-tools" id="toc-librairies-providing-tools" class="nav-link" data-scroll-target="#librairies-providing-tools">Librairies providing tools</a></li>
+  <li><a href="#librairies-using-tools" id="toc-librairies-using-tools" class="nav-link" data-scroll-target="#librairies-using-tools">Librairies using tools</a></li>
+  <li><a href="#development-tools" id="toc-development-tools" class="nav-link" data-scroll-target="#development-tools">Development tools</a></li>
+  </ul></li>
+  <li><a href="#tools-catalog" id="toc-tools-catalog" class="nav-link" data-scroll-target="#tools-catalog">Tools catalog</a>
+  <ul class="collapse">
+  <li><a href="#enhance-ipython-kernel" id="toc-enhance-ipython-kernel" class="nav-link" data-scroll-target="#enhance-ipython-kernel">Enhance IPython kernel</a></li>
+  <li><a href="#web-access" id="toc-web-access" class="nav-link" data-scroll-target="#web-access">Web access</a></li>
+  <li><a href="#code-execution" id="toc-code-execution" class="nav-link" data-scroll-target="#code-execution">Code execution</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="tools.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">wordslab-notebooks-lib.tools</h1>
+</div>
+
+<div>
+  <div class="description">
+    Predefined tools for LLMs
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="solveit-exploration" class="level2">
+<h2 class="anchored" data-anchor-id="solveit-exploration">Solveit exploration</h2>
+<p>Here is the list of unique Answerai library names sorted in alphabetical order:</p>
+<section id="librairies-providing-tools" class="level3">
+<h3 class="anchored" data-anchor-id="librairies-providing-tools">Librairies providing tools</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Library</th>
+<th>GitHub Repo URL</th>
+<th>Library Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>contextkit</strong></td>
+<td><a href="https://github.com/AnswerDotAI/ContextKit" title="GitHub - AnswerDotAI/ContextKit: Useful LLM contexts ready to be used in AIMagic">*</a> https://github.com/AnswerDotAI/ContextKit</td>
+<td><a href="https://github.com/AnswerDotAI/ContextKit" title="GitHub - AnswerDotAI/ContextKit: Useful LLM contexts ready to be used in AIMagic">*</a> Useful LLM contexts ready to be used in AIMagic. Library for gathering context from various sources (URLs, GitHub repos, Google Docs, PDFs, arXiv) for feeding to LLMs.</td>
+</tr>
+<tr class="even">
+<td><strong>dialoghelper</strong></td>
+<td><a href="https://github.com/AnswerDotAI/dialoghelper" title="GitHub - AnswerDotAI/dialoghelper: Helper functions for solveit dialogs">*</a> https://github.com/AnswerDotAI/dialoghelper</td>
+<td><a href="https://github.com/AnswerDotAI/dialoghelper" title="GitHub - AnswerDotAI/dialoghelper: Helper functions for solveit dialogs">*</a> Helper functions for solveit dialogs. Provides functions for message manipulation, gist management, screen capture, and tool integration in the solveit environment.</td>
+</tr>
+<tr class="odd">
+<td><strong>execnb</strong></td>
+<td><a href="https://github.com/AnswerDotAI/execnb" title="GitHub - AnswerDotAI/execnb: Execute a jupyter notebook, fast, without needing jupyter">*</a> https://github.com/AnswerDotAI/execnb</td>
+<td><a href="https://github.com/AnswerDotAI/execnb" title="GitHub - AnswerDotAI/execnb: Execute a jupyter notebook, fast, without needing jupyter">*</a> Execute a jupyter notebook, fast, without needing jupyter. Provides CaptureShell for running code and capturing outputs without a Jupyter server.</td>
+</tr>
+<tr class="even">
+<td><strong>fastcore</strong></td>
+<td><a href="https://github.com/AnswerDotAI" title="Answer.AI · GitHub">*</a> https://github.com/AnswerDotAI/fastcore</td>
+<td>Python utilities and enhancements used across fast.ai projects. Includes foundational tools like <code>@patch</code>, <code>@delegates</code>, type dispatch, and LLM file/bash tools.</td>
+</tr>
+<tr class="odd">
+<td><strong>ipykernel_helper</strong></td>
+<td>PRIVATE REPO</td>
+<td>Helper utilities for IPython/Jupyter kernels, providing <code>read_url</code>, <code>transient</code> display, enhanced completion, and namespace inspection for dialog environments.</td>
+</tr>
+<tr class="even">
+<td><strong>llms_txt</strong></td>
+<td><a href="https://github.com/AnswerDotAI/llms-txt/blob/main/nbs/index.qmd" title="llms-txt/nbs/index.qmd at main · AnswerDotAI/llms-txt">*</a> https://github.com/AnswerDotAI/llms-txt</td>
+<td><a href="https://github.com/AnswerDotAI/llms-txt/blob/main/nbs/index.qmd" title="llms-txt/nbs/index.qmd at main · AnswerDotAI/llms-txt">*</a> The <code>llms.txt</code> specification is open for community input. A GitHub repository hosts this informal overview. Tools for the /llms.txt standard helping language models use websites.</td>
+</tr>
+<tr class="odd">
+<td><strong>playwrightnb</strong></td>
+<td>https://github.com/AnswerDotAI/playwrightnb</td>
+<td>Playwright browser automation integration for Jupyter notebooks, enabling headless browser control and web scraping.</td>
+</tr>
+<tr class="even">
+<td><strong>toolslm</strong></td>
+<td><a href="https://github.com/AnswerDotAI/toolslm" title="GitHub - AnswerDotAI/toolslm: Tools to make language models a bit easier to use">*</a> https://github.com/AnswerDotAI/toolslm</td>
+<td><a href="https://github.com/AnswerDotAI/toolslm" title="GitHub - AnswerDotAI/toolslm: Tools to make language models a bit easier to use">*</a> Tools to make language models a bit easier to use. Provides XML context creation, function schema generation, shell execution, and web content downloading for LLMs.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="librairies-using-tools" class="level3">
+<h3 class="anchored" data-anchor-id="librairies-using-tools">Librairies using tools</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Library</th>
+<th>GitHub Repo URL</th>
+<th>Library Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>claudette</strong></td>
+<td><a href="https://github.com/AnswerDotAI/claudette" title="GitHub - AnswerDotAI/claudette: Claudette is Claude's friend">*</a> <a href="https://github.com/AnswerDotAI/claudette" title="GitHub - AnswerDotAI/claudette: Claudette is Claude's friend">*</a> <a href="https://github.com/AnswerDotAI/claudette" title="GitHub - AnswerDotAI/claudette: Claudette is Claude's friend">*</a> https://github.com/AnswerDotAI/claudette</td>
+<td><a href="https://github.com/AnswerDotAI/claudette" title="GitHub - AnswerDotAI/claudette: Claudette is Claude's friend">*</a> Wrapper for Anthropic’s Python SDK. The SDK works well, but is quite low level. Claudette automates pretty much everything that can be automated, whilst providing full control.</td>
+</tr>
+<tr class="even">
+<td><strong>cosette</strong></td>
+<td><a href="https://github.com/AnswerDotAI/cosette" title="GitHub - AnswerDotAI/cosette: Claudette's sister, a helper for OpenAI GPT">*</a> https://github.com/AnswerDotAI/cosette</td>
+<td><a href="https://github.com/AnswerDotAI/cosette" title="GitHub - AnswerDotAI/cosette: Claudette's sister, a helper for OpenAI GPT">*</a> Claudette’s sister, a helper for OpenAI GPT. High-level wrapper for OpenAI’s SDK with stateful chat, tool calling, and streaming support.</td>
+</tr>
+<tr class="odd">
+<td><strong>lisette</strong></td>
+<td>https://github.com/AnswerDotAI/lisette</td>
+<td>LiteLLM helper providing unified access to 100+ LLM providers using the OpenAI API format, with stateful chat, tools, web search, and reasoning support.</td>
+</tr>
+<tr class="even">
+<td><strong>msglm</strong></td>
+<td>https://github.com/AnswerDotAI/msglm</td>
+<td>Makes it easier to create messages for LLMs (Claude, OpenAI). Handles text, images, PDFs, prompt caching, and API-specific formatting.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="development-tools" class="level3">
+<h3 class="anchored" data-anchor-id="development-tools">Development tools</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Library</th>
+<th>GitHub Repo URL</th>
+<th>Library Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>fastcaddy</strong></td>
+<td>https://github.com/AnswerDotAI/fastcaddy</td>
+<td>Python wrapper for Caddy web server integration, simplifying HTTPS setup and reverse proxy configuration for FastHTML apps.</td>
+</tr>
+<tr class="even">
+<td><strong>fastlite</strong></td>
+<td><a href="https://github.com/AnswerDotAI" title="Answer.AI · GitHub">*</a> https://github.com/AnswerDotAI/fastlite</td>
+<td>A thin, expressive wrapper around SQLite for Python, providing easy database operations with minimal boilerplate.</td>
+</tr>
+<tr class="odd">
+<td><strong>fastlucide</strong></td>
+<td>https://github.com/AnswerDotAI/fastlucide</td>
+<td>Lucide icons integration for FastHTML applications, providing SVG icons as Python components.</td>
+</tr>
+<tr class="even">
+<td><strong>fasthtml</strong></td>
+<td>https://github.com/AnswerDotAI/fasthtml</td>
+<td>Modern Python web framework for building HTML applications with HTMX and Starlette, using pure Python for HTML generation.</td>
+</tr>
+<tr class="odd">
+<td><strong>ghapi</strong></td>
+<td>https://github.com/AnswerDotAI/ghapi</td>
+<td><a href="https://github.com/orgs/AnswerDotAI/repositories" title="AnswerDotAI repositories · GitHub">*</a> A delightful and complete interface to GitHub’s amazing API. Auto-generated Python client covering all GitHub API endpoints.</td>
+</tr>
+<tr class="even">
+<td><strong>monsterui</strong></td>
+<td><a href="https://github.com/AnswerDotAI" title="Answer.AI · GitHub">*</a> https://github.com/AnswerDotAI/MonsterUI</td>
+<td><a href="https://github.com/AnswerDotAI" title="Answer.AI · GitHub">*</a> MonsterUI is a FastHTML Tailwind-powered UI framework for building beautiful web interfaces with minimal code.</td>
+</tr>
+<tr class="odd">
+<td><strong>nbdev</strong></td>
+<td><a href="https://github.com/AnswerDotAI" title="Answer.AI · GitHub">*</a> https://github.com/AnswerDotAI/nbdev</td>
+<td>Literate programming framework that allows writing library code, tests, and documentation in Jupyter Notebooks, then exporting to Python modules.</td>
+</tr>
+<tr class="even">
+<td><strong>shell_sage</strong></td>
+<td>https://github.com/AnswerDotAI/shell_sage</td>
+<td><a href="https://github.com/orgs/AnswerDotAI/repositories" title="AnswerDotAI repositories · GitHub">*</a> ShellSage saves sysadmins’ sanity by solving shell script snafus super swiftly. AI-powered shell command helper.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="tools-catalog" class="level2">
+<h2 class="anchored" data-anchor-id="tools-catalog">Tools catalog</h2>
+<p>Here is the list of tools we want to develop.</p>
+<section id="enhance-ipython-kernel" class="level3">
+<h3 class="anchored" data-anchor-id="enhance-ipython-kernel">Enhance IPython kernel</h3>
+<section id="ipykernel_helper" class="level4">
+<h4 class="anchored" data-anchor-id="ipykernel_helper">ipykernel_helper</h4>
+<p>ipykernel_helper is a library that provides helper utilities for working with IPython/Jupyter kernels.</p>
+<p>It appears to be part of the infrastructure that makes the Dialog Engineering environment work smoothly, providing convenient functions that are useful in an interactive coding environment.</p>
+<p><strong>IPython InteractiveShell - Complete Feature Summary</strong></p>
+<p><code>InteractiveShell</code> is the core class of IPython, providing an enhanced, interactive Python environment. It’s a singleton class that manages everything from code execution to history, completion, and output formatting.</p>
+<ol type="1">
+<li><strong>Code Execution</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>run_cell(raw_cell, store_history, silent, shell_futures, cell_id)</code></td>
+<td>Run a complete IPython cell including magics</td>
+</tr>
+<tr class="even">
+<td><code>run_cell_async(...)</code></td>
+<td>Async version of <code>run_cell</code></td>
+</tr>
+<tr class="odd">
+<td><code>run_code(code_obj, result, async_)</code></td>
+<td>Execute a compiled code object</td>
+</tr>
+<tr class="even">
+<td><code>run_ast_nodes(nodelist, cell_name, interactivity, compiler, result)</code></td>
+<td>Run a sequence of AST nodes</td>
+</tr>
+<tr class="odd">
+<td><code>run_line_magic(magic_name, line)</code></td>
+<td>Execute a line magic like <code>%timeit</code></td>
+</tr>
+<tr class="even">
+<td><code>run_cell_magic(magic_name, line, cell)</code></td>
+<td>Execute a cell magic like <code>%%bash</code></td>
+</tr>
+<tr class="odd">
+<td><code>safe_execfile(fname, *where, ...)</code></td>
+<td>Safely execute a .py file</td>
+</tr>
+<tr class="even">
+<td><code>safe_execfile_ipy(fname, ...)</code></td>
+<td>Execute .ipy or .ipynb files with IPython syntax</td>
+</tr>
+<tr class="odd">
+<td><code>safe_run_module(mod_name, where)</code></td>
+<td>Safe version of <code>runpy.run_module()</code></td>
+</tr>
+</tbody>
+</table>
+<ol start="2" type="1">
+<li><strong>Namespace Management</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 56%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method/Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>user_ns</code></td>
+<td>The user’s namespace dictionary</td>
+</tr>
+<tr class="even">
+<td><code>user_ns_hidden</code></td>
+<td>Hidden namespace items (not shown to user)</td>
+</tr>
+<tr class="odd">
+<td><code>all_ns_refs</code></td>
+<td>List of all namespace dictionaries where objects may be stored</td>
+</tr>
+<tr class="even">
+<td><code>push(variables, interactive)</code></td>
+<td>Inject variables into user namespace</td>
+</tr>
+<tr class="odd">
+<td><code>del_var(varname, by_name)</code></td>
+<td>Delete a variable from namespaces</td>
+</tr>
+<tr class="even">
+<td><code>drop_by_id(variables)</code></td>
+<td>Remove variables if they match given values</td>
+</tr>
+<tr class="odd">
+<td><code>ev(expr)</code></td>
+<td>Evaluate Python expression in user namespace</td>
+</tr>
+<tr class="even">
+<td><code>ex(cmd)</code></td>
+<td>Execute Python statement in user namespace</td>
+</tr>
+<tr class="odd">
+<td><code>init_user_ns()</code></td>
+<td>Initialize user-visible namespaces to defaults</td>
+</tr>
+<tr class="even">
+<td><code>reset(new_session, aggressive)</code></td>
+<td>Clear all internal namespaces</td>
+</tr>
+<tr class="odd">
+<td><code>reset_selective(regex)</code></td>
+<td>Clear variables matching a regex pattern</td>
+</tr>
+</tbody>
+</table>
+<ol start="3" type="1">
+<li><strong>Code Completion</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>init_completer()</code></td>
+<td>Initialize completion machinery</td>
+</tr>
+<tr class="even">
+<td><code>complete(text, line, cursor_pos)</code></td>
+<td>Return completed text and list of completions</td>
+</tr>
+<tr class="odd">
+<td><code>set_completer_frame(frame)</code></td>
+<td>Set the frame for completion context</td>
+</tr>
+<tr class="even">
+<td><code>set_custom_completer(completer, pos)</code></td>
+<td>Add a custom completer function</td>
+</tr>
+</tbody>
+</table>
+<ol start="4" type="1">
+<li><strong>Code Transformation</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 56%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method/Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>transform_cell(raw_cell)</code></td>
+<td>Transform input cell before parsing (handles <code>%magic</code>, <code>!system</code>, etc.)</td>
+</tr>
+<tr class="even">
+<td><code>transform_ast(node)</code></td>
+<td>Apply AST transformations from <code>ast_transformers</code></td>
+</tr>
+<tr class="odd">
+<td><code>input_transformers_post</code></td>
+<td>List of string transformers applied after IPython’s own</td>
+</tr>
+<tr class="even">
+<td><code>ast_transformers</code></td>
+<td>List of <code>ast.NodeTransformer</code> instances for code modification</td>
+</tr>
+<tr class="odd">
+<td><code>check_complete(code)</code></td>
+<td>Check if code is ready to execute or needs continuation</td>
+</tr>
+</tbody>
+</table>
+<ol start="5" type="1">
+<li><strong>History Management</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 56%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method/Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>init_history()</code></td>
+<td>Setup command history and autosaves</td>
+</tr>
+<tr class="even">
+<td><code>extract_input_lines(range_str, raw)</code></td>
+<td>Return input history slices as string</td>
+</tr>
+<tr class="odd">
+<td><code>history_length</code></td>
+<td>Total length of command history</td>
+</tr>
+<tr class="even">
+<td><code>history_load_length</code></td>
+<td>Number of entries loaded at startup</td>
+</tr>
+</tbody>
+</table>
+<ol start="6" type="1">
+<li><strong>Magic System</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>find_magic(magic_name, magic_kind)</code></td>
+<td>Find and return a magic by name</td>
+</tr>
+<tr class="even">
+<td><code>find_line_magic(magic_name)</code></td>
+<td>Find a line magic</td>
+</tr>
+<tr class="odd">
+<td><code>find_cell_magic(magic_name)</code></td>
+<td>Find a cell magic</td>
+</tr>
+<tr class="even">
+<td><code>register_magic_function(func, magic_kind, magic_name)</code></td>
+<td>Expose a function as a magic</td>
+</tr>
+<tr class="odd">
+<td><code>define_macro(name, themacro)</code></td>
+<td>Define a new macro</td>
+</tr>
+</tbody>
+</table>
+<ol start="7" type="1">
+<li><strong>Object Inspection</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>object_inspect(oname, detail_level)</code></td>
+<td>Get object info</td>
+</tr>
+<tr class="even">
+<td><code>object_inspect_mime(oname, detail_level, omit_sections)</code></td>
+<td>Get object info as mimebundle</td>
+</tr>
+<tr class="odd">
+<td><code>object_inspect_text(oname, detail_level)</code></td>
+<td>Get object info as formatted text</td>
+</tr>
+<tr class="even">
+<td><code>find_user_code(target, raw, py_only, ...)</code></td>
+<td>Get code from history, file, URL, or string</td>
+</tr>
+</tbody>
+</table>
+<ol start="8" type="1">
+<li><strong>Error Handling &amp; Debugging</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 56%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method/Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>showtraceback(exc_tuple, filename, tb_offset, ...)</code></td>
+<td>Display exception that just occurred</td>
+</tr>
+<tr class="even">
+<td><code>showsyntaxerror(filename, running_compiled_code)</code></td>
+<td>Display syntax error</td>
+</tr>
+<tr class="odd">
+<td><code>showindentationerror()</code></td>
+<td>Handle IndentationError</td>
+</tr>
+<tr class="even">
+<td><code>get_exception_only(exc_tuple)</code></td>
+<td>Get exception string without traceback</td>
+</tr>
+<tr class="odd">
+<td><code>set_custom_exc(exc_tuple, handler)</code></td>
+<td>Set custom exception handler</td>
+</tr>
+<tr class="even">
+<td><code>excepthook(etype, value, tb)</code></td>
+<td>Custom sys.excepthook</td>
+</tr>
+<tr class="odd">
+<td><code>debugger(force)</code></td>
+<td>Call pdb debugger</td>
+</tr>
+<tr class="even">
+<td><code>call_pdb</code></td>
+<td>Control auto-activation of pdb at exceptions</td>
+</tr>
+<tr class="odd">
+<td><code>pdb</code></td>
+<td>Automatically call pdb after every exception</td>
+</tr>
+<tr class="even">
+<td><code>xmode</code></td>
+<td>Switch modes for exception handlers</td>
+</tr>
+</tbody>
+</table>
+<ol start="9" type="1">
+<li><strong>System Interaction</strong></li>
+</ol>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>system(cmd)</code></td>
+<td>Call cmd in subprocess, piping stdout/err</td>
+</tr>
+<tr class="even">
+<td><code>system_piped(cmd)</code></td>
+<td>Call cmd with piped output</td>
+</tr>
+<tr class="odd">
+<td><code>system_raw(cmd)</code></td>
+<td>Call cmd using os.system or subprocess</td>
+</tr>
+<tr class="even">
+<td><code>getoutput(cmd, split, depth)</code></td>
+<td>Get output from subprocess</td>
+</tr>
+</tbody>
+</table>
+<ol start="10" type="1">
+<li><strong>Expression Evaluation</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 38%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>user_expressions(expressions)</code></td>
+<td>Evaluate dict of expressions, return rich mime-typed display_data</td>
+</tr>
+<tr class="even">
+<td><code>var_expand(cmd, depth, formatter)</code></td>
+<td>Expand Python variables in a string</td>
+</tr>
+</tbody>
+</table>
+<ol start="11" type="1">
+<li><strong>Async Support</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 56%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property/Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>autoawait</code></td>
+<td>Automatically run await in top-level REPL</td>
+</tr>
+<tr class="even">
+<td><code>should_run_async(raw_cell, ...)</code></td>
+<td>Determine if cell should run via coroutine runner</td>
+</tr>
+<tr class="odd">
+<td><code>loop_runner</code></td>
+<td>Select the loop runner for async code</td>
+</tr>
+</tbody>
+</table>
+<ol start="12" type="1">
+<li><strong>Configuration Properties</strong></li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>autocall</code></td>
+<td>Auto-call callable objects (0=off, 1=smart, 2=full)</td>
+</tr>
+<tr class="even">
+<td><code>autoindent</code></td>
+<td>Auto-indent code</td>
+</tr>
+<tr class="odd">
+<td><code>automagic</code></td>
+<td>Call magics without leading <code>%</code></td>
+</tr>
+<tr class="even">
+<td><code>colors</code></td>
+<td>Color scheme (nocolor, neutral, linux, lightbg)</td>
+</tr>
+<tr class="odd">
+<td><code>cache_size</code></td>
+<td>Output cache size (default 1000)</td>
+</tr>
+<tr class="even">
+<td><code>ast_node_interactivity</code></td>
+<td>Which nodes display output (‘all’, ‘last’, ‘last_expr’, ‘none’, ‘last_expr_or_assign’)</td>
+</tr>
+<tr class="odd">
+<td><code>banner1</code> / <code>banner2</code></td>
+<td>Banner text before/after profile</td>
+</tr>
+<tr class="even">
+<td><code>display_page</code></td>
+<td>Show pager content as regular output</td>
+</tr>
+<tr class="odd">
+<td><code>enable_html_pager</code></td>
+<td>Enable HTML in pagers</td>
+</tr>
+<tr class="even">
+<td><code>enable_tip</code></td>
+<td>Show tip on IPython start</td>
+</tr>
+<tr class="odd">
+<td><code>show_rewritten_input</code></td>
+<td>Show rewritten input for autocall</td>
+</tr>
+<tr class="even">
+<td><code>sphinxify_docstring</code></td>
+<td>Enable rich HTML docstrings</td>
+</tr>
+<tr class="odd">
+<td><code>warn_venv</code></td>
+<td>Warn if running in venv without IPython installed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Architecture Summary</strong></p>
+<pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                    InteractiveShell (Singleton)                     │
+├─────────────────────────────────────────────────────────────────────┤
+│  NAMESPACES                                                         │
+│    user_ns, user_ns_hidden, all_ns_refs                            │
+├─────────────────────────────────────────────────────────────────────┤
+│  CODE EXECUTION PIPELINE                                            │
+│    raw_cell → transform_cell → parse → transform_ast → run_code    │
+├─────────────────────────────────────────────────────────────────────┤
+│  SUBSYSTEMS                                                         │
+│    • Completer (tab completion)                                     │
+│    • History Manager                                                │
+│    • Magic System (line/cell magics)                               │
+│    • Display Publisher                                              │
+│    • Exception Handler / Debugger                                   │
+│    • Input Transformers (magics, shell commands)                   │
+│    • AST Transformers                                               │
+├─────────────────────────────────────────────────────────────────────┤
+│  EXTENSIONS                                                         │
+│    • Hooks (set_hook)                                               │
+│    • Custom completers (set_custom_completer)                      │
+│    • Custom exception handlers (set_custom_exc)                    │
+│    • Magic functions (register_magic_function)                     │
+└─────────────────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>How ipykernel_helper Extends InteractiveShell</strong></p>
+<p>The <code>ipykernel_helper</code> library uses fastcore’s <code>@patch</code> to add methods to <code>InteractiveShell</code>:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Added Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>user_items()</code></td>
+<td>Get user-defined vars &amp; functions (filtered)</td>
+</tr>
+<tr class="even">
+<td><code>get_vars(vs)</code></td>
+<td>Get specific variable values</td>
+</tr>
+<tr class="odd">
+<td><code>get_schemas(fs)</code></td>
+<td>Get JSON schemas for functions (tool calling)</td>
+</tr>
+<tr class="even">
+<td><code>ranked_complete(code, ...)</code></td>
+<td>Enhanced completion with ranking</td>
+</tr>
+<tr class="odd">
+<td><code>sig_help(code, ...)</code></td>
+<td>Signature help using Jedi</td>
+</tr>
+<tr class="even">
+<td><code>xpush(**kw)</code></td>
+<td>Push with kwargs</td>
+</tr>
+<tr class="odd">
+<td><code>publish(data, ...)</code></td>
+<td>Enhanced display publishing</td>
+</tr>
+</tbody>
+</table>
+<p>This is how solveit extends IPython’s core to support AI-assisted coding!</p>
+</section>
+<section id="extract-information-from-the-users-namespace" class="level4">
+<h4 class="anchored" data-anchor-id="extract-information-from-the-users-namespace">Extract information from the user’s namespace</h4>
+<p>These are methods patched onto IPython’s InteractiveShell by ipykernel_helper.</p>
+<p>Getting an InteractiveShell instance from a notebook code cell is straightforward.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython <span class="im">import</span> get_ipython</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>shell <span class="op">=</span> get_ipython()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>They help extract information from the user’s namespace for use in dialog/AI contexts.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>InteractiveShell.user_items(<span class="va">self</span>, max_len<span class="op">=</span><span class="dv">200</span>, xtra_skip<span class="op">=</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Purpose: Get user-defined variables and functions from the IPython namespace, filtering out system/internal items.</p>
+<p>Returns: Tuple of (user_vars, user_fns) - user_vars: Dict of {var_name: repr_string} - variable names and their string representations (truncated to max_len) - user_fns: Dict of {func_name: signature_string} - user-defined function names and their signatures</p>
+<p>What it filters out: - Hidden namespace items (user_ns_hidden) - Items starting with _ - Types, modules, methods, builtins, typing constructs - Specific names like nbmeta, receive_nbmeta</p>
+<p>Use case: Let the AI know what variables and functions the user has defined in their session.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>InteractiveShell.get_vars(<span class="va">self</span>:InteractiveShell, vs:<span class="bu">list</span>, literal<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Purpose: Retrieve specific variable values from the namespace</p>
+<p>Parameters: - vs: List of variable names to retrieve - literal: If True, try to return actual Python literals; if False, return string representation</p>
+<p>Returns: - Dict of {var_name: value} for variables that exist in the namespace</p>
+<p>The literal=True behavior: - Tries to repr() the value, then literal_eval() it back - If that succeeds, returns the actual value (works for dicts, lists, strings, numbers, etc.) - If it fails (complex objects), returns the string representation instead</p>
+<p>Use case: When the user shares specific variables with the AI using <code>$varname</code> notation, this function retrieves their current values.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>InteractiveShell.get_schemas(<span class="va">self</span>:InteractiveShell, fs:<span class="bu">list</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Purpose: Get JSON schemas for functions (for LLM tool calling).</p>
+<p>Parameters: - fs: List of function names to get schemas for</p>
+<p>Returns: Dict of {func_name: schema_or_error} - If successful: {‘type’: ‘function’, ‘function’: {JSON schema}} - If not found: “funcname not found. Did you run it?” - If schema error: “funcname: error message”</p>
+<p>The schema format (via <code>toolslm.funccall.get_schema</code>):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="er">'type'</span><span class="fu">:</span> <span class="er">'function'</span><span class="fu">,</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="er">'function'</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="er">'name'</span><span class="fu">:</span> <span class="er">'my_func'</span><span class="fu">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="er">'description'</span><span class="fu">:</span> <span class="er">'Docstring</span> <span class="er">here'</span><span class="fu">,</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="er">'parameters'</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            <span class="er">'type'</span><span class="fu">:</span> <span class="er">'object'</span><span class="fu">,</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            <span class="er">'properties'</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                <span class="er">'param1'</span><span class="fu">:</span> <span class="fu">{</span><span class="er">'type'</span><span class="fu">:</span> <span class="er">'string'</span><span class="fu">,</span> <span class="er">'description'</span><span class="fu">:</span> <span class="er">'...'</span><span class="fu">},</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                <span class="er">'param2'</span><span class="fu">:</span> <span class="fu">{</span><span class="er">'type'</span><span class="fu">:</span> <span class="er">'integer'</span><span class="fu">,</span> <span class="er">'description'</span><span class="fu">:</span> <span class="er">'...'</span><span class="fu">}</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>            <span class="fu">},</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>            <span class="er">'required'</span><span class="fu">:</span> <span class="ot">[</span><span class="er">'param1'</span><span class="ot">]</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Use case: When the user shares tools with the AI using <code>&amp;toolname</code> notation, this function generates the JSON schemas that tell the AI how to call those functions.</p>
+</section>
+<section id="solveit-use-of-get_vars-and-get_schema" class="level4">
+<h4 class="anchored" data-anchor-id="solveit-use-of-get_vars-and-get_schema">Solveit use of get_vars() and get_schema()</h4>
+<p>The <code>$varname</code> and <code>&amp;toolname</code> Notation System</p>
+<p>Overview</p>
+<p>When you write a prompt in solveit containing <code>$myvar</code> or <code>&amp;mytool</code>, the system: 1. <strong>Parses</strong> your prompt for these special notations 2. <strong>Extracts</strong> the referenced names 3. <strong>Retrieves</strong> their values/schemas from the Python namespace 4. <strong>Injects</strong> this information into the context sent to the AI</p>
+<p><strong>Variable Sharing: <code>$varname</code></strong></p>
+<p>What Happens</p>
+<pre><code>User writes prompt:
+┌─────────────────────────────────────────────┐
+│ "Analyze the data in `$df` and tell me     │
+│  the average of the 'sales' column"         │
+└─────────────────────────────────────────────┘
+                    │
+                    ▼
+            Parse for $-prefixed names
+                    │
+                    ▼
+            Found: ['df']
+                    │
+                    ▼
+            Call: shell.get_vars(['df'])
+                    │
+                    ▼
+            Retrieve current value of df
+                    │
+                    ▼
+┌─────────────────────────────────────────────┐
+│ Context sent to AI includes:                │
+│                                             │
+│ &lt;variables&gt;                                 │
+│   df = DataFrame with 100 rows, columns:    │
+│        ['date', 'sales', 'region', ...]     │
+│ &lt;/variables&gt;                                │
+│                                             │
+│ User prompt: "Analyze the data in df..."    │
+└─────────────────────────────────────────────┘</code></pre>
+<p>Key Behavior</p>
+<ol type="1">
+<li>Current value: The variable’s value at the time the prompt is sent (not when it was first defined)</li>
+<li>Retroactive updates: If you change the variable and re-run, the context updates</li>
+<li>Safe representation: Uses <code>_safe_repr()</code> to truncate large values (default 200 chars)</li>
+<li>Literal conversion: Tries to preserve actual Python types when possible via <code>literal_eval</code></li>
+</ol>
+<p>Example Flow</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cell 1: Define data</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({<span class="st">'a'</span>: [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>], <span class="st">'b'</span>: [<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>]})</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cell 2: Prompt with $df</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># "What's the sum of column 'a' in `$df`?"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Behind the scenes:</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>shell.get_vars([<span class="st">'df'</span>])</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Returns: {'df': "   a  b\n0  1  4\n1  2  5\n2  3  6"}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Tool Sharing: <code>&amp;toolname</code></strong></p>
+<p>What Happens</p>
+<pre><code>User writes prompt:
+┌─────────────────────────────────────────────┐
+│ "Use `&amp;calculate` to add 15 and 27"         │
+└─────────────────────────────────────────────┘
+                    │
+                    ▼
+            Parse for &amp;-prefixed names
+                    │
+                    ▼
+            Found: ['calculate']
+                    │
+                    ▼
+            Call: shell.get_schemas(['calculate'])
+                    │
+                    ▼
+            Generate JSON schema from function
+                    │
+                    ▼
+┌─────────────────────────────────────────────┐
+│ AI receives tool definition:                │
+│                                             │
+│ {                                           │
+│   "type": "function",                       │
+│   "function": {                             │
+│     "name": "calculate",                    │
+│     "description": "Add two numbers",       │
+│     "parameters": {                         │
+│       "type": "object",                     │
+│       "properties": {                       │
+│         "a": {"type": "integer"},           │
+│         "b": {"type": "integer"}            │
+│       },                                    │
+│       "required": ["a", "b"]                │
+│     }                                       │
+│   }                                         │
+│ }                                           │
+└─────────────────────────────────────────────┘</code></pre>
+<p><strong>Requirements for Tools</strong></p>
+<p>From <code>dialoghelper.core.is_usable_tool()</code>, a function must have: 1. Type annotations for all parameters 2. A docstring (becomes the tool description)</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ✅ Valid tool</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate(a: <span class="bu">int</span>, b: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Add two numbers together"</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ❌ Not usable - no docstring</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bad_tool(a: <span class="bu">int</span>, b: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># ❌ Not usable - missing type hints</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> another_bad(a, b):</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Add numbers"</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Tool Execution Flow</strong></p>
+<p>When the AI decides to use a tool:</p>
+<pre><code>┌─────────────────────────────────────────────┐
+│ AI Response:                                │
+│ "I'll use calculate to add those numbers"   │
+│                                             │
+│ Tool Call:                                  │
+│   name: "calculate"                         │
+│   arguments: {"a": 15, "b": 27}             │
+└─────────────────────────────────────────────┘
+                    │
+                    ▼
+            solveit receives tool call
+                    │
+                    ▼
+            Look up 'calculate' in namespace
+                    │
+                    ▼
+            Execute: calculate(a=15, b=27)
+                    │
+                    ▼
+            Result: 42
+                    │
+                    ▼
+┌─────────────────────────────────────────────┐
+│ Tool result sent back to AI                 │
+│                                             │
+│ AI continues: "The sum of 15 and 27 is 42"  │
+└─────────────────────────────────────────────┘</code></pre>
+<p><strong>The Parsing Mechanism</strong></p>
+<p>The parsing likely uses regex to find these patterns:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_prompt(prompt):</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Find $varname in backticks</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    var_pattern <span class="op">=</span> <span class="vs">r'`</span><span class="ch">\$</span><span class="kw">(</span><span class="dv">\w</span><span class="op">+</span><span class="kw">)</span><span class="vs">`'</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    vars_found <span class="op">=</span> re.findall(var_pattern, prompt)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Find &amp;toolname in backticks</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    tool_pattern <span class="op">=</span> <span class="vs">r'`&amp;</span><span class="kw">(</span><span class="dv">\w</span><span class="op">+</span><span class="kw">)</span><span class="vs">`'</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    tools_found <span class="op">=</span> re.findall(tool_pattern, prompt)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> vars_found, tools_found</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Example</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">"Use `&amp;calculate` on `$x` and `$y`"</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>parse_prompt(prompt)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Returns: (['x', 'y'], ['calculate'])</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Complete Architecture</strong></p>
+<pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                      USER WRITES PROMPT                             │
+│  "Use `&amp;my_tool` to process `$my_data` and return the result"      │
+└─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      SOLVEIT FRONTEND                               │
+│  1. Parse prompt for `$name` and `&amp;name` patterns                  │
+│  2. Extract: vars=['my_data'], tools=['my_tool']                   │
+│  3. Request from kernel: get_vars(), get_schemas()                 │
+└─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      IPYKERNEL (Python)                             │
+│  shell.get_vars(['my_data'])                                       │
+│    → {'my_data': [1, 2, 3, 4, 5]}                                  │
+│                                                                     │
+│  shell.get_schemas(['my_tool'])                                    │
+│    → {'my_tool': {'type': 'function', 'function': {...}}}          │
+└─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      CONTEXT ASSEMBLY                               │
+│  &lt;variables&gt;                                                        │
+│    my_data = [1, 2, 3, 4, 5]                                       │
+│  &lt;/variables&gt;                                                       │
+│                                                                     │
+│  Tools: [my_tool schema]                                           │
+│                                                                     │
+│  Prompt: "Use my_tool to process my_data..."                       │
+└─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      AI (Claude/etc)                                │
+│  - Sees variable values in context                                 │
+│  - Has tool schemas available                                      │
+│  - Can call tools, results executed in user's kernel               │
+└─────────────────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Key Points</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th><code>$varname</code></th>
+<th><code>&amp;toolname</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Purpose</td>
+<td>Share variable value</td>
+<td>Share function as callable tool</td>
+</tr>
+<tr class="even">
+<td>Retrieval</td>
+<td><code>get_vars()</code></td>
+<td><code>get_schemas()</code></td>
+</tr>
+<tr class="odd">
+<td>What AI sees</td>
+<td>Current value (as string/literal)</td>
+<td>JSON schema for tool calling</td>
+</tr>
+<tr class="even">
+<td>Requirements</td>
+<td>Variable must exist</td>
+<td>Function needs types + docstring</td>
+</tr>
+<tr class="odd">
+<td>AI can modify?</td>
+<td>No (read-only snapshot)</td>
+<td>Yes (can call the function)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Practical Tips</strong></p>
+<ol type="1">
+<li>Variables are snapshots: The AI sees the value when you send the prompt</li>
+<li>Tools execute in your kernel: Side effects happen in your session</li>
+<li>Use backticks: The notation is <code>`$var`</code> and <code>`&amp;tool`</code>, not bare <code>$var</code></li>
+<li>Check tool validity: Use <code>is_usable_tool(func)</code> to verify a function can be used as a tool</li>
+<li>List tools: Use <code>mk_toollist(symbols)</code> from dialoghelper to see available tools formatted for prompts</li>
+</ol>
+</section>
+<section id="customize-jupyterlab-default-behavior-to-enhance-variables-display" class="level4">
+<h4 class="anchored" data-anchor-id="customize-jupyterlab-default-behavior-to-enhance-variables-display">Customize Jupyterlab default behavior to enhance variables display</h4>
+<p>Let me explain how JupyterLab’s Debugger panel works and whether you could hook into it.</p>
+<p><strong>How JupyterLab’s Debugger Panel Gets Variables</strong></p>
+<p>The Debugger panel in JupyterLab uses a completely different mechanism than these ipykernel_helper functions: 1. Debug Adapter Protocol (DAP) - JupyterLab’s debugger communicates via the DAP standard 2. debugpy - The Python debugger backend 3. Kernel debug messages - Special debug_request/debug_reply messages over ZMQ The flow looks like:</p>
+<pre><code>JupyterLab Debugger UI
+        │
+        ▼ (DAP protocol)
+    debugpy 
+        │
+        ▼ (inspects frames)
+    Python runtime</code></pre>
+<p><strong>The Challenge</strong></p>
+<p>The user_items(), get_vars(), get_schemas() functions are: - Pull-based: Called on demand by the solveit frontend - Custom protocol: Use transient display messages or custom endpoints - Namespace-focused: Look at InteractiveShell.user_ns</p>
+<p>JupyterLab’s Debugger is: - DAP-based: Uses standardized debug adapter protocol - Frame-focused: Inspects stack frames, not just the namespace - debugpy-controlled: The variable inspection happens inside debugpy</p>
+<p><strong>Option: Custom Variable Inspector Extension</strong></p>
+<p>Instead of modifying the Debugger, create a JupyterLab extension that: - Sends custom comm messages to the kernel - Calls user_items() or similar - Displays results in a custom panel</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kernel side</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ipykernel.comm <span class="im">import</span> Comm</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> send_variables():</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    shell <span class="op">=</span> get_ipython()</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    user_vars, user_fns <span class="op">=</span> shell.user_items()</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    comm <span class="op">=</span> Comm(target_name<span class="op">=</span><span class="st">'variable_inspector'</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    comm.send({<span class="st">'vars'</span>: user_vars, <span class="st">'fns'</span>: user_fns})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Practical Recommendation</strong></p>
+<p>The easiest approach that gives you similar functionality to solveit’s variable display in standard JupyterLab:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In your notebook or startup file</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython <span class="im">import</span> get_ipython</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display, HTML</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_user_items(max_len<span class="op">=</span><span class="dv">100</span>):</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Display user variables and functions like solveit does"""</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    shell <span class="op">=</span> get_ipython()</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    user_vars, user_fns <span class="op">=</span> shell.user_items(max_len<span class="op">=</span>max_len)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    html <span class="op">=</span> <span class="st">"&lt;details open&gt;&lt;summary&gt;&lt;b&gt;Variables&lt;/b&gt;&lt;/summary&gt;&lt;ul&gt;"</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k, v <span class="kw">in</span> user_vars.items():</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>        html <span class="op">+=</span> <span class="ss">f"&lt;li&gt;&lt;code&gt;</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">&lt;/code&gt;: </span><span class="sc">{</span>v<span class="sc">}</span><span class="ss">&lt;/li&gt;"</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    html <span class="op">+=</span> <span class="st">"&lt;/ul&gt;&lt;/details&gt;"</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    html <span class="op">+=</span> <span class="st">"&lt;details open&gt;&lt;summary&gt;&lt;b&gt;Functions&lt;/b&gt;&lt;/summary&gt;&lt;ul&gt;"</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k, v <span class="kw">in</span> user_fns.items():</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>        html <span class="op">+=</span> <span class="ss">f"&lt;li&gt;&lt;code&gt;</span><span class="sc">{</span>k<span class="sc">}{</span>v<span class="sc">}</span><span class="ss">&lt;/code&gt;&lt;/li&gt;"</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    html <span class="op">+=</span> <span class="st">"&lt;/ul&gt;&lt;/details&gt;"</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    display(HTML(html))</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Auto-show after each cell (optional)</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co"># get_ipython().events.register('post_run_cell', lambda r: show_user_items())</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="provide-smarter-code-completion-and-signature-help" class="level4">
+<h4 class="anchored" data-anchor-id="provide-smarter-code-completion-and-signature-help">Provide smarter code completion and signature help</h4>
+<p>Why These Are Better Than Default IPython</p>
+<p>Default IPython completion: - No custom ranking (alphabetical or frequency-based) - Includes all <strong>dunder</strong> methods always - Doesn’t prioritize user code</p>
+<p>These custom versions: - Smart ranking: user code &gt; builtins &gt; everything else - Filters <strong>dunder</strong> unless explicitly requested - Context-aware (knows about your namespace) - Provides structured data for rich UI display</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>InteractiveShell.ranked_complete(<span class="va">self</span>:InteractiveShell, code, line_no<span class="op">=</span><span class="va">None</span>, col_no<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Purpose: Provide intelligent, ranked code completions using Jedi, with custom ranking logic.</p>
+<p>Parameters: - code: The code string to complete - line_no: Optional line number (1-indexed) - col_no: Optional column number (1-indexed)</p>
+<p>Returns: List of completion objects with these attributes: - text - The completion text - type - Type of completion (param, function, module, etc.) - mod - Module where the item is defined - rank - Numeric rank (lower = higher priority)</p>
+<p>Ranking logic (lower is better): - Rank 1: Parameters (function arguments being filled) - Rank 2: Local variables/functions (from <strong>main</strong>) - Rank 3: Module members (when completing module.something) - Rank 4: Builtins (like print, len, etc.) - Rank 5: Everything else (imported modules, third-party) - Rank +0.1: Private items (starting with _) - slightly lower priority</p>
+<p>Special handling: - Filters out <strong>dunder</strong> methods unless the user explicitly types __ (so they’re not cluttering normal completion) - Deprioritizes private _methods slightly but doesn’t remove them</p>
+<p>Use case: Provide better autocomplete suggestions in the solveit dialog environment, prioritizing user-defined items and parameters over stdlib/third-party items.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>InteractiveShell.sig_help(<span class="va">self</span>:InteractiveShell, code, line_no<span class="op">=</span><span class="va">None</span>, col_no<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Purpose: Get function signature information at the cursor position (like when you type func( and want to see the parameters).</p>
+<p>Parameters: - code The code string - line_no Line number where cursor is (1-indexed) - col_no Column number where cursor is (1-indexed)</p>
+<p>Returns: List of signature objects, each containing: - label - Full signature description (e.g., “print(value, …, sep=’ ‘, end=’’)”) - typ - Type of callable (function, method, class, etc.) - mod - Module name where it’s defined d- oc - Full docstring - idx - Current parameter index (which parameter the cursor is on) - params - List of parameter dicts with name and desc</p>
+<p>How it works: - Uses Jedi’s Interpreter with the current namespace to get context-aware signatures - Falls back to Script (static analysis) if Interpreter doesn’t find anything - Extracts detailed information about each signature - Returns structured data about parameters and documentation</p>
+<p>Use case: Power the signature help tooltip in the solveit editor, showing: - What parameters a function takes - Which parameter you’re currently typing - Documentation for each parameter - Full docstring</p>
+</section>
+<section id="override-ipythons-default-behavior-to-enhance-completions" class="level4">
+<h4 class="anchored" data-anchor-id="override-ipythons-default-behavior-to-enhance-completions">Override IPython’s default behavior to enhance completions</h4>
+<p>JupyterLab communicates with the kernel via the Jupyter messaging protocol:</p>
+<pre><code>┌─────────────────┐                    ┌─────────────────┐
+│   JupyterLab    │  complete_request  │    IPython      │
+│   Frontend      │ ─────────────────► │    Kernel       │
+│                 │                    │                 │
+│                 │ ◄───────────────── │                 │
+│                 │  complete_reply    │                 │
+└─────────────────┘                    └─────────────────┘</code></pre>
+<p>The relevant message types are: - complete_request / complete_reply - for autocompletion - inspect_request / inspect_reply - for signature/documentation help</p>
+<p><strong>Patch do_complete on the Kernel</strong></p>
+<p>The kernel’s do_complete method handles complete_request messages. You can patch it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ipykernel.ipkernel <span class="im">import</span> IPythonKernel</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> wraps</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Store original</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>_original_do_complete <span class="op">=</span> IPythonKernel.do_complete</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="at">@wraps</span>(_original_do_complete)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> custom_do_complete(<span class="va">self</span>, code, cursor_pos):</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Enhanced completion with ranking."""</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get original reply</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    reply <span class="op">=</span> _original_do_complete(<span class="va">self</span>, code, cursor_pos)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> reply[<span class="st">'status'</span>] <span class="op">==</span> <span class="st">'ok'</span>:</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>        matches <span class="op">=</span> reply[<span class="st">'matches'</span>]</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Custom ranking logic</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> rank(name):</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>            ...</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Filter __dunder__ unless explicitly typing them</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>        text <span class="op">=</span> code[:cursor_pos].split()[<span class="op">-</span><span class="dv">1</span>] <span class="cf">if</span> code[:cursor_pos].split() <span class="cf">else</span> <span class="st">''</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="st">'__'</span> <span class="kw">not</span> <span class="kw">in</span> text:</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>            matches <span class="op">=</span> [m <span class="cf">for</span> m <span class="kw">in</span> matches <span class="cf">if</span> <span class="kw">not</span> m.startswith(<span class="st">'__'</span>)]</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Sort by rank</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>        reply[<span class="st">'matches'</span>] <span class="op">=</span> <span class="bu">sorted</span>(matches, key<span class="op">=</span>rank)</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> reply</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply patch</span></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>IPythonKernel.do_complete <span class="op">=</span> custom_do_complete</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Patch do_inspect for Signature Help</strong></p>
+<p>For enhanced signature/documentation help:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ipykernel.ipkernel <span class="im">import</span> IPythonKernel</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> jedi <span class="im">import</span> Interpreter</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> wraps</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>_original_do_inspect <span class="op">=</span> IPythonKernel.do_inspect</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="at">@wraps</span>(_original_do_inspect)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> custom_do_inspect(<span class="va">self</span>, code, cursor_pos, detail_level<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Enhanced inspect with Jedi signatures."""</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Try Jedi first for better signature info</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>        ns <span class="op">=</span> <span class="va">self</span>.shell.user_ns</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Get signatures at cursor</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>        ...</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> {</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">'status'</span>: <span class="st">'ok'</span>,</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">'found'</span>: <span class="va">True</span>,</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>                <span class="st">'data'</span>: {<span class="st">'text/markdown'</span>: text, <span class="st">'text/plain'</span>: sig.docstring()},</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>                <span class="st">'metadata'</span>: {}</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">pass</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Fall back to original</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> _original_do_inspect(<span class="va">self</span>, code, cursor_pos, detail_level)</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>IPythonKernel.do_inspect <span class="op">=</span> custom_do_inspect</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Create an IPython Extension</strong></p>
+<p>Package everything as a proper IPython extension:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_ipython_extension(ip):</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Called when extension is loaded via %load_ext"""</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> ipykernel.ipkernel <span class="im">import</span> IPythonKernel</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> functools <span class="im">import</span> wraps</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Patch do_complete</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    _orig <span class="op">=</span> IPythonKernel.do_complete</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">@wraps</span>(_orig)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> patched_do_complete(<span class="va">self</span>, code, cursor_pos):</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>        ...</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    IPythonKernel.do_complete <span class="op">=</span> patched_do_complete</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Enhanced completions loaded!"</span>)</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> unload_ipython_extension(ip):</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Called when extension is unloaded"""</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Restore original if needed</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Usage:</p>
+<pre><code>%load_ext my_completer_extension</code></pre>
+<p>Or add to ipython_config.py:</p>
+<pre><code>c.InteractiveShellApp.extensions = ['my_completer_extension']</code></pre>
+<div id="e556d54b-28be-4a11-9568-4b87b3e96784" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>what do xpush(), _get_info() <span class="kw">and</span> publish() do exactly ?</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="send-commands-and-display-data-to-the-javascript-frontend" class="level4">
+<h4 class="anchored" data-anchor-id="send-commands-and-display-data-to-the-javascript-frontend">Send commands and display data to the Javascript frontend</h4>
+<p>A convenience wrapper that sends a command to the frontend via the transient mechanism.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>InteractiveShell.run_cmd(cmd, data<span class="op">=</span><span class="st">''</span>, meta<span class="op">=</span><span class="va">None</span>, update<span class="op">=</span><span class="va">False</span>, <span class="op">**</span>kw)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    InteractiveShell.transient(data<span class="op">=</span><span class="st">''</span>, subtype<span class="op">=</span><span class="st">'plain'</span>, mimetype<span class="op">=</span><span class="st">'text'</span>, meta<span class="op">=</span><span class="va">None</span>, update<span class="op">=</span><span class="va">False</span>, <span class="op">**</span>kw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In Jupyter, when you output something, it gets sent to the frontend via a display_data or execute_result message. These messages have three main parts:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"data"</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">"text/plain"</span><span class="fu">:</span> <span class="st">"Hello"</span><span class="fu">,</span> <span class="dt">"text/html"</span><span class="fu">:</span> <span class="st">"&lt;b&gt;Hello&lt;/b&gt;"</span><span class="fu">},</span>  <span class="er">#</span> <span class="er">The</span> <span class="er">content</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"metadata"</span><span class="fu">:</span> <span class="fu">{},</span>  <span class="er">#</span> <span class="er">Extra</span> <span class="er">info</span> <span class="er">about</span> <span class="er">the</span> <span class="er">content</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"transient"</span><span class="fu">:</span> <span class="fu">{}</span>  <span class="er">#</span> <span class="er">Data</span> <span class="er">that</span> <span class="er">should</span> <span class="er">NOT</span> <span class="er">be</span> <span class="er">persisted</span> <span class="er">in</span> <span class="er">the</span> <span class="er">notebook</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Sends display data to the frontend where the actual payload is in the transient field, not the main data field.</p>
+<p>The key insight: transient data is displayed but not saved when the notebook is saved. It’s ephemeral.</p>
+<p>Why use transient? - Not saved to notebook - Commands and temporary UI updates don’t clutter the saved .ipynb file - Custom frontend communication - The solveit frontend watches for specific transient keys - Ephemeral state - Progress indicators, status updates, commands that shouldn’t persist</p>
+<p>Example usage:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>run_cmd(<span class="st">"scroll_to"</span>, msg_id<span class="op">=</span><span class="st">"abc123"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="web-access" class="level3">
+<h3 class="anchored" data-anchor-id="web-access">Web access</h3>
+<p>I have access to two main tools:</p>
+<ol type="1">
+<li>Web Search - I can search for current information, recent events, technical documentation, news, and anything where up-to-date data would be helpful. I use this when:</li>
+</ol>
+<ul>
+<li>You need recent information (after my March 2025 knowledge cutoff)</li>
+<li>You’re looking for specific facts or current conditions</li>
+<li>Real-time data is important (weather, news, stock prices, etc.)</li>
+</ul>
+<ol start="2" type="1">
+<li>Read URL - I can fetch and read content from specific web pages you provide, which is useful for analyzing articles, documentation, or other online content.</li>
+</ol>
+<p>I use these tools strategically - I don’t search for things I already know well (like general programming concepts, historical facts, or established knowledge), but I will search when current or specific information would genuinely help answer your question.</p>
+<section id="model-inference-service" class="level4">
+<h4 class="anchored" data-anchor-id="model-inference-service">Model inference service</h4>
+<p>The web_search function isn’t defined in your Python environment - it’s a tool that’s available to me (the AI assistant) but not directly accessible to you in your Python code.</p>
+<p>When I use web_search, I’m calling it through my own tool-calling mechanism, not through your Python interpreter. It’s part of my capabilities, separate from the Python environment you’re working in.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>web_search(query: <span class="bu">str</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Parameters - Takes a search query string and returns web search results</p>
+</section>
+<section id="ipykernel_helper-1" class="level4">
+<h4 class="anchored" data-anchor-id="ipykernel_helper-1">ipykernel_helper</h4>
+<p>Full-featured URL reader that can extract sections, convert to markdown, handle math (KaTeX/MathJax), absolutify image URLs, and optionally tag images for AI processing</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>read_url(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    url: <span class="bu">str</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    as_md: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    extract_section: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    selector: <span class="bu">str</span> <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Parameters - url: The URL to read (required) - as_md: Whether to convert HTML to Markdown (default: True) - extract_section: If URL has an anchor, return only that section (default: True) - selector: CSS selector to extract specific sections using BeautifulSoup.select syntax (optional)</p>
+<p>Uses internally - scrape_url() - Fetch URL content using cloudscraper (handles anti-bot protections) - get_md() - Convert HTML to clean markdown</p>
+</section>
+</section>
+<section id="code-execution" class="level3">
+<h3 class="anchored" data-anchor-id="code-execution">Code execution</h3>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/wordslab-org\.github\.io\/wordslab-notebooks-lib");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
