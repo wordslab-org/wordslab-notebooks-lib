@@ -8,7 +8,6 @@ __all__ = ['NbChat']
 # %% ../nbs/02_chat.ipynb 3
 import os
 from ollama import chat
-import openai
 
 from .core import WordslabNotebooks
 from .context import get_notebook_context

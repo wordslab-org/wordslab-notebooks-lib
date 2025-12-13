@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name="wordslab-notebooks-lib"
-requires-python=">=3.9"
+requires-python=">=3.10"
 classifiers = [
     "Framework :: Jupyter",
     "Framework :: Jupyter :: JupyterLab",
@@ -36,3 +36,17 @@ include-package-data = true
 
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { file = "settings.ini" }, { file = "setup.py" }]
+
+[tool.uv.workspace]
+members = [
+    ".",
+]
+
+[tool.uv.sources]
+wordslab-notebooks-lib = { workspace = true, editable = true }
+
+[dependency-groups]
+dev = [
+    "nbdev>=2.4.6",
+    "wordslab-notebooks-lib",
+]
