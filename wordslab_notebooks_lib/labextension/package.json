@@ -16,6 +16,7 @@
   "author": "Laurent Prud'hon",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "styleModule": "style/index.css",
   "repository": {
     "type": "git",
     "url": "https://github.com/wordslab-org/wordslab-notebooks-lib.git"
@@ -45,10 +46,12 @@
   },
   "jupyterlab": {
     "extension": true,
+    "schemaDir": "schema",
     "outputDir": "wordslab_notebooks_lib/labextension",
     "_build": {
-      "load": "static/remoteEntry.97d57e417eaf8ebadeb6.js",
-      "extension": "./extension"
+      "load": "static/remoteEntry.2dbd88fd033c3f74f671.js",
+      "extension": "./extension",
+      "style": "./style"
     }
   }
 }

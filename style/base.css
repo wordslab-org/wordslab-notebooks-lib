@@ -1,0 +1,11 @@
+.jp-Cell.cell-type-note {
+  border-left: 4px solid green;
+}
+
+.jp-Cell.cell-type-code {
+  border-left: 4px solid blue;
+}
+
+.jp-Cell.cell-type-prompt {
+  border-left: 4px solid red;
+}
