@@ -6,6 +6,7 @@ import {
 import { NotebookPanel } from '@jupyterlab/notebook';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { INotebookTracker } from '@jupyterlab/notebook';
+import { Cell } from '@jupyterlab/cells';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'wordslab-notebooks-lib:plugin',    
@@ -15,8 +16,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
   optional: [ISettingRegistry],
   activate: (app: JupyterFrontEnd, notebookTracker: INotebookTracker, settingRegistry: ISettingRegistry | null) => {
     console.log('Wordslab notebooks extension activated');
-
-    console.log(Array.from(app.commands.listCommands()).filter(c => c.includes('notebook')));
       
     // Special execution for prompt cells    
     async function executePromptCell() {
@@ -78,46 +77,72 @@ const plugin: JupyterFrontEndPlugin<void> = {
       selector: '.jp-Notebook-cell.jp-mod-active'
     });
       
-    // Apply cells type styles when a notebook is opened
+    // Apply cells styles to visualize their type
+    function applyCellStyle(cell: Cell) {
+        var cellType = cell.model.getMetadata('wordslab_cell_type');
+        if (cellType == null) {
+          cellType = cell.model.type;
+        }
+          
+        cell.node.classList.remove('cell-type-note', 'cell-type-code', 'cell-type-prompt');            
+        if (cellType === 'prompt') {
+          cell.node.classList.add('cell-type-prompt');
+          if (cell.editor) {
+            cell.editor.model.mimeType = 'text/x-markdown';
+          }
+        } else if (cellType === 'markdown') {
+          cell.node.classList.add('cell-type-note');
+          if (cell.editor) {
+            cell.editor.model.mimeType = 'text/x-markdown';
+          }
+        } else if (cellType === 'code') {
+          cell.node.classList.add('cell-type-code');
+          if (cell.editor) {
+            cell.editor.model.mimeType = 'text/x-ipython';
+          }
+        }
+    }
+
+    // Apply cells styles when ...
     notebookTracker.widgetAdded.connect((_, notebookPanel) => {
       notebookPanel.context.ready.then(() => {
           const notebook = notebookPanel.content;
+
+          // ... a notebook is loaded
           notebook.widgets.forEach(cell => {
-            var cellType = cell.model.getMetadata('wordslab_cell_type');
-            if (cellType == null) {
-              cellType = cell.model.type;
-            }
-              
-            cell.node.classList.remove('cell-type-note', 'cell-type-code', 'cell-type-prompt');            
-            if (cellType === 'prompt') {
-              cell.node.classList.add('cell-type-prompt');
-              if (cell.editor) {
-                cell.editor.model.mimeType = 'text/x-markdown';
-              }
-            } else if (cellType === 'markdown') {
-              cell.node.classList.add('cell-type-note');
-            } else if (cellType === 'code') {
-              cell.node.classList.add('cell-type-code');
+            applyCellStyle(cell);
+
+            // The issue is that when context.ready fires, the cell widgets might not be fully initialized yet
+            // Need to reapply the mimeType for prompt cells after the editor is initialized
+            const cellType = cell.model.getMetadata('wordslab_cell_type');
+            if (cellType === 'prompt' && cell.editor) {
+              cell.editor.model.mimeType = 'text/x-markdown';
             }
           });
+
+          // ... a new cell is created or its style is changed
+          notebook.model!.cells.changed.connect((_, args) => {   
+              args.newValues.forEach(cellModel => {
+                const cellWidget = notebook.widgets.find(c => c.model.id === cellModel.id);
+                if (cellWidget) {
+                  applyCellStyle(cellWidget);
+                }
+              });
+            });
       });
     });
       
     // Register a set-note command which changes the cell type to markdown
     app.commands.addCommand('wordslab:set-note', {
       label: 'note',
-      execute: () => {
+      execute: async () => {
         const notebook = notebookTracker.currentWidget?.content;
         if (notebook) {
-          app.commands.execute('notebook:change-cell-to-markdown');
+          await app.commands.execute('notebook:change-cell-to-markdown');
           const cell = notebook.activeCell;
           if (cell) {
             cell.model.deleteMetadata('wordslab_cell_type');
-            cell.node.classList.remove('cell-type-code', 'cell-type-prompt');
-            cell.node.classList.add('cell-type-note');
-            if (cell.editor) {
-              cell.editor.model.mimeType = 'text/x-markdown';
-            }
+            applyCellStyle(cell);
           }
         }
       }
@@ -126,18 +151,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
     // Register a set-code command which changes the cell type to code
     app.commands.addCommand('wordslab:set-code', {
       label: 'code',
-      execute: () => {
+      execute: async () => {
         const notebook = notebookTracker.currentWidget?.content;
         if (notebook) {
-          app.commands.execute('notebook:change-cell-to-code');
+          await app.commands.execute('notebook:change-cell-to-code');
           const cell = notebook.activeCell;
           if (cell) {
             cell.model.deleteMetadata('wordslab_cell_type');
-            cell.node.classList.remove('cell-type-note', 'cell-type-prompt');
-            cell.node.classList.add('cell-type-code');
-            if (cell.editor) {
-              cell.editor.model.mimeType = 'text/x-python';
-            }
+            applyCellStyle(cell);
           }
         }
       }
@@ -146,18 +167,14 @@ const plugin: JupyterFrontEndPlugin<void> = {
     // Register a set-prompt command which changes the cell type to prompt
     app.commands.addCommand('wordslab:set-prompt', {
       label: 'prompt',
-      execute: () => {
+      execute: async () => {
         const notebook = notebookTracker.currentWidget?.content;
         if (notebook) {
-          app.commands.execute('notebook:change-cell-to-code');
+          await app.commands.execute('notebook:change-cell-to-code');
           const cell = notebook.activeCell;
           if (cell) {
             cell.model.setMetadata('wordslab_cell_type', 'prompt');
-            cell.node.classList.remove('cell-type-note', 'cell-type-code');
-            cell.node.classList.add('cell-type-prompt');
-            if (cell.editor) {
-              cell.editor.model.mimeType = 'text/x-markdown';
-            }
+            applyCellStyle(cell);
           }
         }
       }

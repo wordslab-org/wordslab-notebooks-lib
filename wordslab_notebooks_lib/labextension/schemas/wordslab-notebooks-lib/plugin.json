@@ -1,10 +1,13 @@
 {
   "jupyter.lab.toolbarRegistry": true,
   "jupyter.lab.toolbars": {
+    "Notebook": [
+      { "name": "run", "command": "wordslab:run-cell-and-select-next", "icon":"ui-components:run", "rank": 30 }
+    ],
     "Cell": [
       { "name": "set-note", "command": "wordslab:set-note", "rank": 0 },
-      { "name": "set-code", "command": "wordslab:set-code", "rank": 1 },
-      { "name": "set-prompt", "command": "wordslab:set-prompt", "rank": 2 }
+      { "name": "set-prompt", "command": "wordslab:set-prompt", "rank": 1 },
+      { "name": "set-code", "command": "wordslab:set-code", "rank": 2 }
     ]
   },
   "title": "wordslab-notebooks-lib",

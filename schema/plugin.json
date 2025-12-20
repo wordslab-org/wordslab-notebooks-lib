@@ -3,8 +3,8 @@
   "jupyter.lab.toolbars": {
     "Cell": [
       { "name": "set-note", "command": "wordslab:set-note", "rank": 0 },
-      { "name": "set-code", "command": "wordslab:set-code", "rank": 1 },
-      { "name": "set-prompt", "command": "wordslab:set-prompt", "rank": 2 }
+      { "name": "set-prompt", "command": "wordslab:set-prompt", "rank": 1 },
+      { "name": "set-code", "command": "wordslab:set-code", "rank": 2 }
     ]
   },
   "title": "wordslab-notebooks-lib",
