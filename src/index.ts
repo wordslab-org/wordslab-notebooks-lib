@@ -16,8 +16,67 @@ const plugin: JupyterFrontEndPlugin<void> = {
   activate: (app: JupyterFrontEnd, notebookTracker: INotebookTracker, settingRegistry: ISettingRegistry | null) => {
     console.log('Wordslab notebooks extension activated');
 
-    const originalRunCell = app.commands.hasCommand('notebook:run-cell');
-    console.log('Run cell command exists:', originalRunCell);
+    console.log(Array.from(app.commands.listCommands()).filter(c => c.includes('notebook')));
+      
+    // Special execution for prompt cells    
+    async function executePromptCell() {
+      console.log('Execute prompt');
+      // TODO: call nbchat() instead
+    }
+      
+    // Wrap the run-cell command with our own logic
+    function isPromptCell(notebookTracker: INotebookTracker): boolean {
+      const notebook = notebookTracker.currentWidget?.content;
+      const cell = notebook?.activeCell;
+      return cell?.model.getMetadata('wordslab_cell_type') === 'prompt';
+    }    
+    app.commands.addCommand('wordslab:run-cell', {
+      label: 'Run Cell',
+      execute: async (args: any) => {
+        if (isPromptCell(notebookTracker)) {
+          await executePromptCell();
+        } else {
+          return app.commands.execute('notebook:run-cell', args);
+        }
+      }
+    });    
+    app.commands.addCommand('wordslab:run-cell-and-select-next', {
+      label: 'Run Cell and Select Next',
+      execute: async (args: any) => {
+        if (isPromptCell(notebookTracker)) {
+          await executePromptCell();
+          app.commands.execute('notebook:move-cursor-down');
+        } else {
+          return app.commands.execute('notebook:run-cell-and-select-next', args);
+        }
+      }
+    });    
+    app.commands.addCommand('wordslab:run-cell-and-insert-below', {
+      label: 'Run Cell and Insert Below',
+      execute: async (args: any) => {
+        if (isPromptCell(notebookTracker)) {
+          await executePromptCell();
+          app.commands.execute('notebook:insert-cell-below');
+        } else {
+          return app.commands.execute('notebook:run-cell-and-insert-below', args);
+        }
+      }
+    });
+    app.commands.addKeyBinding({
+      command: 'wordslab:run-cell',
+      keys: ['Ctrl Enter'],
+      selector: '.jp-Notebook-cell.jp-mod-active'
+    });    
+    app.commands.addKeyBinding({
+      command: 'wordslab:run-cell-and-select-next',
+      keys: ['Shift Enter'],
+      selector: '.jp-Notebook-cell.jp-mod-active'
+    });    
+    app.commands.addKeyBinding({
+      command: 'wordslab:run-cell-and-insert-below',
+      keys: ['Alt Enter'],
+      selector: '.jp-Notebook-cell.jp-mod-active'
+    });
       
     // Apply cells type styles when a notebook is opened
     notebookTracker.widgetAdded.connect((_, notebookPanel) => {
