@@ -5,6 +5,8 @@ import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 import { INotebookCellExecutor, runCell } from '@jupyterlab/notebook';
 import { Cell } from '@jupyterlab/cells';
 
+const version = "0.0.11";
+
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'wordslab-notebooks-lib:plugin',    
   description: 'JupyterLab extension for wordslab-notebooks',
@@ -15,7 +17,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
              notebookTracker: INotebookTracker, 
              settingRegistry: ISettingRegistry | null) => {
                  
-    console.log('Wordslab notebooks extension activated');
+    console.log(`Wordslab notebooks extension v${version} activated`);
           
     // -------------------------------------
     // 1. Introduce a new "prompt" cell type
@@ -160,7 +162,7 @@ const cellExecutorPlugin: JupyterFrontEndPlugin<INotebookCellExecutor> = {
   autoStart: true,
   provides: INotebookCellExecutor,
   activate: (): INotebookCellExecutor => {
-    console.log('Wordslab notebooks cell executor activated');
+    console.log(`Wordslab notebooks cell executor v${version} activated`);
 
     // ----------------------------------------------
     // 2. Customize the "prompt" cell execution logic
@@ -168,13 +170,38 @@ const cellExecutorPlugin: JupyterFrontEndPlugin<INotebookCellExecutor> = {
 
     // Define a custom cell executor
     class WordslabCellExecutor implements INotebookCellExecutor {
-      runCell(options: INotebookCellExecutor.IRunCellOptions): Promise<boolean> {
-
-        // Prompt cell
-        const cellType = options.cell.model.getMetadata('wordslab_cell_type');        
+        
+        private async injectVariable(kernel: any, name: string, value: any): Promise<void> {
+          const code = `${name} = ${JSON.stringify(value)}`;
+          await kernel.requestExecute({ code, store_history: false }).done;
+        }
+        
+      async runCell(options: INotebookCellExecutor.IRunCellOptions): Promise<boolean> {
+          
+        let cellType = options.cell.model.getMetadata('wordslab_cell_type');
+        if (cellType == null) {
+          cellType = options.cell.model.type;
+        }
+          
+        // Code or Prompt cell => inject variables in the python kernel describing the notebook context 
+        if (cellType === 'code' || cellType === 'prompt') {
+          const kernel = options.sessionContext?.session?.kernel;
+          if (kernel) {
+            await this.injectVariable(kernel, '__jupyterlab_extension_version', version);
+            const notebookPath = options.sessionContext?.path || '';
+            await this.injectVariable(kernel, '__notebook_path', notebookPath);
+            const notebookContent = options.notebook.toJSON();
+            await this.injectVariable(kernel, '__notebook_content', notebookContent);
+            const cellId = options.cell.model.id;
+            await this.injectVariable(kernel, '__cell_id', cellId);
+          }
+        }
+          
+        // Prompt cell => use the text of the cell as a prompt and send it to nbchat    
         if (cellType === 'prompt') {
-          console.log('Prompt cell intercepted!');
-          // TODO: custom execution
+          const promptText = options.cell.model.sharedModel.source;
+          const code = `nbchat(${JSON.stringify(promptText)})`;
+          console.log('Executing:', code);
           return Promise.resolve(true);
         }
 
