@@ -1,11 +1,8 @@
 import '../style/index.css';
-import {
-  JupyterFrontEnd,
-  JupyterFrontEndPlugin
-} from '@jupyterlab/application';
-import { NotebookPanel } from '@jupyterlab/notebook';
+import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
-import { INotebookTracker } from '@jupyterlab/notebook';
+import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
+import { INotebookCellExecutor, runCell } from '@jupyterlab/notebook';
 import { Cell } from '@jupyterlab/cells';
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -14,72 +11,19 @@ const plugin: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   requires: [INotebookTracker],
   optional: [ISettingRegistry],
-  activate: (app: JupyterFrontEnd, notebookTracker: INotebookTracker, settingRegistry: ISettingRegistry | null) => {
+  activate: (app: JupyterFrontEnd, 
+             notebookTracker: INotebookTracker, 
+             settingRegistry: ISettingRegistry | null) => {
+                 
     console.log('Wordslab notebooks extension activated');
-      
-    // Special execution for prompt cells    
-    async function executePromptCell() {
-      console.log('Execute prompt');
-      // TODO: call nbchat() instead
-    }
-      
-    // Wrap the run-cell command with our own logic
-    function isPromptCell(notebookTracker: INotebookTracker): boolean {
-      const notebook = notebookTracker.currentWidget?.content;
-      const cell = notebook?.activeCell;
-      return cell?.model.getMetadata('wordslab_cell_type') === 'prompt';
-    }    
-    app.commands.addCommand('wordslab:run-cell', {
-      label: 'Run Cell',
-      execute: async (args: any) => {
-        if (isPromptCell(notebookTracker)) {
-          await executePromptCell();
-        } else {
-          return app.commands.execute('notebook:run-cell', args);
-        }
-      }
-    });    
-    app.commands.addCommand('wordslab:run-cell-and-select-next', {
-      label: 'Run Cell and Select Next',
-      execute: async (args: any) => {
-        if (isPromptCell(notebookTracker)) {
-          await executePromptCell();
-          app.commands.execute('notebook:move-cursor-down');
-        } else {
-          return app.commands.execute('notebook:run-cell-and-select-next', args);
-        }
-      }
-    });    
-    app.commands.addCommand('wordslab:run-cell-and-insert-below', {
-      label: 'Run Cell and Insert Below',
-      execute: async (args: any) => {
-        if (isPromptCell(notebookTracker)) {
-          await executePromptCell();
-          app.commands.execute('notebook:insert-cell-below');
-        } else {
-          return app.commands.execute('notebook:run-cell-and-insert-below', args);
-        }
-      }
-    });
-    app.commands.addKeyBinding({
-      command: 'wordslab:run-cell',
-      keys: ['Ctrl Enter'],
-      selector: '.jp-Notebook-cell.jp-mod-active'
-    });    
-    app.commands.addKeyBinding({
-      command: 'wordslab:run-cell-and-select-next',
-      keys: ['Shift Enter'],
-      selector: '.jp-Notebook-cell.jp-mod-active'
-    });    
-    app.commands.addKeyBinding({
-      command: 'wordslab:run-cell-and-insert-below',
-      keys: ['Alt Enter'],
-      selector: '.jp-Notebook-cell.jp-mod-active'
-    });
+          
+    // -------------------------------------
+    // 1. Introduce a new "prompt" cell type
+    // -------------------------------------
       
     // Apply cells styles to visualize their type
     function applyCellStyle(cell: Cell) {
-        var cellType = cell.model.getMetadata('wordslab_cell_type');
+        let cellType = cell.model.getMetadata('wordslab_cell_type');
         if (cellType == null) {
           cellType = cell.model.type;
         }
@@ -179,6 +123,17 @@ const plugin: JupyterFrontEndPlugin<void> = {
         }
       }
     });
+
+    // Test if the currently active cell is a prompt cell
+    /*function isPromptCell(notebookTracker: INotebookTracker): boolean {
+      const notebook = notebookTracker.currentWidget?.content;
+      const cell = notebook?.activeCell;
+      return cell?.model.getMetadata('wordslab_cell_type') === 'prompt';
+    }*/
+      
+    // -----------------
+    // Debug utilties
+    // -----------------
       
     // Print cell id and type when a new cell gets the focus
     if (app.shell.currentChanged) {
@@ -195,8 +150,41 @@ const plugin: JupyterFrontEndPlugin<void> = {
             });
           }
         });
-    }      
+    }
   }
 };
 
-export default plugin;
+const cellExecutorPlugin: JupyterFrontEndPlugin<INotebookCellExecutor> = {
+  id: 'wordslab-notebooks-lib:cell-executor',
+  description: 'Custom Jupyterlab cell executor for wordslab-notebooks',
+  autoStart: true,
+  provides: INotebookCellExecutor,
+  activate: (): INotebookCellExecutor => {
+    console.log('Wordslab notebooks cell executor activated');
+
+    // ----------------------------------------------
+    // 2. Customize the "prompt" cell execution logic
+    // ----------------------------------------------
+
+    // Define a custom cell executor
+    class WordslabCellExecutor implements INotebookCellExecutor {
+      runCell(options: INotebookCellExecutor.IRunCellOptions): Promise<boolean> {
+
+        // Prompt cell
+        const cellType = options.cell.model.getMetadata('wordslab_cell_type');        
+        if (cellType === 'prompt') {
+          console.log('Prompt cell intercepted!');
+          // TODO: custom execution
+          return Promise.resolve(true);
+        }
+
+        // Other cells
+        return runCell(options);
+      }
+    }
+          
+    return new WordslabCellExecutor();
+  }
+};
+
+export default [cellExecutorPlugin, plugin];

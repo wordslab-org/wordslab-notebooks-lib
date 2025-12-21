@@ -45,6 +45,7 @@
     "access": "public"
   },
   "jupyterlab": {
+    "disabledExtensions": ["@jupyterlab/notebook-extension:cell-executor"],
     "extension": true,
     "schemaDir": "schema",
     "outputDir": "wordslab_notebooks_lib/labextension"

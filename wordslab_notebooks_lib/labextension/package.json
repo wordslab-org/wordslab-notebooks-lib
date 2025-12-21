@@ -45,11 +45,14 @@
     "access": "public"
   },
   "jupyterlab": {
+    "disabledExtensions": [
+      "@jupyterlab/notebook-extension:cell-executor"
+    ],
     "extension": true,
     "schemaDir": "schema",
     "outputDir": "wordslab_notebooks_lib/labextension",
     "_build": {
-      "load": "static/remoteEntry.f0222c54f5cd3cd4da07.js",
+      "load": "static/remoteEntry.fed306841a48809922e6.js",
       "extension": "./extension",
       "style": "./style"
     }
