@@ -172,7 +172,7 @@ const cellExecutorPlugin: JupyterFrontEndPlugin<INotebookCellExecutor> = {
     class WordslabCellExecutor implements INotebookCellExecutor {
         
         private async injectVariable(kernel: any, name: string, value: any): Promise<void> {
-          const code = `${name} = ${JSON.stringify(value)}`;
+          const code = `import json; ${name} = json.loads(${JSON.stringify(JSON.stringify(value))})`;
           await kernel.requestExecute({ code, store_history: false }).done;
         }
         
@@ -187,10 +187,10 @@ const cellExecutorPlugin: JupyterFrontEndPlugin<INotebookCellExecutor> = {
         if (cellType === 'code' || cellType === 'prompt') {
           const kernel = options.sessionContext?.session?.kernel;
           if (kernel) {
-            await this.injectVariable(kernel, '__jupyterlab_extension_version', version);
+            await this.injectVariable(kernel, '__wordslab_extension_version', version);
             const notebookPath = options.sessionContext?.path || '';
             await this.injectVariable(kernel, '__notebook_path', notebookPath);
-            const notebookContent = options.notebook.toJSON();
+            const notebookContent = options.notebook.toJSON();            
             await this.injectVariable(kernel, '__notebook_content', notebookContent);
             const cellId = options.cell.model.id;
             await this.injectVariable(kernel, '__cell_id', cellId);

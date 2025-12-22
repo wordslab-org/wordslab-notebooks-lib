@@ -52,7 +52,7 @@
     "schemaDir": "schema",
     "outputDir": "wordslab_notebooks_lib/labextension",
     "_build": {
-      "load": "static/remoteEntry.dc1d3090a1d613e6016f.js",
+      "load": "static/remoteEntry.cedfb13e37d4f594f459.js",
       "extension": "./extension",
       "style": "./style"
     }
