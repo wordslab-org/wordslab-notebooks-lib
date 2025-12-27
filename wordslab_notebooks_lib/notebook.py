@@ -6,11 +6,12 @@
 __all__ = ['find_var', 'JupyterlabNotebook']
 
 # %% ../nbs/02_notebook.ipynb 2
+from ast import literal_eval
+from html import escape
 from inspect import currentframe, getattr_static, getdoc, isfunction, ismethod, signature
+from textwrap import dedent
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
 import typing
-from html import escape
-from textwrap import dedent
 
 from IPython.core.getipython import get_ipython
 from IPython.core.interactiveshell import InteractiveShell
@@ -19,17 +20,40 @@ from IPython.display import display, HTML
 import nbformat
 
 from fastcore.utils import patch
+from toolslm.funccall import get_schema
+
+# %% ../nbs/02_notebook.ipynb 8
+@patch
+def _get_info(self: Inspector, obj, oname='', formatter=None, info=None, detail_level=0, omit_sections=()):
+    """Custom Python formatter for ?? output:
+    - suppress the useless code indentation
+    - wrap the code in a markdown python code block
+    - display the output as markdown
+    """
+    orig = self._orig__get_info(obj, oname=oname, formatter=formatter, info=info,
+                                detail_level=detail_level, omit_sections=omit_sections)
+    if detail_level == 0:
+        return orig
+    info_dict = self.info(obj, oname=oname, info=info, detail_level=detail_level)
+    out = []
+    if c := info_dict.get('source'): 
+        out.append(f"\n```python\n{dedent(c)}\n```")
+    if c := info_dict.get('file'): 
+        out.append(f"**File:** `{c}`")
+    return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
 
 # %% ../nbs/02_notebook.ipynb 10
 def _safe_str(obj, max_str_len=200):
     "Safely get the string representation of an object, truncating if it exceeds max_len."
     try:
         s = str(obj)
-        return s[:max_str_len] + ("…" if len(s)>max_str_len else "")
-    except Exception as e: return f"<str error: {str(e)}>"
+        return s[:max_str_len] + ("…" if len(s) > max_str_len else "")
+    except Exception as e: 
+        return f"<str error: {str(e)}>"
+
 
 @patch
-def user_items(self:InteractiveShell, max_str_len=200, xtra_ignore=()):
+def user_items(self: InteractiveShell, max_str_len=200, xtra_ignore=()):
     """Get an overview of the variables & functions defined by the user so far in the notebook.
     The value addded by this function is to filter out all internal ipython and wordslab variables.
     Returns a tuple of dictionaries (user_variables, user_functions):
@@ -38,8 +62,8 @@ def user_items(self:InteractiveShell, max_str_len=200, xtra_ignore=()):
     The `max_str_len` parameter is used to truncate the string representation of the variables.
     The `xtra_ignore` parameter is used to hide additional names from the result. 
     """
-    ns,nsh = self.user_ns,self.user_ns_hidden
-    ignore = set() # Add here the wordslab specific vars and funcs we want to hide
+    ns, nsh = self.user_ns, self.user_ns_hidden
+    ignore = set()  # Add here the wordslab specific vars and funcs we want to hide
     ignore.add(xtra_ignore)
     rm_types = (
         type, FunctionType, ModuleType, MethodType, BuiltinFunctionType,
@@ -47,31 +71,67 @@ def user_items(self:InteractiveShell, max_str_len=200, xtra_ignore=()):
         getattr(typing, '_GenericAlias', ()),
         getattr(typing, '_SpecialForm', ())
     )
-    user_items = {k:v for k, v in ns.items()
-                  if not k in ignore and k not in nsh}
-    user_vars = {k:_safe_str(v, max_str_len=max_str_len)
+    user_items = {k: v for k, v in ns.items()
+                  if k not in ignore and k not in nsh}
+    user_vars = {k: _safe_str(v, max_str_len=max_str_len)
                  for k, v in user_items.items() if not k.startswith('_') and not isinstance(v, rm_types)}
-    user_fns = {k:str(signature(v)) for k, v in user_items.items()
+    user_fns = {k: str(signature(v)) for k, v in user_items.items()
                 if isinstance(v, FunctionType) and v.__module__ == '__main__' and not k.startswith('__')}
-    return user_vars,user_fns    
+    return user_vars, user_fns
+
+# %% ../nbs/02_notebook.ipynb 12
+@patch
+def get_variables_values(self: InteractiveShell, var_names: list, literal=True):
+    """Get a safe and serializable representation of variables values from the user namespace.
+    This method preserves real Python values when they are safe literals, otherwise it falls back to strings.
+    You can call it in two modes:
+    - literal = True : Preserve actual Python values when safe, best for internal tools
+    - literal = False : Force everything to strings, best for logging / UI display / debug output
+    """
+    ns = self.user_ns
+
+    def _maybe_eval(o):
+        try:
+            literal_eval(repr(o))
+            return o
+        except:
+            return str(o)
+    return {v: _maybe_eval(ns[v]) if literal else str(ns[v]) for v in var_names if v in ns}
 
 # %% ../nbs/02_notebook.ipynb 14
-def _find_frame_dict(var:str):
+def _get_schema(ns: dict, t):
+    "Check if tool `t` has errors."
+    if t not in ns:
+        return f"`{t}` not found. Did you run it?"
+    try:
+        return {'type': 'function', 'function': get_schema(ns[t], pname='parameters')}
+    except Exception as e:
+        return f"`{t}`: {e}."
+
+@patch
+def get_tools_schemas(self: InteractiveShell, func_names: list):
+    """Get a json schema of functions defined in the user namespace which can be used as tools."""
+    ns = self.user_ns
+    return {f: _get_schema(ns, f) for f in func_names}
+
+# %% ../nbs/02_notebook.ipynb 19
+def _find_frame_dict(var: str):
     "Find the dict (globals or locals) containing var"
     frame = currentframe().f_back.f_back
     while frame:
-        if var in frame.f_globals: return frame.f_globals
+        if var in frame.f_globals:
+            return frame.f_globals
         frame = frame.f_back
     raise ValueError(f"Could not find {var} in any scope")
 
-def find_var(var:str):
+def find_var(var: str):
     "Search for var in all frames of the call stack"
     return _find_frame_dict(var)[var]
 
-# %% ../nbs/02_notebook.ipynb 15
+# %% ../nbs/02_notebook.ipynb 20
 class JupyterlabNotebook:
-    """Jupyter notebook introspection and metaprogramming"""
-    
+    """Jupyter notebook introspection and metaprogramming."""
+
     def __init__(self):
         try:
             self.jupyterlab_extension_version
@@ -81,12 +141,12 @@ class JupyterlabNotebook:
                 "please execute `pip install wordslab-notebooks-lib` in JupyterLab virtual environment "
                 "and refresh your web browser."
             )
-    
+
     @property
     def jupyterlab_extension_version(self):
         """wordslab-notebooks-lib version number injected by the Jupyterlab frontend extension"""
         return find_var("__wordslab_extension_version")
-    
+
     @property
     def path(self):
         """Relative path of the notebook .ipynb file in the notebook workspace"""
@@ -96,13 +156,28 @@ class JupyterlabNotebook:
     def content(self):
         """Full content of the notebook returned as a NotebookNode object from the nbformat library"""
         return nbformat.from_dict(find_var("__notebook_content"))
-    
+
     @property
     def cell_id(self):
         """Unique ID of the current notebook cell, useful to locate the current cell in the full notebook content"""
         return find_var("__cell_id")
 
-# %% ../nbs/02_notebook.ipynb 24
+# %% ../nbs/02_notebook.ipynb 28
+@patch
+def display_variables_and_functions(self: JupyterlabNotebook):
+    """Display the variables and functions defined by the user so far in the notebook."""
+    variables, functions = get_ipython().user_items()
+    output = "<h4>Variables</h4><table><tr><th>Name</th><th>Value</th></tr>"
+    for var, value in variables.items():
+        output += f"<tr><td>{var}</td><td>{escape(value)}</td></tr>"
+    output += "</table>"
+    output += "<h4>Functions</h4><table><tr><th>Name</th><th>Signature</th></tr>"
+    for func, sig in functions.items():
+        output += f"<tr><td>{func}</td><td>{escape(sig)}</td></tr>"
+    output += "</table>"
+    display(HTML(output))
+
+# %% ../nbs/02_notebook.ipynb 30
 def _safe_getattr(obj, name):
     try:
         return getattr(obj, name)
@@ -112,7 +187,7 @@ def _safe_getattr(obj, name):
 def _safe_attr_doc(obj, name, max_str_len=200):
     # Try to get the static attribute from the class
     try:
-        class_attr = getattr_static( obj.__class__, name)
+        class_attr = getattr_static(obj.__class__, name)
     except AttributeError:
         class_attr = None
     # 1. Property
@@ -137,19 +212,19 @@ def _safe_attr_doc(obj, name, max_str_len=200):
     # Max length
     if attr_doc is None:
         attr_doc = ""
-    elif len(attr_doc)>max_str_len:
+    elif len(attr_doc) > max_str_len:
         attr_doc = attr_doc[:max_str_len] + "…"
     return attr_doc
 
 @patch
-def display_object_members(self:JupyterlabNotebook, obj):
+def display_object_members(self: JupyterlabNotebook, obj):
     """Display the attributes and methods of a given python object"""
     obj_class = obj.__class__
     output = (f"<h3>Object of type: {obj_class.__name__}</h3>") 
     output += f"<pre>{getdoc(obj)}</pre>"
- 
-    obj_members = [(name,_safe_getattr(obj,name)) for name in dir(obj) if not name.startswith("_")]
-           
+
+    obj_members = [(name, _safe_getattr(obj, name)) for name in dir(obj) if not name.startswith("_")]
+
     output += "<h4>Attributes</h4>"
     output += "<table><tr><th>Name</th><th>Type</th><th>Value</th><th>Doc</th></tr>"
     for name, value in obj_members:
@@ -157,7 +232,7 @@ def display_object_members(self:JupyterlabNotebook, obj):
             continue
         # Skip callables (handled as methods below)
         if callable(value):
-            continue     
+            continue
         attr_type = type(value).__name__
         attr_value = _safe_str(value)
         attr_doc = _safe_attr_doc(obj, name)
@@ -168,12 +243,12 @@ def display_object_members(self:JupyterlabNotebook, obj):
     output += "<table><tr><th>Name</th><th>Signatue</th><th>Type</th><th>Doc</th></tr>"
     for name, value in obj_members:
         if name.startswith("_"):
-            continue    
+            continue
         # Skip attributes (handled above)
         if not callable(value):
-            continue    
+            continue
         # Determine method type
-        method_type = "instance method"    
+        method_type = "instance method"
         if isfunction(value):
             # Defined on the class
             class_attr = getattr(obj_class, name, None)
@@ -194,3 +269,14 @@ def display_object_members(self:JupyterlabNotebook, obj):
     output += "</table>"
 
     display(HTML(output))
+
+# %% ../nbs/02_notebook.ipynb 33
+@patch
+def get_variables_values(self: JupyterlabNotebook, var_names: list):
+    """Get a safe and serializable representation of variables values."""
+    return get_ipython().get_variables_values(var_names=var_names)
+
+@patch
+def get_tools_schemas(self: JupyterlabNotebook, func_names: list):
+    """Get a json schema of functions which can be used as tools."""
+    return get_ipython().get_tools_schemas(func_names=func_names)

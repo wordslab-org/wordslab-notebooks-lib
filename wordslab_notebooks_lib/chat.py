@@ -13,8 +13,9 @@ import os
 from IPython.display import display, Markdown, clear_output
 
 from .env import WordslabNotebooksEnv
+from .notebook import JupyterlabNotebook
 
-# %% ../nbs/03_chat.ipynb 15
+# %% ../nbs/03_chat.ipynb 18
 class NbChat:
 
     
@@ -58,13 +59,13 @@ Execute this user instruction in the context of the code cells above:
             clear_output(wait=True)
             display(Markdown(streamed_text))
 
-# %% ../nbs/03_chat.ipynb 64
+# %% ../nbs/03_chat.ipynb 67
 def get_mime_text(data):
     "Get text from MIME bundle, preferring markdown over plain"
     if 'text/markdown' in data: return ''.join(list(data['text/markdown']))
     if 'text/plain' in data: return ''.join(list(data['text/plain']))
 
-# %% ../nbs/03_chat.ipynb 65
+# %% ../nbs/03_chat.ipynb 68
 def cell2out(o):
     "Convert single notebook output to XML format"
     if hasattr(o, 'data'): 
@@ -75,7 +76,7 @@ def cell2out(o):
         return Out(txt, type='stream', name=o.get('name', 'stdout'))
     if hasattr(o, 'ename'): return Out(f"{o.ename}: {o.evalue}", type='error')
 
-# %% ../nbs/03_chat.ipynb 66
+# %% ../nbs/03_chat.ipynb 69
 def cell2xml(cell):
     "Convert notebook cell to concise XML format"
     cts = Source(''.join(cell.source)) if hasattr(cell, 'source') and cell.source else None
@@ -85,7 +86,7 @@ def cell2xml(cell):
     parts = [p for p in [cts, outs] if p]
     return Cell(*parts, type=cell.cell_type)
 
-# %% ../nbs/03_chat.ipynb 67
+# %% ../nbs/03_chat.ipynb 70
 def nb2xml(nb, until_cell_id):
     cells_xml = []
     for c in nb.cells:
@@ -94,7 +95,7 @@ def nb2xml(nb, until_cell_id):
             cells_xml.append(to_xml(cell2xml(c), do_escape=False))
     return '\n'.join(cells_xml)     
 
-# %% ../nbs/03_chat.ipynb 69
+# %% ../nbs/03_chat.ipynb 72
 async def get_notebook_context(timeout=1):
     data = await get_notebook_data(timeout=timeout)
     notebook_content = data["notebook"]
