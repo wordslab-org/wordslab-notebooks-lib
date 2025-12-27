@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Chat with local and remote LLMs in the context of the wordslab-notebooks environment">
+
+<title>wordslab-notebooks-lib.chat – wordslab-notebooks-lib</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-000f0825b9c55ed21d14970d810c14a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="wordslab-notebooks-lib.chat – wordslab-notebooks-lib">
+<meta property="og:description" content="Chat with local and remote LLMs in the context of the wordslab-notebooks environment">
+<meta property="og:site_name" content="wordslab-notebooks-lib">
+<meta name="twitter:title" content="wordslab-notebooks-lib.chat – wordslab-notebooks-lib">
+<meta name="twitter:description" content="Chat with local and remote LLMs in the context of the wordslab-notebooks environment">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">wordslab-notebooks-lib</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chat.html">wordslab-notebooks-lib.chat</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.core</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./env.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.env</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notebook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.notebook</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chat.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">wordslab-notebooks-lib.chat</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.tools</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./docs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.docs</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#ollama-chat-client" id="toc-ollama-chat-client" class="nav-link active" data-scroll-target="#ollama-chat-client">ollama chat client</a></li>
+  <li><a href="#openrouter-chat-client" id="toc-openrouter-chat-client" class="nav-link" data-scroll-target="#openrouter-chat-client">openrouter chat client</a></li>
+  <li><a href="#notebook-chat" id="toc-notebook-chat" class="nav-link" data-scroll-target="#notebook-chat">Notebook chat</a>
+  <ul class="collapse">
+  <li><a href="#nbchat" id="toc-nbchat" class="nav-link" data-scroll-target="#nbchat">NbChat</a></li>
+  </ul></li>
+  <li><a href="#design-concepts" id="toc-design-concepts" class="nav-link" data-scroll-target="#design-concepts">Design concepts</a>
+  <ul class="collapse">
+  <li><a href="#user-centric-workflow" id="toc-user-centric-workflow" class="nav-link" data-scroll-target="#user-centric-workflow">User centric workflow</a></li>
+  <li><a href="#self-hosted-inference-or-inference-as-a-service" id="toc-self-hosted-inference-or-inference-as-a-service" class="nav-link" data-scroll-target="#self-hosted-inference-or-inference-as-a-service">Self-hosted inference or inference as a service</a></li>
+  </ul></li>
+  <li><a href="#modelsprovider" id="toc-modelsprovider" class="nav-link" data-scroll-target="#modelsprovider">ModelsProvider</a>
+  <ul class="collapse">
+  <li><a href="#list-download-and-load-models" id="toc-list-download-and-load-models" class="nav-link" data-scroll-target="#list-download-and-load-models">List, download and load models</a></li>
+  <li><a href="#explore-ollama-api" id="toc-explore-ollama-api" class="nav-link" data-scroll-target="#explore-ollama-api">Explore ollama API</a></li>
+  </ul></li>
+  <li><a href="#client" id="toc-client" class="nav-link" data-scroll-target="#client">Client</a>
+  <ul class="collapse">
+  <li><a href="#explore-ollama-vllm-and-openrouter-apis" id="toc-explore-ollama-vllm-and-openrouter-apis" class="nav-link" data-scroll-target="#explore-ollama-vllm-and-openrouter-apis">Explore ollama, vllm and openrouter APIs</a></li>
+  <li><a href="#get_mime_text" id="toc-get_mime_text" class="nav-link" data-scroll-target="#get_mime_text">get_mime_text</a></li>
+  <li><a href="#cell2out" id="toc-cell2out" class="nav-link" data-scroll-target="#cell2out">cell2out</a></li>
+  <li><a href="#cell2xml" id="toc-cell2xml" class="nav-link" data-scroll-target="#cell2xml">cell2xml</a></li>
+  <li><a href="#nb2xml" id="toc-nb2xml" class="nav-link" data-scroll-target="#nb2xml">nb2xml</a></li>
+  <li><a href="#get_notebook_context" id="toc-get_notebook_context" class="nav-link" data-scroll-target="#get_notebook_context">get_notebook_context</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="chat.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">wordslab-notebooks-lib.chat</h1>
+</div>
+
+<div>
+  <div class="description">
+    Chat with local and remote LLMs in the context of the wordslab-notebooks environment
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="ollama-chat-client" class="level2">
+<h2 class="anchored" data-anchor-id="ollama-chat-client">ollama chat client</h2>
+<div id="fc8f0da6-eb12-4687-ae0a-ae20be8bc5ae" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:35:29.642718Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:35:29.642612Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:35:29.644905Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:35:29.644282Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:35:29.642710Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>env <span class="op">=</span> WordslabNotebooksEnv()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="3d77f8e6-8322-4da8-830e-b2b26ccec705" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:35:29.697857Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:35:29.697752Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:35:29.701421Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:35:29.700734Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:35:29.697848Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> env.default_model_chat</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>model</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>'gemma3:27b'</code></pre>
+</div>
+</div>
+<div id="0795c383-f0a7-4d3a-ac1c-c7a19799ffc8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:35:29.918072Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:35:29.917962Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:35:29.920777Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:35:29.920093Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:35:29.918064Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>messages <span class="op">=</span> [{<span class="st">'role'</span>: <span class="st">'user'</span>, <span class="st">'content'</span>: <span class="st">'In one sentence: why is the sky blue?'</span>}]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="9fc80788-6527-4731-9b87-5d8269ebceb7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:35:30.057139Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:35:30.057039Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:35:30.059516Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:35:30.058934Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:35:30.057130Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ollama_chat_stream(model, messages):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    stream <span class="op">=</span> chat(model<span class="op">=</span>model, messages<span class="op">=</span>messages, stream<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> chunk <span class="kw">in</span> stream:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">yield</span> chunk[<span class="st">'message'</span>][<span class="st">'content'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="19fdcf40-384d-4920-8794-5cc8e7d44e67" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:35:30.117139Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:35:30.117034Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:35:31.534196Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:35:31.533496Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:35:30.117131Z&quot;}}" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>stream <span class="op">=</span> ollama_chat_stream(model, messages)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>streamed_text <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> chunk <span class="kw">in</span> stream:</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    streamed_text <span class="op">+=</span> chunk  </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    clear_output(wait<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    display(Markdown(streamed_text))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>The sky is blue because of a phenomenon called Rayleigh scattering, where shorter wavelengths of light (like blue and violet) are scattered more by the Earth’s atmosphere than other colors, making blue appear to dominate our view.</p>
+</div>
+</div>
+</section>
+<section id="openrouter-chat-client" class="level2">
+<h2 class="anchored" data-anchor-id="openrouter-chat-client">openrouter chat client</h2>
+<div id="3ac5ddbb-3907-4bdc-a922-33c7345d0f65" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:35:59.868726Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:35:59.868603Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:35:59.870778Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:35:59.870286Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:35:59.868717Z&quot;}}" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>api_key <span class="op">=</span> os.environ[<span class="st">"OPENROUTER_API_KEY"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="b8107815-648b-4434-8300-15795a8f10ee" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:36:07.010274Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:36:07.010171Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:36:07.013159Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:36:07.012596Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:36:07.010266Z&quot;}}" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> <span class="st">"mistralai/mistral-small-creative"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>model</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>'mistralai/mistral-small-creative'</code></pre>
+</div>
+</div>
+<div id="c8c0a058-d4df-4063-9870-52f47f4fd691" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:36:07.456170Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:36:07.456067Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:36:07.462197Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:36:07.461182Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:36:07.456162Z&quot;}}" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> OpenAI(base_url<span class="op">=</span><span class="st">"https://openrouter.ai/api/v1"</span>, api_key<span class="op">=</span>api_key)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> openrouter_chat_stream(model, messages):</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    stream <span class="op">=</span> client.chat.completions.create(model<span class="op">=</span>model, messages<span class="op">=</span>messages, stream<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> chunk <span class="kw">in</span> stream:</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">yield</span> chunk.choices[<span class="dv">0</span>].delta.content</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="b97ce419-4fde-4026-a0c0-86431caad059" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:36:09.043949Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:36:09.043805Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:36:09.562047Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:36:09.561279Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:36:09.043940Z&quot;}}" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>stream <span class="op">=</span> openrouter_chat_stream(model, messages)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>streamed_text <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> chunk <span class="kw">in</span> stream:</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    streamed_text <span class="op">+=</span> chunk  </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    clear_output(wait<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    display(Markdown(streamed_text))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>The sky appears blue because Earth’s atmosphere scatters shorter (blue) wavelengths of sunlight more than other colors, a phenomenon called <strong>Rayleigh scattering</strong>.</p>
+</div>
+</div>
+</section>
+<section id="notebook-chat" class="level2">
+<h2 class="anchored" data-anchor-id="notebook-chat">Notebook chat</h2>
+<div id="2d6d7c8f-e54e-4d32-9ae2-2bbec1920495" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:38:00.674798Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:38:00.674687Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:38:00.677583Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:38:00.677023Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:38:00.674789Z&quot;}}" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">globals</span>().keys()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<pre><code>dict_keys(['__name__', '__doc__', '__package__', '__loader__', '__spec__', '__builtin__', '__builtins__', '_ih', '_oh', '_dh', 'In', 'Out', 'get_ipython', 'exit', 'quit', 'open', '_', '__', '___', '__session__', 'json', '__wordslab_extension_version', '__notebook_path', '__notebook_content', '__cell_id', '_i', '_ii', '_iii', '_i1', '_i2', 'chat', 'OpenAI', 'os', 'display', 'Markdown', 'clear_output', 'WordslabNotebooksEnv', 'JupyterlabNotebook', '_i3', 'env', '_i4', 'model', '_4', '_i5', 'messages', '_i6', 'ollama_chat_stream', '_i7', 'stream', 'streamed_text', 'chunk', '_i8', '_i9', '_9', '_i10', '_i11', 'api_key', '_i12', '_12', '_i13', 'client', 'openrouter_chat_stream', '_i14', '_i15', '_i16'])</code></pre>
+</div>
+</div>
+<div id="55786d5f-710d-434e-931d-4d29da19bac2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:37:27.104945Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:37:27.104842Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:37:27.129766Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:37:27.129165Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:37:27.104937Z&quot;}}" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>notebook <span class="op">=</span> JupyterlabNotebook()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[15]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> notebook = <span class="ansi-yellow-bg">JupyterlabNotebook</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/home/workspace/wordslab-notebooks-lib/wordslab_notebooks_lib/notebook.py:15</span>, in <span class="ansi-cyan-fg">JupyterlabNotebook.__init__</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg">     13</span> <span style="font-weight:bold;color:rgb(0,135,0)">def</span><span style="color:rgb(188,188,188)"> </span><span class="ansi-blue-fg">__init__</span>(<span style="color:rgb(0,135,0)">self</span>):
+<span class="ansi-green-fg">     14</span>     <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">__wordslab_extension_version</span><span class="ansi-yellow-fg">"</span> <span style="font-weight:bold;color:rgb(175,0,255)">in</span> <span style="color:rgb(0,135,0)">globals</span>():
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">15</span>         <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">RuntimeError</span>(
+<span class="ansi-green-fg">     16</span>             <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">The JupyterLab extension for wordslab-notebooks is not activated: </span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">     17</span>             <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">please execute `pip install wordslab-notebooks-lib` in JupyterLab virtual environment </span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">     18</span>             <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">and refresh you web browser.</span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">     19</span>         )
+
+<span class="ansi-red-fg">RuntimeError</span>: The JupyterLab extension for wordslab-notebooks is not activated: please execute `pip install wordslab-notebooks-lib` in JupyterLab virtual environment and refresh you web browser.</pre>
+</div>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/chat.py#L18" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="nbchat" class="level3">
+<h3 class="anchored" data-anchor-id="nbchat">NbChat</h3>
+<blockquote class="blockquote">
+<pre><code> NbChat (model=None)</code></pre>
+</blockquote>
+<p><em>Initialize self. See help(type(self)) for accurate signature.</em></p>
+<div id="5d96c931-4043-4425-a119-d4055928a6db" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T23:31:42.718352Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T23:31:42.718242Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T23:31:42.721390Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T23:31:42.720770Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T23:31:42.718344Z&quot;}}" data-execution_count="46">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> NbChat:</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, model<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> model <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>            wlnb <span class="op">=</span> WordslabNotebooks()</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.model <span class="op">=</span> wlnb.default_model_chat</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.model <span class="op">=</span> model</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.prompt_template <span class="op">=</span> <span class="st">"""You are an AI assistant designed to help the user learn and solve problems interactively.</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="st">You run in an interactive Jupyter notebook environment where the user can write code, take notes, and chat with you.</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="st">You work with the user step-by-step rather than just giving complete answers. You are especially good at:</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="st">- Breaking down complex topics into manageable pieces</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="st">- Helping the user work through coding problems in Python</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="st">- Encouraging the user to try things himself, with guidance when he needs it</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="st">- Adapting to the user level and interests</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="st">You are designed to be collaborative - you ask questions, check the user understanding, and let him explore ideas rather than just lecturing. </span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="st">You can help with teaching, coding, problem-solving, research, and creative projects.</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="st">What sets you apart is your teaching approach - you focus on helping the user develop his skills rather than just giving him answers. </span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="st">You provide information in small chunks, check in frequently to see if things make sense, and encourage the user to try things himself.</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="st"># Jupyter notebook - all cells above the user instruction in XML</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="sc">{notebook_context}</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="st"># User Instruction - in the last code cell of the notebook</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="st">Execute this user instruction in the context of the code cells above:</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="sc">{user_instruction}</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> <span class="fu">__call__</span>(<span class="va">self</span>, user_instruction, timeout<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>        notebook_context <span class="op">=</span> <span class="cf">await</span> get_notebook_context(timeout<span class="op">=</span>timeout)</span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>        prompt <span class="op">=</span> <span class="va">self</span>.prompt_template.<span class="bu">format</span>(user_instruction<span class="op">=</span>user_instruction, notebook_context<span class="op">=</span>notebook_context)</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>        stream <span class="op">=</span> chat(model<span class="op">=</span><span class="va">self</span>.model, messages<span class="op">=</span>[{<span class="st">'role'</span>: <span class="st">'user'</span>, <span class="st">'content'</span>: prompt}], stream<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>        streamed_text <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> chunk <span class="kw">in</span> stream:</span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>            streamed_text <span class="op">+=</span> chunk[<span class="st">'message'</span>][<span class="st">'content'</span>]    </span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>            clear_output(wait<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>            display(Markdown(streamed_text))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="a85bd7e2-e8b8-4100-99f5-278fff76bed4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-13T16:14:13.412378Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-13T16:14:13.412276Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-13T16:14:13.416401Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-13T16:14:13.415815Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-13T16:14:13.412370Z&quot;}}" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>nbchat <span class="op">=</span> NbChat(<span class="st">"mistral-small3.2:24b"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="4ce3f187-3603-4586-b6f9-637fdb22a72f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-13T16:14:13.417015Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-13T16:14:13.416921Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-13T16:14:42.653878Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-13T16:14:42.650948Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-13T16:14:13.417008Z&quot;}}" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> nbchat(<span class="st">"What is this notebook about?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>This notebook appears to be focused on exploring and demonstrating the capabilities of the <strong>Ollama API</strong>, particularly for interacting with large language models (LLMs) like Gemma3, Mistral, and others. Here’s a breakdown of its key components:</p>
+<section id="key-features-demonstrated" class="level3">
+<h3 class="anchored" data-anchor-id="key-features-demonstrated">Key Features Demonstrated:</h3>
+<ol type="1">
+<li><strong>Model Interaction</strong>:
+<ul>
+<li>The notebook shows how to use the <code>ollama</code> Python client to interact with different models (e.g., <code>gemma3</code>, <code>mistral-small3.2</code>).</li>
+<li>It includes examples of generating text, chatting, and embedding text using these models.</li>
+</ul></li>
+<li><strong>Streaming Responses</strong>:
+<ul>
+<li>The notebook demonstrates how to handle streaming responses from the API, which is useful for real-time interactions.</li>
+</ul></li>
+<li><strong>Notebook Context</strong>:
+<ul>
+<li>There’s a <a href="https://wordslab-org.github.io/wordslab-notebooks-lib/chat.html#nbchat"><code>NbChat</code></a> class designed to integrate the LLM with the Jupyter notebook environment. This class uses the notebook’s context (previous code cells and outputs) to provide more relevant responses.</li>
+</ul></li>
+<li><strong>Web Search and Fetch</strong>:
+<ul>
+<li>The notebook explores the <code>web_search</code> and <code>web_fetch</code> methods of the <code>ollama</code> client, which allow the LLM to fetch and process web content.</li>
+</ul></li>
+<li><strong>Model Management</strong>:
+<ul>
+<li>The notebook includes methods to list, pull, and delete models, showing how to manage the models available to the <code>ollama</code> client.</li>
+</ul></li>
+</ol>
+</section>
+<section id="example-use-case" class="level3">
+<h3 class="anchored" data-anchor-id="example-use-case">Example Use Case:</h3>
+<p>The notebook is particularly useful for: - <strong>Educational purposes</strong>: Teaching how to interact with LLMs programmatically. - <strong>Development</strong>: Building applications that require LLM capabilities, such as chatbots, text generation tools, or research assistants. - <strong>Exploration</strong>: Understanding the capabilities of different models and how to use them effectively.</p>
+</section>
+<section id="summary" class="level3">
+<h3 class="anchored" data-anchor-id="summary">Summary:</h3>
+<p>This notebook serves as a comprehensive guide to using the <code>ollama</code> API for interacting with large language models in a Jupyter notebook environment. It covers everything from basic text generation to advanced features like streaming and web search integration.</p>
+</section>
+</div>
+</div>
+</section>
+</section>
+<section id="design-concepts" class="level2">
+<h2 class="anchored" data-anchor-id="design-concepts">Design concepts</h2>
+<section id="user-centric-workflow" class="level3">
+<h3 class="anchored" data-anchor-id="user-centric-workflow">User centric workflow</h3>
+<ol type="1">
+<li>identify your self-hosted inference or inference as a service options</li>
+<li>understand your task type, properties, privacy needs and scale</li>
+<li>find the best model for your task, given your constraints</li>
+<li>prepare and start your self hosted inference or connect to your inference as a service provider</li>
+<li>monitor your resource usage and cost</li>
+</ol>
+</section>
+<section id="self-hosted-inference-or-inference-as-a-service" class="level3">
+<h3 class="anchored" data-anchor-id="self-hosted-inference-or-inference-as-a-service">Self-hosted inference or inference as a service</h3>
+<p>Model families - architecture name - parameter size - training type: base / instruct / thinking - version: relase date - quantization</p>
+<p>Model constraints - model capabilities - modalities in/out - context length - instruction - thinking - tools - model usage - prompt template and special tokens - languages supported - recommended use cases - prompting guidelines - model license - use case restrictions - commercial usage restrictions - outputs usage restrictions - model transparency</p>
+<p>Self-hosted inference constraints - model requirements - size on disk -&gt; download time / load time in vram - size in vram -&gt; max context length / num parallel sequence - tensor flops -&gt; input tokens/sec - memory bandwidth -&gt; output tokens/sec - inference machine constraints - download speed - disk size and speed - GPU vram, memory bandwidth, tensor flops - rented machine constraints - GPU availability - price when you use per GPU - price when you don’t use per GB (storage)</p>
+<p>Inference as a service constraints - router constraints - … same as provider constraints below … - provider constraints - terms of service - privacy options - inference quotas - service availability - per model provider constraints - model capabilities exposed - input/output tokens cost - input/output tokens/sec</p>
+</section>
+</section>
+<section id="modelsprovider" class="level2">
+<h2 class="anchored" data-anchor-id="modelsprovider">ModelsProvider</h2>
+<section id="list-download-and-load-models" class="level3">
+<h3 class="anchored" data-anchor-id="list-download-and-load-models">List, download and load models</h3>
+</section>
+<section id="explore-ollama-api" class="level3">
+<h3 class="anchored" data-anchor-id="explore-ollama-api">Explore ollama API</h3>
+<p>Get ollama version</p>
+<div id="143e8e1d-5041-4115-9e66-40757b9f1a7e" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>Request</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>curl http:<span class="op">//</span>localhost:<span class="dv">11434</span><span class="op">/</span>api<span class="op">/</span>version</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>Response</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"version"</span>: <span class="st">"0.5.1"</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>List remote models</p>
+<p>As of december 2025, there is no API to get the ollama catalog of models, web scraping is the only solution.</p>
+<div id="86e2ead5-6c44-4aae-8620-6119163bd102" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T10:59:59.878946Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T10:59:59.878796Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T10:59:59.886693Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T10:59:59.885786Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T10:59:59.878938Z&quot;}}" data-execution_count="170">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> httpx</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> html <span class="im">import</span> unescape</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> updated_to_months(updated):</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Convert strings like:</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co">      "1 year ago", "2 years ago",</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co">      "1 month ago", "3 weeks ago",</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co">      "7 days ago", "yesterday",</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co">      "4 hours ago"</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="co">    into integer months.</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> updated:</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    updated <span class="op">=</span> updated.lower().strip()</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># handle 'yesterday' explicitly</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> updated <span class="op">==</span> <span class="st">"yesterday"</span>:</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># years → months</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> re.match(<span class="vs">r'</span><span class="kw">(</span><span class="dv">\d</span><span class="op">+</span><span class="kw">)</span><span class="dv">\s</span><span class="op">+</span><span class="vs">year'</span>, updated)</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> m:</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>        years <span class="op">=</span> <span class="bu">int</span>(m.group(<span class="dv">1</span>))</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> years <span class="op">*</span> <span class="dv">12</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># months</span></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> re.match(<span class="vs">r'</span><span class="kw">(</span><span class="dv">\d</span><span class="op">+</span><span class="kw">)</span><span class="dv">\s</span><span class="op">+</span><span class="vs">month'</span>, updated)</span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> m:</span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">int</span>(m.group(<span class="dv">1</span>))</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># weeks</span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> re.match(<span class="vs">r'</span><span class="kw">(</span><span class="dv">\d</span><span class="op">+</span><span class="kw">)</span><span class="dv">\s</span><span class="op">+</span><span class="vs">week'</span>, updated)</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> m:</span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>        weeks <span class="op">=</span> <span class="bu">int</span>(m.group(<span class="dv">1</span>))</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">0</span>, weeks <span class="op">//</span> <span class="dv">4</span>)</span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># days</span></span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> re.match(<span class="vs">r'</span><span class="kw">(</span><span class="dv">\d</span><span class="op">+</span><span class="kw">)</span><span class="dv">\s</span><span class="op">+</span><span class="vs">day'</span>, updated)</span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> m:</span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># hours / minutes / seconds → treat as &lt; 1 month</span></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">any</span>(unit <span class="kw">in</span> updated <span class="cf">for</span> unit <span class="kw">in</span> [<span class="st">"hour"</span>, <span class="st">"minute"</span>, <span class="st">"second"</span>]):</span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pulls_to_int(pulls_str):</span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a><span class="co">    Convert a pulls string like:</span></span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a><span class="co">        '5M', '655.8K', '49K', '73.7M', '957.4K', '27.7M'</span></span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a><span class="co">    into an integer.</span></span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> pulls_str:</span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a>    pulls_str <span class="op">=</span> pulls_str.strip().upper()</span>
+<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a>    match <span class="op">=</span> re.match(<span class="vs">r'</span><span class="kw">(</span><span class="pp">[</span><span class="dv">\d</span><span class="pp">,.]</span><span class="op">+</span><span class="kw">)</span><span class="dv">\s</span><span class="op">*</span><span class="kw">(</span><span class="pp">[KM]</span><span class="op">?</span><span class="kw">)</span><span class="vs">'</span>, pulls_str)</span>
+<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> match:</span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a>    number, suffix <span class="op">=</span> match.groups()</span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove commas and convert to float</span></span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a>    number <span class="op">=</span> <span class="bu">float</span>(number.replace(<span class="st">','</span>, <span class="st">''</span>))</span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> suffix <span class="op">==</span> <span class="st">'M'</span>:</span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a>        number <span class="op">*=</span> <span class="dv">1_000_000</span></span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> suffix <span class="op">==</span> <span class="st">'K'</span>:</span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a>        number <span class="op">*=</span> <span class="dv">1_000</span></span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">int</span>(number)</span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_model_list_regex(html):</span>
+<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a>    models <span class="op">=</span> []</span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a>    <span class="co"># --- Extract each &lt;li x-test-model&gt;...&lt;/li&gt; block ---</span></span>
+<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a>    li_blocks <span class="op">=</span> re.findall(</span>
+<span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a>        <span class="vs">r'&lt;li</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">x-test-model</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">&gt;</span><span class="kw">(</span><span class="dv">.</span><span class="op">*?</span><span class="kw">)</span><span class="vs">&lt;/li&gt;'</span>,</span>
+<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a>        html,</span>
+<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a>        flags<span class="op">=</span>re.DOTALL</span>
+<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-87"><a href="#cb20-87" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> block <span class="kw">in</span> li_blocks:</span>
+<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-89"><a href="#cb20-89" aria-hidden="true" tabindex="-1"></a>        <span class="co"># name from &lt;a href="/library/..."&gt;</span></span>
+<span id="cb20-90"><a href="#cb20-90" aria-hidden="true" tabindex="-1"></a>        name <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-91"><a href="#cb20-91" aria-hidden="true" tabindex="-1"></a>        m <span class="op">=</span> re.search(<span class="vs">r'href="/library/</span><span class="kw">(</span><span class="pp">[^"]</span><span class="op">+</span><span class="kw">)</span><span class="vs">"'</span>, block)</span>
+<span id="cb20-92"><a href="#cb20-92" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> m:</span>
+<span id="cb20-93"><a href="#cb20-93" aria-hidden="true" tabindex="-1"></a>            name <span class="op">=</span> m.group(<span class="dv">1</span>)</span>
+<span id="cb20-94"><a href="#cb20-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-95"><a href="#cb20-95" aria-hidden="true" tabindex="-1"></a>        <span class="co"># description &lt;p class="max-w-lg ..."&gt;...&lt;/p&gt;</span></span>
+<span id="cb20-96"><a href="#cb20-96" aria-hidden="true" tabindex="-1"></a>        description <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb20-97"><a href="#cb20-97" aria-hidden="true" tabindex="-1"></a>        m <span class="op">=</span> re.search(</span>
+<span id="cb20-98"><a href="#cb20-98" aria-hidden="true" tabindex="-1"></a>            <span class="vs">r'&lt;p</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">text-neutral-800</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">&gt;</span><span class="kw">(</span><span class="dv">.</span><span class="op">*?</span><span class="kw">)</span><span class="vs">&lt;/p&gt;'</span>,</span>
+<span id="cb20-99"><a href="#cb20-99" aria-hidden="true" tabindex="-1"></a>            block,</span>
+<span id="cb20-100"><a href="#cb20-100" aria-hidden="true" tabindex="-1"></a>            flags<span class="op">=</span>re.DOTALL</span>
+<span id="cb20-101"><a href="#cb20-101" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb20-102"><a href="#cb20-102" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> m:</span>
+<span id="cb20-103"><a href="#cb20-103" aria-hidden="true" tabindex="-1"></a>            description <span class="op">=</span> re.sub(<span class="vs">r'&lt;</span><span class="dv">.</span><span class="op">*?</span><span class="vs">&gt;'</span>, <span class="st">''</span>, m.group(<span class="dv">1</span>)).strip()</span>
+<span id="cb20-104"><a href="#cb20-104" aria-hidden="true" tabindex="-1"></a>            description <span class="op">=</span> unescape(description)</span>
+<span id="cb20-105"><a href="#cb20-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-106"><a href="#cb20-106" aria-hidden="true" tabindex="-1"></a>        <span class="co"># capabilities (x-test-capability)</span></span>
+<span id="cb20-107"><a href="#cb20-107" aria-hidden="true" tabindex="-1"></a>        capabilities <span class="op">=</span> re.findall(</span>
+<span id="cb20-108"><a href="#cb20-108" aria-hidden="true" tabindex="-1"></a>            <span class="vs">r'&lt;span</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">x-test-capability</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">&gt;</span><span class="kw">(</span><span class="dv">.</span><span class="op">*?</span><span class="kw">)</span><span class="vs">&lt;/span&gt;'</span>,</span>
+<span id="cb20-109"><a href="#cb20-109" aria-hidden="true" tabindex="-1"></a>            block,</span>
+<span id="cb20-110"><a href="#cb20-110" aria-hidden="true" tabindex="-1"></a>            flags<span class="op">=</span>re.DOTALL</span>
+<span id="cb20-111"><a href="#cb20-111" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb20-112"><a href="#cb20-112" aria-hidden="true" tabindex="-1"></a>        capabilities <span class="op">=</span> [c.strip() <span class="cf">for</span> c <span class="kw">in</span> capabilities]</span>
+<span id="cb20-113"><a href="#cb20-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-114"><a href="#cb20-114" aria-hidden="true" tabindex="-1"></a>        <span class="co"># check for the special 'cloud' span </span></span>
+<span id="cb20-115"><a href="#cb20-115" aria-hidden="true" tabindex="-1"></a>        cloud <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb20-116"><a href="#cb20-116" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> re.search(</span>
+<span id="cb20-117"><a href="#cb20-117" aria-hidden="true" tabindex="-1"></a>            <span class="vs">r'&lt;span</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">&gt;cloud&lt;/span&gt;'</span>,</span>
+<span id="cb20-118"><a href="#cb20-118" aria-hidden="true" tabindex="-1"></a>            block,</span>
+<span id="cb20-119"><a href="#cb20-119" aria-hidden="true" tabindex="-1"></a>            flags<span class="op">=</span>re.DOTALL</span>
+<span id="cb20-120"><a href="#cb20-120" aria-hidden="true" tabindex="-1"></a>        ):</span>
+<span id="cb20-121"><a href="#cb20-121" aria-hidden="true" tabindex="-1"></a>            cloud <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb20-122"><a href="#cb20-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-123"><a href="#cb20-123" aria-hidden="true" tabindex="-1"></a>        <span class="co"># sizes (x-test-size)</span></span>
+<span id="cb20-124"><a href="#cb20-124" aria-hidden="true" tabindex="-1"></a>        sizes <span class="op">=</span> re.findall(</span>
+<span id="cb20-125"><a href="#cb20-125" aria-hidden="true" tabindex="-1"></a>            <span class="vs">r'&lt;span</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">x-test-size</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">&gt;</span><span class="kw">(</span><span class="dv">.</span><span class="op">*?</span><span class="kw">)</span><span class="vs">&lt;/span&gt;'</span>,</span>
+<span id="cb20-126"><a href="#cb20-126" aria-hidden="true" tabindex="-1"></a>            block,</span>
+<span id="cb20-127"><a href="#cb20-127" aria-hidden="true" tabindex="-1"></a>            flags<span class="op">=</span>re.DOTALL</span>
+<span id="cb20-128"><a href="#cb20-128" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb20-129"><a href="#cb20-129" aria-hidden="true" tabindex="-1"></a>        sizes <span class="op">=</span> [s.strip() <span class="cf">for</span> s <span class="kw">in</span> sizes]</span>
+<span id="cb20-130"><a href="#cb20-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-131"><a href="#cb20-131" aria-hidden="true" tabindex="-1"></a>        <span class="co"># pulls &lt;span x-test-pull-count&gt;5M&lt;/span&gt;</span></span>
+<span id="cb20-132"><a href="#cb20-132" aria-hidden="true" tabindex="-1"></a>        pulls <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-133"><a href="#cb20-133" aria-hidden="true" tabindex="-1"></a>        m <span class="op">=</span> re.search(</span>
+<span id="cb20-134"><a href="#cb20-134" aria-hidden="true" tabindex="-1"></a>            <span class="vs">r'&lt;span</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">x-test-pull-count</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">&gt;</span><span class="kw">(</span><span class="dv">.</span><span class="op">*?</span><span class="kw">)</span><span class="vs">&lt;/span&gt;'</span>,</span>
+<span id="cb20-135"><a href="#cb20-135" aria-hidden="true" tabindex="-1"></a>            block</span>
+<span id="cb20-136"><a href="#cb20-136" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb20-137"><a href="#cb20-137" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> m:</span>
+<span id="cb20-138"><a href="#cb20-138" aria-hidden="true" tabindex="-1"></a>            pulls <span class="op">=</span> m.group(<span class="dv">1</span>).strip()</span>
+<span id="cb20-139"><a href="#cb20-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-140"><a href="#cb20-140" aria-hidden="true" tabindex="-1"></a>        <span class="co"># tag count &lt;span x-test-tag-count&gt;5&lt;/span&gt;</span></span>
+<span id="cb20-141"><a href="#cb20-141" aria-hidden="true" tabindex="-1"></a>        tag_count <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-142"><a href="#cb20-142" aria-hidden="true" tabindex="-1"></a>        m <span class="op">=</span> re.search(</span>
+<span id="cb20-143"><a href="#cb20-143" aria-hidden="true" tabindex="-1"></a>            <span class="vs">r'&lt;span</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">x-test-tag-count</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">&gt;</span><span class="kw">(</span><span class="dv">.</span><span class="op">*?</span><span class="kw">)</span><span class="vs">&lt;/span&gt;'</span>,</span>
+<span id="cb20-144"><a href="#cb20-144" aria-hidden="true" tabindex="-1"></a>            block</span>
+<span id="cb20-145"><a href="#cb20-145" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb20-146"><a href="#cb20-146" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> m:</span>
+<span id="cb20-147"><a href="#cb20-147" aria-hidden="true" tabindex="-1"></a>            tag_count <span class="op">=</span> m.group(<span class="dv">1</span>).strip()</span>
+<span id="cb20-148"><a href="#cb20-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-149"><a href="#cb20-149" aria-hidden="true" tabindex="-1"></a>        <span class="co"># updated text &lt;span x-test-updated&gt;...&lt;/span&gt;</span></span>
+<span id="cb20-150"><a href="#cb20-150" aria-hidden="true" tabindex="-1"></a>        updated <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-151"><a href="#cb20-151" aria-hidden="true" tabindex="-1"></a>        m <span class="op">=</span> re.search(</span>
+<span id="cb20-152"><a href="#cb20-152" aria-hidden="true" tabindex="-1"></a>            <span class="vs">r'&lt;span</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">x-test-updated</span><span class="pp">[^&gt;]</span><span class="op">*</span><span class="vs">&gt;</span><span class="kw">(</span><span class="dv">.</span><span class="op">*?</span><span class="kw">)</span><span class="vs">&lt;/span&gt;'</span>,</span>
+<span id="cb20-153"><a href="#cb20-153" aria-hidden="true" tabindex="-1"></a>            block</span>
+<span id="cb20-154"><a href="#cb20-154" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb20-155"><a href="#cb20-155" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> m:</span>
+<span id="cb20-156"><a href="#cb20-156" aria-hidden="true" tabindex="-1"></a>            updated <span class="op">=</span> m.group(<span class="dv">1</span>).strip()</span>
+<span id="cb20-157"><a href="#cb20-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-158"><a href="#cb20-158" aria-hidden="true" tabindex="-1"></a>        models.append({</span>
+<span id="cb20-159"><a href="#cb20-159" aria-hidden="true" tabindex="-1"></a>            <span class="st">"name"</span>: name,</span>
+<span id="cb20-160"><a href="#cb20-160" aria-hidden="true" tabindex="-1"></a>            <span class="st">"description"</span>: description,</span>
+<span id="cb20-161"><a href="#cb20-161" aria-hidden="true" tabindex="-1"></a>            <span class="st">"capabilities"</span>: capabilities,</span>
+<span id="cb20-162"><a href="#cb20-162" aria-hidden="true" tabindex="-1"></a>            <span class="st">"cloud"</span>: cloud,</span>
+<span id="cb20-163"><a href="#cb20-163" aria-hidden="true" tabindex="-1"></a>            <span class="st">"sizes"</span>: sizes,</span>
+<span id="cb20-164"><a href="#cb20-164" aria-hidden="true" tabindex="-1"></a>            <span class="st">"pulls"</span>: pulls_to_int(pulls),</span>
+<span id="cb20-165"><a href="#cb20-165" aria-hidden="true" tabindex="-1"></a>            <span class="st">"tag_count"</span>: <span class="bu">int</span>(tag_count),</span>
+<span id="cb20-166"><a href="#cb20-166" aria-hidden="true" tabindex="-1"></a>            <span class="st">"updated_months"</span>: updated_to_months(updated),</span>
+<span id="cb20-167"><a href="#cb20-167" aria-hidden="true" tabindex="-1"></a>            <span class="st">"url"</span>: <span class="ss">f"https://ollama.com/library/</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> name <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb20-168"><a href="#cb20-168" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb20-169"><a href="#cb20-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-170"><a href="#cb20-170" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> models   </span>
+<span id="cb20-171"><a href="#cb20-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-172"><a href="#cb20-172" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> list_models(contains<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb20-173"><a href="#cb20-173" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb20-174"><a href="#cb20-174" aria-hidden="true" tabindex="-1"></a><span class="co">    Extract model names and properties from https://ollama.com/library</span></span>
+<span id="cb20-175"><a href="#cb20-175" aria-hidden="true" tabindex="-1"></a><span class="co">    Optionally filter by substring.</span></span>
+<span id="cb20-176"><a href="#cb20-176" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb20-177"><a href="#cb20-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-178"><a href="#cb20-178" aria-hidden="true" tabindex="-1"></a>    html <span class="op">=</span> httpx.get(<span class="st">"https://ollama.com/library"</span>).text</span>
+<span id="cb20-179"><a href="#cb20-179" aria-hidden="true" tabindex="-1"></a>    models <span class="op">=</span> parse_model_list_regex(html)</span>
+<span id="cb20-180"><a href="#cb20-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-181"><a href="#cb20-181" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> contains:</span>
+<span id="cb20-182"><a href="#cb20-182" aria-hidden="true" tabindex="-1"></a>        models <span class="op">=</span> [</span>
+<span id="cb20-183"><a href="#cb20-183" aria-hidden="true" tabindex="-1"></a>            m <span class="cf">for</span> m <span class="kw">in</span> models</span>
+<span id="cb20-184"><a href="#cb20-184" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> contains.lower() <span class="kw">in</span> m[<span class="st">"name"</span>].lower()</span>
+<span id="cb20-185"><a href="#cb20-185" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb20-186"><a href="#cb20-186" aria-hidden="true" tabindex="-1"></a>        models <span class="op">=</span> <span class="bu">sorted</span>(models, key<span class="op">=</span><span class="kw">lambda</span> m:m[<span class="st">"name"</span>])</span>
+<span id="cb20-187"><a href="#cb20-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-188"><a href="#cb20-188" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> models</span>
+<span id="cb20-189"><a href="#cb20-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-190"><a href="#cb20-190" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> list_recent_models_from_family(familyfilter):</span>
+<span id="cb20-191"><a href="#cb20-191" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="ss">f"</span><span class="sc">{</span>m[<span class="st">'name'</span>]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>m[<span class="st">'capabilities'</span>] <span class="cf">if</span> <span class="bu">len</span>(m[<span class="st">'capabilities'</span>])<span class="op">&gt;</span><span class="dv">0</span> <span class="cf">else</span> <span class="st">''</span><span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>m[<span class="st">'sizes'</span>] <span class="cf">if</span> <span class="bu">len</span>(m[<span class="st">'sizes'</span>])<span class="op">&gt;</span><span class="dv">0</span> <span class="cf">else</span> <span class="st">''</span><span class="sc">}{</span><span class="st">' [cloud]'</span> <span class="cf">if</span> m[<span class="st">'cloud'</span>] <span class="cf">else</span> <span class="st">''</span><span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> m <span class="kw">in</span> list_models(familyfilter) <span class="cf">if</span> m[<span class="st">"updated_months"</span>] <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> m[<span class="st">"updated_months"</span>]<span class="op">&lt;</span><span class="dv">12</span>]</span>
+<span id="cb20-192"><a href="#cb20-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-193"><a href="#cb20-193" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> list_tags(model):</span>
+<span id="cb20-194"><a href="#cb20-194" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb20-195"><a href="#cb20-195" aria-hidden="true" tabindex="-1"></a><span class="co">    Extract valid quantized tags only, without HTML noise,</span></span>
+<span id="cb20-196"><a href="#cb20-196" aria-hidden="true" tabindex="-1"></a><span class="co">    and apply the same exclusions as original greps.</span></span>
+<span id="cb20-197"><a href="#cb20-197" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb20-198"><a href="#cb20-198" aria-hidden="true" tabindex="-1"></a>    html <span class="op">=</span> httpx.get(<span class="ss">f"https://ollama.com/library/</span><span class="sc">{</span>model<span class="sc">}</span><span class="ss">/tags"</span>).text</span>
+<span id="cb20-199"><a href="#cb20-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-200"><a href="#cb20-200" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Capture ONLY the tag part after model:..., e.g. 3b-instruct-q4_K_M</span></span>
+<span id="cb20-201"><a href="#cb20-201" aria-hidden="true" tabindex="-1"></a>    raw_tags <span class="op">=</span> re.findall(</span>
+<span id="cb20-202"><a href="#cb20-202" aria-hidden="true" tabindex="-1"></a>        <span class="vs">rf'</span><span class="sc">{</span>re<span class="sc">.</span>escape(model)<span class="sc">}</span><span class="vs">:</span><span class="kw">(</span><span class="pp">[A-Za-z0-9._-]</span><span class="op">*</span><span class="vs">q</span><span class="pp">[A-Za-z0-9._-]</span><span class="op">*</span><span class="kw">)</span><span class="vs">'</span>,</span>
+<span id="cb20-203"><a href="#cb20-203" aria-hidden="true" tabindex="-1"></a>        html</span>
+<span id="cb20-204"><a href="#cb20-204" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-205"><a href="#cb20-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-206"><a href="#cb20-206" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Re-add full prefix model:&lt;tag&gt;</span></span>
+<span id="cb20-207"><a href="#cb20-207" aria-hidden="true" tabindex="-1"></a>    tags <span class="op">=</span> [<span class="ss">f"</span><span class="sc">{</span>model<span class="sc">}</span><span class="ss">:</span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> t <span class="kw">in</span> raw_tags]</span>
+<span id="cb20-208"><a href="#cb20-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-209"><a href="#cb20-209" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Exclude text|base|fp|q4_[01]|q5_[01]</span></span>
+<span id="cb20-210"><a href="#cb20-210" aria-hidden="true" tabindex="-1"></a>    tags <span class="op">=</span> [</span>
+<span id="cb20-211"><a href="#cb20-211" aria-hidden="true" tabindex="-1"></a>        t <span class="cf">for</span> t <span class="kw">in</span> tags</span>
+<span id="cb20-212"><a href="#cb20-212" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> re.search(<span class="vs">r'</span><span class="kw">(</span><span class="vs">text</span><span class="cf">|</span><span class="vs">base</span><span class="cf">|</span><span class="vs">fp</span><span class="cf">|</span><span class="vs">q</span><span class="pp">[45]</span><span class="vs">_</span><span class="pp">[01]</span><span class="kw">)</span><span class="vs">'</span>, t)</span>
+<span id="cb20-213"><a href="#cb20-213" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb20-214"><a href="#cb20-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-215"><a href="#cb20-215" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Deduplicate</span></span>
+<span id="cb20-216"><a href="#cb20-216" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">set</span>(tags)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="392377be-d847-46b9-9658-430ee348aba7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T10:57:43.524887Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T10:57:43.524724Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T10:57:44.001690Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T10:57:44.000990Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T10:57:43.524879Z&quot;}}" data-execution_count="160">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>list_models()[:<span class="dv">5</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="160">
+<pre><code>[{'name': 'gpt-oss',
+  'description': 'OpenAI’s open-weight models designed for powerful reasoning, agentic tasks, and versatile developer use cases.',
+  'capabilities': ['tools', 'thinking'],
+  'cloud': True,
+  'sizes': ['20b', '120b'],
+  'pulls': 5000000,
+  'tag_count': 5,
+  'updated_months': 1,
+  'url': 'https://ollama.com/library/gpt-oss'},
+ {'name': 'qwen3-vl',
+  'description': 'The most powerful vision-language model in the Qwen model family to date.',
+  'capabilities': ['vision', 'tools'],
+  'cloud': True,
+  'sizes': ['2b', '4b', '8b', '30b', '32b', '235b'],
+  'pulls': 656300,
+  'tag_count': 59,
+  'updated_months': 1,
+  'url': 'https://ollama.com/library/qwen3-vl'},
+ {'name': 'ministral-3',
+  'description': 'The Ministral 3 family is designed for edge deployment, capable of running on a wide range of hardware.',
+  'capabilities': ['vision', 'tools'],
+  'cloud': True,
+  'sizes': ['3b', '8b', '14b'],
+  'pulls': 49100,
+  'tag_count': 16,
+  'updated_months': 0,
+  'url': 'https://ollama.com/library/ministral-3'},
+ {'name': 'deepseek-r1',
+  'description': 'DeepSeek-R1 is a family of open reasoning models with performance approaching that of leading models, such as O3 and Gemini 2.5 Pro.',
+  'capabilities': ['tools', 'thinking'],
+  'cloud': False,
+  'sizes': ['1.5b', '7b', '8b', '14b', '32b', '70b', '671b'],
+  'pulls': 73700000,
+  'tag_count': 35,
+  'updated_months': 5,
+  'url': 'https://ollama.com/library/deepseek-r1'},
+ {'name': 'qwen3-coder',
+  'description': "Alibaba's performant long context models for agentic and coding tasks.",
+  'capabilities': ['tools'],
+  'cloud': True,
+  'sizes': ['30b', '480b'],
+  'pulls': 958100,
+  'tag_count': 10,
+  'updated_months': 2,
+  'url': 'https://ollama.com/library/qwen3-coder'}]</code></pre>
+</div>
+</div>
+<div id="a513f8cf-0679-44c0-bdb4-4fca3aaf1a23" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T11:00:02.715737Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T11:00:02.715583Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T11:00:03.197536Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T11:00:03.196761Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T11:00:02.715728Z&quot;}}" data-execution_count="171">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"qwen"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="171">
+<pre><code>["qwen2.5-coder ['tools'] ['0.5b', '1.5b', '3b', '7b', '14b', '32b']",
+ "qwen2.5vl ['vision'] ['3b', '7b', '32b', '72b']",
+ "qwen3 ['tools', 'thinking'] ['0.6b', '1.7b', '4b', '8b', '14b', '30b', '32b', '235b']",
+ "qwen3-coder ['tools'] ['30b', '480b'] [cloud]",
+ "qwen3-embedding ['embedding'] ['0.6b', '4b', '8b']",
+ "qwen3-vl ['vision', 'tools'] ['2b', '4b', '8b', '30b', '32b', '235b'] [cloud]"]</code></pre>
+</div>
+</div>
+<div id="1f04212a-ad4a-4811-a8f9-833dee73e09d" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T10:57:59.196496Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T10:57:59.196346Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T10:57:59.958274Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T10:57:59.957485Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T10:57:59.196487Z&quot;}}" data-execution_count="162">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"gemma"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="162">
+<pre><code>["embeddinggemma ['embedding'] ['300m']",
+ "gemma3 ['vision'] ['270m', '1b', '4b', '12b', '27b'] [cloud]",
+ "gemma3n  ['e2b', 'e4b']"]</code></pre>
+</div>
+</div>
+<div id="de3cae3b-d873-468d-9d80-8058b785ab8b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T10:58:10.783064Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T10:58:10.782919Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T10:58:11.281348Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T10:58:11.280645Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T10:58:10.783056Z&quot;}}" data-execution_count="163">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"stral"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="163">
+<pre><code>["devstral ['tools'] ['24b']",
+ "magistral ['tools', 'thinking'] ['24b']",
+ "ministral-3 ['vision', 'tools'] ['3b', '8b', '14b'] [cloud]",
+ "mistral ['tools'] ['7b']",
+ 'mistral-large-3   [cloud]',
+ "mistral-nemo ['tools'] ['12b']",
+ "mistral-small ['tools'] ['22b', '24b']",
+ "mistral-small3.1 ['vision', 'tools'] ['24b']",
+ "mistral-small3.2 ['vision', 'tools'] ['24b']"]</code></pre>
+</div>
+</div>
+<div id="45e33d36-4e00-4d8c-9ce1-d6a0c9eafa84" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T10:58:18.463653Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T10:58:18.463491Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T10:58:18.942556Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T10:58:18.941815Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T10:58:18.463644Z&quot;}}" data-execution_count="164">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"gpt"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="164">
+<pre><code>["gpt-oss ['tools', 'thinking'] ['20b', '120b'] [cloud]",
+ "gpt-oss-safeguard ['tools', 'thinking'] ['20b', '120b']"]</code></pre>
+</div>
+</div>
+<div id="524e9f87-1b3d-4190-9f56-dfbcff10bf15" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T10:58:22.602904Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T10:58:22.602762Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T10:58:23.095384Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T10:58:23.094603Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T10:58:22.602895Z&quot;}}" data-execution_count="165">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"deepseek"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="165">
+<pre><code>["deepseek-ocr ['vision'] ['3b']",
+ "deepseek-r1 ['tools', 'thinking'] ['1.5b', '7b', '8b', '14b', '32b', '70b', '671b']",
+ "deepseek-v3  ['671b']",
+ "deepseek-v3.1 ['tools', 'thinking'] ['671b'] [cloud]"]</code></pre>
+</div>
+</div>
+<div id="61e455be-b1ae-4e12-bc16-d72ea08ea494" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T10:58:29.793673Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T10:58:29.793538Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T10:58:30.553942Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T10:58:30.553389Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T10:58:29.793664Z&quot;}}" data-execution_count="166">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"glm"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="166">
+<pre><code>['glm-4.6   [cloud]']</code></pre>
+</div>
+</div>
+<div id="76e6dd40-3fc6-4feb-b2a2-209865434abc" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T11:01:23.731712Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T11:01:23.731571Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T11:01:24.219021Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T11:01:24.218142Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T11:01:23.731703Z&quot;}}" data-execution_count="174">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"granite"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="174">
+<pre><code>["granite-embedding ['embedding'] ['30m', '278m']",
+ "granite3.1-dense ['tools'] ['2b', '8b']",
+ "granite3.1-moe ['tools'] ['1b', '3b']",
+ "granite3.2 ['tools'] ['2b', '8b']",
+ "granite3.2-vision ['vision', 'tools'] ['2b']",
+ "granite3.3 ['tools'] ['2b', '8b']",
+ "granite4 ['tools'] ['350m', '1b', '3b']"]</code></pre>
+</div>
+</div>
+<div id="a71f35d1-2ae8-4564-9f9c-17ca98e378f0" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T10:59:04.835558Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T10:59:04.835402Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T10:59:05.317790Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T10:59:05.317062Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T10:59:04.835544Z&quot;}}" data-execution_count="167">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"llama"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="167">
+<pre><code>["llama3.2-vision ['vision'] ['11b', '90b']",
+ "llama4 ['vision', 'tools'] ['16x17b', '128x17b']"]</code></pre>
+</div>
+</div>
+<div id="ff7893a9-afa2-4fb1-bfd0-9b5936e5eea3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T11:00:37.216004Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T11:00:37.215860Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T11:00:37.683506Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T11:00:37.682868Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T11:00:37.215995Z&quot;}}" data-execution_count="172">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"phi"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="172">
+<pre><code>["dolphin-mixtral  ['8x7b', '8x22b']",
+ "dolphin3  ['8b']",
+ "phi4  ['14b']",
+ "phi4-mini ['tools'] ['3.8b']",
+ "phi4-mini-reasoning  ['3.8b']",
+ "phi4-reasoning  ['14b']"]</code></pre>
+</div>
+</div>
+<div id="99bdadec-2b71-40a7-be49-31fcf9e7a227" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T11:04:38.218394Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T11:04:38.218246Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T11:04:38.701932Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T11:04:38.701369Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T11:04:38.218385Z&quot;}}" data-execution_count="179">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"hermes"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="179">
+<pre><code>["hermes3 ['tools'] ['3b', '8b', '70b', '405b']",
+ "nous-hermes2-mixtral  ['8x7b']"]</code></pre>
+</div>
+</div>
+<div id="88de106f-16a6-49f8-bacb-fdae0515e3e6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T11:05:25.662254Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T11:05:25.662109Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T11:05:26.148392Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T11:05:26.147735Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T11:05:25.662245Z&quot;}}" data-execution_count="180">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"olmo"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="180">
+<pre><code>["olmo2  ['7b', '13b']"]</code></pre>
+</div>
+</div>
+<div id="5ee669d8-b586-4e7b-aa37-cf65489fabcc" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T11:00:54.466494Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T11:00:54.466268Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T11:00:55.223049Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T11:00:55.222412Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T11:00:54.466480Z&quot;}}" data-execution_count="173">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>list_recent_models_from_family(<span class="st">"embed"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="173">
+<pre><code>["embeddinggemma ['embedding'] ['300m']",
+ "granite-embedding ['embedding'] ['30m', '278m']",
+ "qwen3-embedding ['embedding'] ['0.6b', '4b', '8b']"]</code></pre>
+</div>
+</div>
+<div id="1c24bc81-f6d7-433e-b3a8-53e70f914442" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T09:57:09.335859Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T09:57:09.335714Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T09:57:09.546269Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T09:57:09.545377Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T09:57:09.335851Z&quot;}}" data-execution_count="68">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>list_tags(<span class="st">"ministral-3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="68">
+<pre><code>{'ministral-3:14b-instruct-2512-q4_K_M',
+ 'ministral-3:14b-instruct-2512-q8_0',
+ 'ministral-3:3b-instruct-2512-q4_K_M',
+ 'ministral-3:3b-instruct-2512-q8_0',
+ 'ministral-3:8b-instruct-2512-q4_K_M',
+ 'ministral-3:8b-instruct-2512-q8_0'}</code></pre>
+</div>
+</div>
+<div id="cfd1969b-2832-47f9-8569-add48c966f4b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T09:57:10.070423Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T09:57:10.070274Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T09:57:10.269138Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T09:57:10.268379Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T09:57:10.070414Z&quot;}}" data-execution_count="69">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>list_tags(<span class="st">"mistral-small3.2"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="69">
+<pre><code>{'mistral-small3.2:24b-instruct-2506-q4_K_M',
+ 'mistral-small3.2:24b-instruct-2506-q8_0'}</code></pre>
+</div>
+</div>
+<div id="81100df9-ed00-4bd4-afd6-96c8ddf9f1d4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-07T09:57:14.431751Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-07T09:57:14.431606Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-07T09:57:14.775366Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-07T09:57:14.774639Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-07T09:57:14.431741Z&quot;}}" data-execution_count="70">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>list_tags(<span class="st">"qwen3-vl"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="70">
+<pre><code>{'qwen3-vl:235b-a22b-instruct-q4_K_M',
+ 'qwen3-vl:235b-a22b-instruct-q8_0',
+ 'qwen3-vl:235b-a22b-thinking-q4_K_M',
+ 'qwen3-vl:235b-a22b-thinking-q8_0',
+ 'qwen3-vl:2b-instruct-q4_K_M',
+ 'qwen3-vl:2b-instruct-q8_0',
+ 'qwen3-vl:2b-thinking-q4_K_M',
+ 'qwen3-vl:2b-thinking-q8_0',
+ 'qwen3-vl:30b-a3b-instruct-q4_K_M',
+ 'qwen3-vl:30b-a3b-instruct-q8_0',
+ 'qwen3-vl:30b-a3b-thinking-q4_K_M',
+ 'qwen3-vl:30b-a3b-thinking-q8_0',
+ 'qwen3-vl:32b-instruct-q4_K_M',
+ 'qwen3-vl:32b-instruct-q8_0',
+ 'qwen3-vl:32b-thinking-q4_K_M',
+ 'qwen3-vl:32b-thinking-q8_0',
+ 'qwen3-vl:4b-instruct-q4_K_M',
+ 'qwen3-vl:4b-instruct-q8_0',
+ 'qwen3-vl:4b-thinking-q4_K_M',
+ 'qwen3-vl:4b-thinking-q8_0',
+ 'qwen3-vl:8b-instruct-q4_K_M',
+ 'qwen3-vl:8b-instruct-q8_0',
+ 'qwen3-vl:8b-thinking-q4_K_M',
+ 'qwen3-vl:8b-thinking-q8_0'}</code></pre>
+</div>
+</div>
+<p>https://github.com/ollama/ollama/blob/main/docs/api.md#list-local-models</p>
+<p>ollama.list().models -&gt; list(ollama._types.ListResponse.Model)</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="at">ollama._types.ListResponse.Model</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">model</span><span class="kw">:</span><span class="at"> str 'qwen3:4b'</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">modified_at</span><span class="kw">:</span><span class="at"> datetime.datetime datetime(2025, 11, 22, 18, 53, 11)</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">digest</span><span class="kw">:</span><span class="at"> str '359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7'</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">size</span><span class="kw">:</span><span class="at"> pydantic.types.ByteSize 2497293931</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">details</span><span class="kw">:</span><span class="at"> ollama._types.ModelDetails</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">parent_model</span><span class="kw">:</span><span class="at"> str ''</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">format</span><span class="kw">:</span><span class="at"> str 'gguf'</span></span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">family</span><span class="kw">:</span><span class="at"> str 'qwen3'</span></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">families</span><span class="kw">:</span><span class="at"> Sequence[str] ['qwen3']</span></span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">parameter_size</span><span class="kw">:</span><span class="at"> str '4.0B'</span></span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">quantization_level</span><span class="kw">:</span><span class="at"> str 'Q4_K_M'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="a1465604-236a-4e4d-b149-acd1e27d6721" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-06T21:00:34.796944Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-06T21:00:34.796801Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-06T21:00:34.802494Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-06T21:00:34.801787Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-06T21:00:34.796933Z&quot;}}" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>ollama.<span class="bu">list</span>().models[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>Model(model='qwen3:4b', modified_at=datetime.datetime(2025, 11, 22, 18, 53, 11, 586211, tzinfo=TzInfo(3600)), digest='359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7', size=2497293931, details=ModelDetails(parent_model='', format='gguf', family='qwen3', families=['qwen3'], parameter_size='4.0B', quantization_level='Q4_K_M'))</code></pre>
+</div>
+</div>
+<p>https://github.com/ollama/ollama/blob/main/docs/api.md#show-model-information</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="at">ollama._types.ShowResponse</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">modified_at</span><span class="kw">:</span><span class="at"> datetime.datetime datetime.datetime(2025, 11, 22, 18, 53, 11)</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">template</span><span class="kw">:</span><span class="at"> str '{{- $lastUserIdx := -1 -}}...\n{{- end }}'</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">modelfile</span><span class="kw">:</span><span class="at"> str '...'</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">license</span><span class="kw">:</span><span class="at"> str '...'</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">details</span><span class="kw">:</span><span class="at"> ollama._types.ModelDetails -&gt; see above</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">model_info</span><span class="kw">:</span><span class="at"> Mapping[str, Any]</span></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.architecture'</span><span class="kw">:</span><span class="at"> </span><span class="st">'qwen3'</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.basename'</span><span class="kw">:</span><span class="at"> </span><span class="st">'Qwen3'</span><span class="at"> </span></span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.file_type'</span><span class="kw">:</span><span class="at"> </span><span class="dv">15</span></span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.finetune'</span><span class="kw">:</span><span class="at"> </span><span class="st">'Thinking'</span><span class="at"> </span></span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.license'</span><span class="kw">:</span><span class="at"> </span><span class="st">'apache-2.0'</span></span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.license.link'</span><span class="kw">:</span><span class="at"> </span><span class="st">'https://huggingface.co/Qwen/Qwen3-4B-Thinking-2507/blob/main/LICENSE'</span></span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.parameter_count'</span><span class="kw">:</span><span class="at"> </span><span class="dv">4022468096</span></span>
+<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.quantization_version'</span><span class="kw">:</span><span class="at"> 2, </span></span>
+<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.size_label'</span><span class="kw">:</span><span class="at"> </span><span class="st">'4B'</span></span>
+<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.tags'</span><span class="kw">:</span><span class="at"> None</span></span>
+<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.type'</span><span class="kw">:</span><span class="at"> </span><span class="st">'model'</span></span>
+<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'general.version'</span><span class="kw">:</span><span class="at"> </span><span class="st">'2507'</span></span>
+<span id="cb56-20"><a href="#cb56-20" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'qwen3.attention.head_count'</span><span class="kw">:</span><span class="at"> </span><span class="dv">32</span></span>
+<span id="cb56-21"><a href="#cb56-21" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'qwen3.attention.head_count_kv'</span><span class="kw">:</span><span class="at"> </span><span class="dv">8</span></span>
+<span id="cb56-22"><a href="#cb56-22" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'qwen3.attention.key_length'</span><span class="kw">:</span><span class="at"> </span><span class="dv">128</span></span>
+<span id="cb56-23"><a href="#cb56-23" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'qwen3.attention.layer_norm_rms_epsilon'</span><span class="kw">:</span><span class="at"> </span><span class="fl">1e-06</span></span>
+<span id="cb56-24"><a href="#cb56-24" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'qwen3.attention.value_length'</span><span class="kw">:</span><span class="at"> </span><span class="dv">128</span></span>
+<span id="cb56-25"><a href="#cb56-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'qwen3.block_count'</span><span class="kw">:</span><span class="at"> </span><span class="dv">36</span></span>
+<span id="cb56-26"><a href="#cb56-26" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'qwen3.context_length'</span><span class="kw">:</span><span class="at"> </span><span class="dv">262144</span></span>
+<span id="cb56-27"><a href="#cb56-27" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'qwen3.embedding_length'</span><span class="kw">:</span><span class="at"> </span><span class="dv">2560</span></span>
+<span id="cb56-28"><a href="#cb56-28" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'qwen3.feed_forward_length'</span><span class="kw">:</span><span class="at"> </span><span class="dv">9728</span></span>
+<span id="cb56-29"><a href="#cb56-29" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'qwen3.rope.freq_base'</span><span class="kw">:</span><span class="at"> </span><span class="dv">5000000</span></span>
+<span id="cb56-30"><a href="#cb56-30" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'tokenizer.ggml.add_bos_token'</span><span class="kw">:</span><span class="at"> </span><span class="ch">False</span></span>
+<span id="cb56-31"><a href="#cb56-31" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'tokenizer.ggml.bos_token_id'</span><span class="kw">:</span><span class="at"> </span><span class="dv">151643</span></span>
+<span id="cb56-32"><a href="#cb56-32" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'tokenizer.ggml.eos_token_id'</span><span class="kw">:</span><span class="at"> </span><span class="dv">151645</span></span>
+<span id="cb56-33"><a href="#cb56-33" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'tokenizer.ggml.merges'</span><span class="kw">:</span><span class="at"> None</span></span>
+<span id="cb56-34"><a href="#cb56-34" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'tokenizer.ggml.model'</span><span class="kw">:</span><span class="at"> </span><span class="st">'gpt2'</span></span>
+<span id="cb56-35"><a href="#cb56-35" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'tokenizer.ggml.padding_token_id'</span><span class="kw">:</span><span class="at"> </span><span class="dv">151643</span></span>
+<span id="cb56-36"><a href="#cb56-36" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'tokenizer.ggml.pre'</span><span class="kw">:</span><span class="at"> </span><span class="st">'qwen2'</span></span>
+<span id="cb56-37"><a href="#cb56-37" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'tokenizer.ggml.token_type'</span><span class="kw">:</span><span class="at"> None</span></span>
+<span id="cb56-38"><a href="#cb56-38" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">-'tokenizer.ggml.tokens'</span><span class="kw">:</span><span class="at"> None</span></span>
+<span id="cb56-39"><a href="#cb56-39" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">parameters</span><span class="kw">:</span><span class="at"> str 'top_p 0.95\n repeat_penalty 1\n stop "&lt;|im_start|&gt;"\n stop "&lt;|im_end|&gt;"\n temperature 0.6\ n top_k 20'</span></span>
+<span id="cb56-40"><a href="#cb56-40" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">capabilities</span><span class="kw">:</span><span class="at"> List[str] ['completion', 'tools', 'thinking']</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="64c73dfb-fabd-4ee1-9fba-7a24b74cfdde" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-06T21:57:16.373233Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-06T21:57:16.373081Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-06T21:57:16.507811Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-06T21:57:16.507158Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-06T21:57:16.373224Z&quot;}}" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>ollama.show(<span class="st">'gemma3:4b'</span>).capabilities, ollama.show(<span class="st">'gemma3:4b'</span>).modelinfo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="32">
+<pre><code>(['completion', 'vision'],
+ {'gemma3.attention.head_count': 8,
+  'gemma3.attention.head_count_kv': 4,
+  'gemma3.attention.key_length': 256,
+  'gemma3.attention.sliding_window': 1024,
+  'gemma3.attention.value_length': 256,
+  'gemma3.block_count': 34,
+  'gemma3.context_length': 131072,
+  'gemma3.embedding_length': 2560,
+  'gemma3.feed_forward_length': 10240,
+  'gemma3.mm.tokens_per_image': 256,
+  'gemma3.vision.attention.head_count': 16,
+  'gemma3.vision.attention.layer_norm_epsilon': 1e-06,
+  'gemma3.vision.block_count': 27,
+  'gemma3.vision.embedding_length': 1152,
+  'gemma3.vision.feed_forward_length': 4304,
+  'gemma3.vision.image_size': 896,
+  'gemma3.vision.num_channels': 3,
+  'gemma3.vision.patch_size': 14,
+  'general.architecture': 'gemma3',
+  'general.file_type': 15,
+  'general.parameter_count': 4299915632,
+  'general.quantization_version': 2,
+  'tokenizer.ggml.add_bos_token': True,
+  'tokenizer.ggml.add_eos_token': False,
+  'tokenizer.ggml.add_padding_token': False,
+  'tokenizer.ggml.add_unknown_token': False,
+  'tokenizer.ggml.bos_token_id': 2,
+  'tokenizer.ggml.eos_token_id': 1,
+  'tokenizer.ggml.merges': None,
+  'tokenizer.ggml.model': 'llama',
+  'tokenizer.ggml.padding_token_id': 0,
+  'tokenizer.ggml.pre': 'default',
+  'tokenizer.ggml.scores': None,
+  'tokenizer.ggml.token_type': None,
+  'tokenizer.ggml.tokens': None,
+  'tokenizer.ggml.unknown_token_id': 3})</code></pre>
+</div>
+</div>
+<div id="efffa6e8-2816-4c1c-a051-dc29b5bc477c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-06T22:07:36.385550Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-06T22:07:36.385409Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-06T22:07:36.393950Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-06T22:07:36.393333Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-06T22:07:36.385540Z&quot;}}" data-execution_count="40">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>ollama.pull??</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Signature:</span> ollama.pull(model: str, *, insecure: bool = <span style="font-weight:bold;color:rgb(0,135,0)">False</span>, stream: bool = <span style="font-weight:bold;color:rgb(0,135,0)">False</span>) -&gt; Union[ollama._types.ProgressResponse, collections.abc.Iterator[ollama._types.ProgressResponse]]
+<span class="ansi-red-fg">Source:</span>   
+  <span style="font-weight:bold;color:rgb(0,135,0)">def</span> pull(
+    self,
+    model: str,
+    *,
+    insecure: bool = <span style="font-weight:bold;color:rgb(0,135,0)">False</span>,
+    stream: bool = <span style="font-weight:bold;color:rgb(0,135,0)">False</span>,
+  ) -&gt; Union[ProgressResponse, Iterator[ProgressResponse]]:
+    <span class="ansi-yellow-fg">"""</span>
+<span class="ansi-yellow-fg">    Raises `ResponseError` if the request could not be fulfilled.</span>
+<span class="ansi-yellow-fg">    Returns `ProgressResponse` if `stream` is `False`, otherwise returns a `ProgressResponse` generator.</span>
+<span class="ansi-yellow-fg">    """</span>
+    <span style="font-weight:bold;color:rgb(0,135,0)">return</span> self._request(
+      ProgressResponse,
+      <span class="ansi-yellow-fg">'POST'</span>,
+      <span class="ansi-yellow-fg">'/api/pull'</span>,
+      json=PullRequest(
+        model=model,
+        insecure=insecure,
+        stream=stream,
+      ).model_dump(exclude_none=<span style="font-weight:bold;color:rgb(0,135,0)">True</span>),
+      stream=stream,
+    )
+<span class="ansi-red-fg">File:</span>      /home/workspace/wordslab-notebooks-lib/.venv/lib/python3.12/site-packages/ollama/_client.py
+<span class="ansi-red-fg">Type:</span>      method</pre>
+</div>
+</div>
+</div>
+<div id="333b8647-58f5-495f-add3-bc2309fcc3a5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-06T22:07:44.346878Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-06T22:07:44.346691Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-06T22:07:44.351110Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-06T22:07:44.350504Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-06T22:07:44.346869Z&quot;}}" data-execution_count="41">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>ollama.delete??</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Signature:</span> ollama.delete(model: str) -&gt; ollama._types.StatusResponse
+<span class="ansi-red-fg">Docstring:</span> &lt;no docstring&gt;
+<span class="ansi-red-fg">Source:</span>   
+  <span style="font-weight:bold;color:rgb(0,135,0)">def</span> delete(self, model: str) -&gt; StatusResponse:
+    r = self._request_raw(
+      <span class="ansi-yellow-fg">'DELETE'</span>,
+      <span class="ansi-yellow-fg">'/api/delete'</span>,
+      json=DeleteRequest(
+        model=model,
+      ).model_dump(exclude_none=<span style="font-weight:bold;color:rgb(0,135,0)">True</span>),
+    )
+    <span style="font-weight:bold;color:rgb(0,135,0)">return</span> StatusResponse(
+      status=<span class="ansi-yellow-fg">'success'</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> r.status_code == <span class="ansi-green-fg">200</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span> <span class="ansi-yellow-fg">'error'</span>,
+    )
+<span class="ansi-red-fg">File:</span>      /home/workspace/wordslab-notebooks-lib/.venv/lib/python3.12/site-packages/ollama/_client.py
+<span class="ansi-red-fg">Type:</span>      method</pre>
+</div>
+</div>
+</div>
+<p><strong>Streaming responses</strong></p>
+<p>Certain endpoints stream responses as JSON objects. Streaming can be disabled by providing {“stream”: false} for these endpoints.</p>
+<p><strong>Structured outputs</strong></p>
+<p>Structured outputs are supported by providing a JSON schema in the format parameter. The model will generate a response that matches the schema. See the structured outputs example below.</p>
+<p><strong>JSON mode</strong></p>
+<p>Enable JSON mode by setting the format parameter to json. This will structure the response as a valid JSON object.</p>
+<p>https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion</p>
+<p>Parameters - model: (required) the model name - prompt: the prompt to generate a response for - suffix: the text after the model response - images: (optional) a list of base64-encoded images (for multimodal models such as llava) - think: (for thinking models) should the model think before responding?</p>
+<p>Advanced parameters (optional): - format: the format to return a response in. Format can be json or a JSON schema - options: additional model parameters listed in the documentation for the Modelfile such as temperature - system: system message to (overrides what is defined in the Modelfile) - template: the prompt template to use (overrides what is defined in the Modelfile) - stream: if false the response will be returned as a single response object, rather than a stream of objects - raw: if true no formatting will be applied to the prompt. You may choose to use the raw parameter if you are specifying a full templated prompt in your request to the API - keep_alive: controls how long the model will stay loaded into memory following the request (default: 5m)</p>
+<p>Response</p>
+<p>A stream of JSON objects is returned:</p>
+<p>{ “model”: “llama3.2”, “created_at”: “2023-08-04T08:52:19.385406455-07:00”, “response”: “The”, “done”: false }</p>
+<p>The final response in the stream also includes additional data about the generation: - total_duration: time spent generating the response - load_duration: time spent in nanoseconds loading the model - prompt_eval_count: number of tokens in the prompt - prompt_eval_duration: time spent in nanoseconds evaluating the prompt - eval_count: number of tokens in the response - eval_duration: time in nanoseconds spent generating the response - response: empty if the response was streamed, if not streamed, this will contain the full response</p>
+<p>A response can be received in one reply when streaming is off.</p>
+<p>To calculate how fast the response is generated in tokens per second (token/s), divide eval_count / eval_duration * 10^9.</p>
+<p><strong>Images</strong></p>
+<p>To submit images to multimodal models, provide a list of base64-encoded images:</p>
+<ul>
+<li>“images”: [“iVBORw0KGgoAAAANSUhEUgAAAG0AAABmCAYAAADBPx+VAAAACXBI…”]</li>
+</ul>
+<div id="76a9a4ff-fc63-44ef-97ae-26af7567da6a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>ollama.generate(model<span class="op">=</span><span class="st">'gemma3'</span>, prompt<span class="op">=</span><span class="st">'Why is the sky blue?'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="54fc66e5-9a58-4243-89c3-2ccdb710673e" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>ollama.chat(model<span class="op">=</span><span class="st">'gemma3'</span>, messages<span class="op">=</span>[{<span class="st">'role'</span>: <span class="st">'user'</span>, <span class="st">'content'</span>: <span class="st">'Why is the sky blue?'</span>}])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="2707163e-156d-4fe7-a57d-8b7f768e9c6a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>ollama.embed(model<span class="op">=</span><span class="st">'gemma3'</span>, <span class="bu">input</span><span class="op">=</span><span class="st">'The sky is blue because of rayleigh scattering'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="3e169690-b0c3-4e1d-82a8-c61027cfec73" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>ollama.embed(model<span class="op">=</span><span class="st">'gemma3'</span>, <span class="bu">input</span><span class="op">=</span>[<span class="st">'The sky is blue because of rayleigh scattering'</span>, <span class="st">'Grass is green because of chlorophyll'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="3f141425-512e-4596-a0f6-673a8fccd9cf" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-06T22:01:15.232728Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-06T22:01:15.232579Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-06T22:01:15.249013Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-06T22:01:15.248273Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-06T22:01:15.232719Z&quot;}}" data-execution_count="33">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>ollama.ps()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="33">
+<pre><code>ProcessResponse(models=[])</code></pre>
+</div>
+</div>
+<div id="8e9c2574-6372-4969-9636-6e638ec7fcee" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-06T22:06:37.359483Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-06T22:06:37.359326Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-06T22:06:37.367422Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-06T22:06:37.366773Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-06T22:06:37.359474Z&quot;}}" data-execution_count="39">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>ollama.web_search??</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Signature:</span> ollama.web_search(query: str, max_results: int = <span class="ansi-green-fg">3</span>) -&gt; ollama._types.WebSearchResponse
+<span class="ansi-red-fg">Source:</span>   
+  <span style="font-weight:bold;color:rgb(0,135,0)">def</span> web_search(self, query: str, max_results: int = <span class="ansi-green-fg">3</span>) -&gt; WebSearchResponse:
+    <span class="ansi-yellow-fg">"""</span>
+<span class="ansi-yellow-fg">    Performs a web search</span>
+<span class="ansi-yellow-fg">    Args:</span>
+<span class="ansi-yellow-fg">      query: The query to search for</span>
+<span class="ansi-yellow-fg">      max_results: The maximum number of results to return (default: 3)</span>
+<span class="ansi-yellow-fg">    Returns:</span>
+<span class="ansi-yellow-fg">      WebSearchResponse with the search results</span>
+<span class="ansi-yellow-fg">    Raises:</span>
+<span class="ansi-yellow-fg">      ValueError: If OLLAMA_API_KEY environment variable is not set</span>
+<span class="ansi-yellow-fg">    """</span>
+    <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="font-weight:bold;color:rgb(0,135,0)">not</span> self._client.headers.get(<span class="ansi-yellow-fg">'authorization'</span>, <span class="ansi-yellow-fg">''</span>).startswith(<span class="ansi-yellow-fg">'Bearer '</span>):
+      <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> ValueError(<span class="ansi-yellow-fg">'Authorization header with Bearer token is required for web search'</span>)
+    <span style="font-weight:bold;color:rgb(0,135,0)">return</span> self._request(
+      WebSearchResponse,
+      <span class="ansi-yellow-fg">'POST'</span>,
+      <span class="ansi-yellow-fg">'https://ollama.com/api/web_search'</span>,
+      json=WebSearchRequest(
+        query=query,
+        max_results=max_results,
+      ).model_dump(exclude_none=<span style="font-weight:bold;color:rgb(0,135,0)">True</span>),
+    )
+<span class="ansi-red-fg">File:</span>      /home/workspace/wordslab-notebooks-lib/.venv/lib/python3.12/site-packages/ollama/_client.py
+<span class="ansi-red-fg">Type:</span>      method</pre>
+</div>
+</div>
+</div>
+<div id="a5753e78-cde5-4f6c-bb76-ffe6e7231170" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-06T22:05:46.873876Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-06T22:05:46.873689Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-06T22:05:46.877680Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-06T22:05:46.877059Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-06T22:05:46.873864Z&quot;}}" data-execution_count="38">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>ollama.web_fetch??</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Signature:</span> ollama.web_fetch(url: str) -&gt; ollama._types.WebFetchResponse
+<span class="ansi-red-fg">Source:</span>   
+  <span style="font-weight:bold;color:rgb(0,135,0)">def</span> web_fetch(self, url: str) -&gt; WebFetchResponse:
+    <span class="ansi-yellow-fg">"""</span>
+<span class="ansi-yellow-fg">    Fetches the content of a web page for the provided URL.</span>
+<span class="ansi-yellow-fg">    Args:</span>
+<span class="ansi-yellow-fg">      url: The URL to fetch</span>
+<span class="ansi-yellow-fg">    Returns:</span>
+<span class="ansi-yellow-fg">      WebFetchResponse with the fetched result</span>
+<span class="ansi-yellow-fg">    """</span>
+    <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="font-weight:bold;color:rgb(0,135,0)">not</span> self._client.headers.get(<span class="ansi-yellow-fg">'authorization'</span>, <span class="ansi-yellow-fg">''</span>).startswith(<span class="ansi-yellow-fg">'Bearer '</span>):
+      <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> ValueError(<span class="ansi-yellow-fg">'Authorization header with Bearer token is required for web fetch'</span>)
+    <span style="font-weight:bold;color:rgb(0,135,0)">return</span> self._request(
+      WebFetchResponse,
+      <span class="ansi-yellow-fg">'POST'</span>,
+      <span class="ansi-yellow-fg">'https://ollama.com/api/web_fetch'</span>,
+      json=WebFetchRequest(
+        url=url,
+      ).model_dump(exclude_none=<span style="font-weight:bold;color:rgb(0,135,0)">True</span>),
+    )
+<span class="ansi-red-fg">File:</span>      /home/workspace/wordslab-notebooks-lib/.venv/lib/python3.12/site-packages/ollama/_client.py
+<span class="ansi-red-fg">Type:</span>      method</pre>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="client" class="level2">
+<h2 class="anchored" data-anchor-id="client">Client</h2>
+<section id="explore-ollama-vllm-and-openrouter-apis" class="level3">
+<h3 class="anchored" data-anchor-id="explore-ollama-vllm-and-openrouter-apis">Explore ollama, vllm and openrouter APIs</h3>
+<div id="a45a8fc4-a08d-4787-a134-1b2eaf0a64da" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-13T16:14:42.656868Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-13T16:14:42.656356Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-13T16:14:58.334627Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-13T16:14:58.333830Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-13T16:14:42.656820Z&quot;}}" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> nbchat(<span class="st">"using only the bits of information present in this notebooks, try to generate a function to get the list of ollama models which can run in a GPU with 16GB vram"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>Based on the information in this notebook, we can create a function to filter Ollama models that can run on a GPU with 16GB VRAM. Here’s how we can approach this:</p>
+<ol type="1">
+<li>We’ll use the <code>ollama.list()</code> method to get all available models</li>
+<li>We’ll filter models based on their VRAM requirements</li>
+<li>We’ll consider that 16GB VRAM can typically handle models up to about 13B parameters (though this varies by model architecture)</li>
+</ol>
+<p>Here’s the function:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_models_for_16gb_vram():</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Returns a list of Ollama models that can run on a GPU with 16GB VRAM"""</span></span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>    all_models <span class="op">=</span> ollama.<span class="bu">list</span>()</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Define a mapping of model sizes to VRAM requirements</span></span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># These are approximate values based on typical requirements</span></span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>    model_vram_map <span class="op">=</span> {</span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">'gemma3'</span>: {</span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">'27b'</span>: <span class="dv">24</span>,  <span class="co"># 27B model needs ~24GB VRAM</span></span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">'13b'</span>: <span class="dv">16</span>,  <span class="co"># 13B model fits in 16GB</span></span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">'7b'</span>: <span class="dv">8</span>,    <span class="co"># 7B model fits in 8GB</span></span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">'3b'</span>: <span class="dv">4</span>     <span class="co"># 3B model fits in 4GB</span></span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">'mistral'</span>: {</span>
+<span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">'small3.2'</span>: <span class="dv">12</span>,  <span class="co"># 24B model needs ~12GB VRAM</span></span>
+<span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a>            <span class="st">'small3'</span>: <span class="dv">10</span>,    <span class="co"># 10B model fits in 10GB</span></span>
+<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a>            <span class="st">'tiny'</span>: <span class="dv">4</span>        <span class="co"># Tiny model fits in 4GB</span></span>
+<span id="cb70-18"><a href="#cb70-18" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb70-19"><a href="#cb70-19" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Add other models as needed</span></span>
+<span id="cb70-20"><a href="#cb70-20" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb70-21"><a href="#cb70-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-22"><a href="#cb70-22" aria-hidden="true" tabindex="-1"></a>    compatible_models <span class="op">=</span> []</span>
+<span id="cb70-23"><a href="#cb70-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-24"><a href="#cb70-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> model <span class="kw">in</span> all_models.models:</span>
+<span id="cb70-25"><a href="#cb70-25" aria-hidden="true" tabindex="-1"></a>        model_name <span class="op">=</span> model.name</span>
+<span id="cb70-26"><a href="#cb70-26" aria-hidden="true" tabindex="-1"></a>        model_size <span class="op">=</span> model.modelfile.get(<span class="st">'parameters'</span>, {}).get(<span class="st">'size'</span>, <span class="st">'unknown'</span>)</span>
+<span id="cb70-27"><a href="#cb70-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-28"><a href="#cb70-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Get VRAM requirement</span></span>
+<span id="cb70-29"><a href="#cb70-29" aria-hidden="true" tabindex="-1"></a>        vram_required <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb70-30"><a href="#cb70-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> model_name <span class="kw">in</span> model_vram_map:</span>
+<span id="cb70-31"><a href="#cb70-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> model_size <span class="kw">in</span> model_vram_map[model_name]:</span>
+<span id="cb70-32"><a href="#cb70-32" aria-hidden="true" tabindex="-1"></a>                vram_required <span class="op">=</span> model_vram_map[model_name][model_size]</span>
+<span id="cb70-33"><a href="#cb70-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-34"><a href="#cb70-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Check if model fits in 16GB VRAM</span></span>
+<span id="cb70-35"><a href="#cb70-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> vram_required <span class="op">&lt;=</span> <span class="dv">16</span>:</span>
+<span id="cb70-36"><a href="#cb70-36" aria-hidden="true" tabindex="-1"></a>            compatible_models.append({</span>
+<span id="cb70-37"><a href="#cb70-37" aria-hidden="true" tabindex="-1"></a>                <span class="st">'name'</span>: model_name,</span>
+<span id="cb70-38"><a href="#cb70-38" aria-hidden="true" tabindex="-1"></a>                <span class="st">'size'</span>: model_size,</span>
+<span id="cb70-39"><a href="#cb70-39" aria-hidden="true" tabindex="-1"></a>                <span class="st">'vram_required'</span>: vram_required</span>
+<span id="cb70-40"><a href="#cb70-40" aria-hidden="true" tabindex="-1"></a>            })</span>
+<span id="cb70-41"><a href="#cb70-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-42"><a href="#cb70-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> compatible_models</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Example usage:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>compatible_models <span class="op">=</span> get_models_for_16gb_vram()</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model <span class="kw">in</span> compatible_models:</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>model[<span class="st">'name'</span>]<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span>model[<span class="st">'size'</span>]<span class="sc">}</span><span class="ss">): </span><span class="sc">{</span>model[<span class="st">'vram_required'</span>]<span class="sc">}</span><span class="ss">GB VRAM required"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Note: The VRAM requirements are approximate and may vary based on: - The specific GPU architecture - Batch size - Other system configurations - Model quantization (if supported)</p>
+<p>For more accurate information, you might want to: 1. Check the official documentation for each model 2. Test the models on your specific hardware 3. Consider using model quantization to reduce VRAM usage</p>
+</div>
+</div>
+<section id="format-the-notebook-cells-for-llms" class="level4">
+<h4 class="anchored" data-anchor-id="format-the-notebook-cells-for-llms">Format the notebook cells for LLMs</h4>
+<p>Convert notebook contents to compact XML - code and format copied from <strong>toolslm by AnswerDotAI</strong>:</p>
+<p>https://github.com/AnswerDotAI/toolslm/blob/main/00_xml.ipynb</p>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/chat.py#L62" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+</section>
+<section id="get_mime_text" class="level3">
+<h3 class="anchored" data-anchor-id="get_mime_text">get_mime_text</h3>
+<blockquote class="blockquote">
+<pre><code> get_mime_text (data)</code></pre>
+</blockquote>
+<p><em>Get text from MIME bundle, preferring markdown over plain</em></p>
+<div id="5aaa9e78-f789-4a4b-ac2c-71460fc5eeb8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.status.busy&quot;:&quot;2025-12-21T12:52:22.212828Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-21T12:52:22.213623Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-21T12:52:22.212888Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-21T12:52:22.212883Z&quot;}}">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_mime_text(data):</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Get text from MIME bundle, preferring markdown over plain"</span></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">'text/markdown'</span> <span class="kw">in</span> data: <span class="cf">return</span> <span class="st">''</span>.join(<span class="bu">list</span>(data[<span class="st">'text/markdown'</span>]))</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">'text/plain'</span> <span class="kw">in</span> data: <span class="cf">return</span> <span class="st">''</span>.join(<span class="bu">list</span>(data[<span class="st">'text/plain'</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/chat.py#L68" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cell2out" class="level3">
+<h3 class="anchored" data-anchor-id="cell2out">cell2out</h3>
+<blockquote class="blockquote">
+<pre><code> cell2out (o)</code></pre>
+</blockquote>
+<p><em>Convert single notebook output to XML format</em></p>
+<div id="a994bed3-b6ef-4629-8473-30bc8ceef13b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.status.busy&quot;:&quot;2025-12-21T12:52:22.214356Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-21T12:52:22.215236Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-21T12:52:22.214427Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-21T12:52:22.214422Z&quot;}}">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cell2out(o):</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Convert single notebook output to XML format"</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">hasattr</span>(o, <span class="st">'data'</span>): </span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>        txt <span class="op">=</span> get_mime_text(o.data)</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> txt: <span class="cf">return</span> Out(txt, mime<span class="op">=</span><span class="st">'markdown'</span> <span class="cf">if</span> <span class="st">'text/markdown'</span> <span class="kw">in</span> o.data <span class="cf">else</span> <span class="st">'plain'</span>)</span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">hasattr</span>(o, <span class="st">'text'</span>):</span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>        txt <span class="op">=</span> o.text <span class="cf">if</span> <span class="bu">isinstance</span>(o.text, <span class="bu">str</span>) <span class="cf">else</span> <span class="st">''</span>.join(o.text)</span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Out(txt, <span class="bu">type</span><span class="op">=</span><span class="st">'stream'</span>, name<span class="op">=</span>o.get(<span class="st">'name'</span>, <span class="st">'stdout'</span>))</span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">hasattr</span>(o, <span class="st">'ename'</span>): <span class="cf">return</span> Out(<span class="ss">f"</span><span class="sc">{</span>o<span class="sc">.</span>ename<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>o<span class="sc">.</span>evalue<span class="sc">}</span><span class="ss">"</span>, <span class="bu">type</span><span class="op">=</span><span class="st">'error'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/chat.py#L79" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="cell2xml" class="level3">
+<h3 class="anchored" data-anchor-id="cell2xml">cell2xml</h3>
+<blockquote class="blockquote">
+<pre><code> cell2xml (cell)</code></pre>
+</blockquote>
+<p><em>Convert notebook cell to concise XML format</em></p>
+<div id="6e55eb50-5ea0-42b6-b0e2-65183a68b27e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.status.busy&quot;:&quot;2025-12-21T12:52:22.215505Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-21T12:52:22.215792Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-21T12:52:22.215573Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-21T12:52:22.215568Z&quot;}}">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cell2xml(cell):</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Convert notebook cell to concise XML format"</span></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>    cts <span class="op">=</span> Source(<span class="st">''</span>.join(cell.source)) <span class="cf">if</span> <span class="bu">hasattr</span>(cell, <span class="st">'source'</span>) <span class="kw">and</span> cell.source <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>    out_items <span class="op">=</span> L(<span class="bu">getattr</span>(cell,<span class="st">'outputs'</span>,[])).<span class="bu">map</span>(cell2out).<span class="bu">filter</span>()</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>    outs <span class="op">=</span> []</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> out_items: outs <span class="op">=</span> Outs(<span class="op">*</span>out_items)</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>    parts <span class="op">=</span> [p <span class="cf">for</span> p <span class="kw">in</span> [cts, outs] <span class="cf">if</span> p]</span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Cell(<span class="op">*</span>parts, <span class="bu">type</span><span class="op">=</span>cell.cell_type)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/chat.py#L89" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="nb2xml" class="level3">
+<h3 class="anchored" data-anchor-id="nb2xml">nb2xml</h3>
+<blockquote class="blockquote">
+<pre><code> nb2xml (nb, until_cell_id)</code></pre>
+</blockquote>
+<div id="edba80e6-770a-4383-b31c-892ab2590548" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.status.busy&quot;:&quot;2025-12-21T12:52:22.216100Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-21T12:52:22.217038Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-21T12:52:22.216171Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-21T12:52:22.216166Z&quot;}}">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nb2xml(nb, until_cell_id):</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>    cells_xml <span class="op">=</span> []</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> c <span class="kw">in</span> nb.cells:</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> c.<span class="bu">id</span> <span class="op">==</span> until_cell_id: <span class="cf">break</span></span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> c.cell_type <span class="kw">in</span> (<span class="st">'code'</span>,<span class="st">'markdown'</span>):</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>            cells_xml.append(to_xml(cell2xml(c), do_escape<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>.join(cells_xml)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="2d4c1ae5-d585-4940-a62c-1df5f33952d2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.status.busy&quot;:&quot;2025-12-21T12:52:22.217331Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-21T12:52:22.217837Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-21T12:52:22.217394Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-21T12:52:22.217389Z&quot;}}">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>nb2xml(nb, executing_cell_id)[:<span class="dv">3000</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/chat.py#L98" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_notebook_context" class="level3">
+<h3 class="anchored" data-anchor-id="get_notebook_context">get_notebook_context</h3>
+<blockquote class="blockquote">
+<pre><code> get_notebook_context (timeout=1)</code></pre>
+</blockquote>
+<div id="ea144aca-f0e8-462e-9800-2401292e40be" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.status.busy&quot;:&quot;2025-12-21T12:52:22.218043Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-21T12:52:22.218620Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-21T12:52:22.218104Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-21T12:52:22.218100Z&quot;}}">
+<details open="" class="code-fold">
+<summary>Exported source</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="cf">async</span> <span class="kw">def</span> get_notebook_context(timeout<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> <span class="cf">await</span> get_notebook_data(timeout<span class="op">=</span>timeout)</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>    notebook_content <span class="op">=</span> data[<span class="st">"notebook"</span>]</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>    nb <span class="op">=</span> nbformat.from_dict(notebook_content)</span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>    cell_id <span class="op">=</span> data[<span class="st">"cell_id"</span>]</span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> nb2xml(nb, cell_id)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="3f080093-98cc-4fe5-aaa8-888576cd69f0" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.status.busy&quot;:&quot;2025-12-21T12:52:22.218913Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-21T12:52:22.219193Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-21T12:52:22.218984Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-21T12:52:22.218979Z&quot;}}">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> get_notebook_context(timeout<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>You can see that the content of this cell, which is below the call to get_notebook_context(), doesn’t appear in the context.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/wordslab-org\.github\.io\/wordslab-notebooks-lib");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
