@@ -5,7 +5,7 @@ import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 import { INotebookCellExecutor, runCell } from '@jupyterlab/notebook';
 import { Cell } from '@jupyterlab/cells';
 
-const version = "0.0.11";
+const version = "0.0.12";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'wordslab-notebooks-lib:plugin',    
@@ -126,13 +126,112 @@ const plugin: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    // Test if the currently active cell is a prompt cell
-    /*function isPromptCell(notebookTracker: INotebookTracker): boolean {
-      const notebook = notebookTracker.currentWidget?.content;
-      const cell = notebook?.activeCell;
-      return cell?.model.getMetadata('wordslab_cell_type') === 'prompt';
-    }*/
-      
+    // ----------------------------------------------
+    // 2. Customize the "prompt" cell execution logic
+    // ----------------------------------------------
+                 
+    // The specific execution for a prompt cell is implemented via the "cellExecutorPlugin", see below
+
+    // -----------------------------------
+    // 3. Create, update, delete and run cells
+    // -----------------------------------
+                 
+    function getInsertIndex(notebookPanel: NotebookPanel, placement: string, cellId: string): number {
+      const cells = notebookPanel.model?.sharedModel.cells;
+      if (!cells) return 0;
+    
+      if (placement === 'at_start') return 0;
+      if (placement === 'at_end') return cells.length;
+    
+      const refIndex = cells.findIndex((c: any) => c.id === cellId);
+      if (refIndex === -1) return cells.length;
+    
+      if (placement === 'add_before') return refIndex;
+      if (placement === 'add_after') return refIndex + 1;
+    
+      return cells.length;
+    }
+                 
+    // Register a comm target whenever a kernel becomes available.
+    notebookTracker.widgetAdded.connect((_, notebookPanel) => {
+      const session = notebookPanel.sessionContext;
+    console.log(notebookPanel.context.path);
+      session.kernelChanged.connect((_, args) => {
+        const kernel = args.newValue;
+        if (kernel) {            
+          kernel.registerCommTarget('wordslab_cells', (comm, openMsg) => {           
+            comm.onMsg = (msg: any) => {
+              const data = msg.content.data;
+
+              // -- Select the target notebook --
+              let targetNotebookPanel: NotebookPanel | undefined = notebookPanel;
+              if(data.notebook_path) {
+                targetNotebookPanel = notebookTracker.find(panel => panel.context.path === data.notebook_path);
+                if (!targetNotebookPanel) {
+                  comm.send({ success: false, error: `Notebook not found: ${data.notebook_path}` });
+                  return;
+                }
+              }
+                
+              // -- Add a new cell --  
+              if (data.action === 'create_cell' && targetNotebookPanel) {
+                const insertIndex = getInsertIndex(targetNotebookPanel, data.placement, data.cell_id);
+                let cellModel: any;
+                if(data.cell_type === 'prompt') 
+                {
+                    cellModel = { cell_type: 'code', source: data.content, metadata: { wordslab_cell_type: 'prompt' } };
+                } 
+                else if(data.cell_type === 'code') 
+                {
+                    cellModel = cellModel = { cell_type: 'code', source: data.content };
+                } 
+                else 
+                {
+                    cellModel = cellModel = { cell_type: 'markdown', source: data.content };
+                }
+                const newCell = targetNotebookPanel.model?.sharedModel.insertCell(insertIndex, cellModel);
+                comm.send({ success: true, cell_id: newCell?.id, cell_index: insertIndex } as any);
+                return;
+              }
+
+              // -- Update an existing cell --
+              if (data.action === 'update_cell' && targetNotebookPanel) {
+                const cells = targetNotebookPanel.model?.sharedModel.cells;
+                const cellIndex = cells?.findIndex((c: any) => c.id === data.cell_id);
+                if (!cells || cellIndex === undefined || cellIndex === -1) {
+                  comm.send({ success: false, error: `Cell not found: ${data.cell_id}` } );
+                  return;
+                }
+                const cell = cells[cellIndex];
+                  
+                if(data.content)
+                {
+                    console.log(cell);
+                    cell.setSource(data.content);
+                }
+                comm.send({ success: true, cell_id: data.cell_id, cell_index: cellIndex });
+                return;
+              }
+
+              // -- Delete an existing cell --
+              if (data.action === 'delete_cell' && targetNotebookPanel) {
+                const cells = targetNotebookPanel.model?.sharedModel.cells;
+                const cellIndex = cells?.findIndex((c: any) => c.id === data.cell_id);
+                if (!cells || cellIndex === undefined || cellIndex === -1) {
+                  comm.send({ success: false, error: `Cell not found: ${data.cell_id}` } );
+                  return;
+                }
+  
+                targetNotebookPanel.model?.sharedModel.deleteCell(cellIndex);
+                comm.send({ success: true, cell_id: data.cell_id, cell_index: cellIndex });
+                return;
+              }
+            };
+          });
+        }
+      });
+    });
+                 
     // -----------------
     // Debug utilties
     // -----------------
