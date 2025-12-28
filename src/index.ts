@@ -171,7 +171,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
                   comm.send({ success: false, error: `Notebook not found: ${data.notebook_path}` });
                   return;
                 }
-              }
+              }                
                 
               // -- Add a new cell --  
               if (data.action === 'create_cell' && targetNotebookPanel) {
@@ -193,38 +193,45 @@ const plugin: JupyterFrontEndPlugin<void> = {
                 comm.send({ success: true, cell_id: newCell?.id, cell_index: insertIndex } as any);
                 return;
               }
-
-              // -- Update an existing cell --
-              if (data.action === 'update_cell' && targetNotebookPanel) {
+              
+              // -- Select the target cell -
+              let cell;
+              let cellIndex;
+              if(data.cell_id) {
                 const cells = targetNotebookPanel.model?.sharedModel.cells;
-                const cellIndex = cells?.findIndex((c: any) => c.id === data.cell_id);
+                cellIndex = cells?.findIndex((c: any) => c.id === data.cell_id);
                 if (!cells || cellIndex === undefined || cellIndex === -1) {
                   comm.send({ success: false, error: `Cell not found: ${data.cell_id}` } );
                   return;
                 }
-                const cell = cells[cellIndex];
-                  
+                cell = cells[cellIndex];
+              }
+              if(cell && cellIndex)
+              {
+              // -- Update an existing cell --
+              if (data.action === 'update_cell' && targetNotebookPanel && cell) {
                 if(data.content)
                 {
-                    console.log(cell);
-                    cell.setSource(data.content);
+                  cell.setSource(data.content);
                 }
                 comm.send({ success: true, cell_id: data.cell_id, cell_index: cellIndex });
                 return;
               }
 
               // -- Delete an existing cell --
-              if (data.action === 'delete_cell' && targetNotebookPanel) {
-                const cells = targetNotebookPanel.model?.sharedModel.cells;
-                const cellIndex = cells?.findIndex((c: any) => c.id === data.cell_id);
-                if (!cells || cellIndex === undefined || cellIndex === -1) {
-                  comm.send({ success: false, error: `Cell not found: ${data.cell_id}` } );
-                  return;
-                }
-  
+              if (data.action === 'delete_cell' && targetNotebookPanel && cell) {  
                 targetNotebookPanel.model?.sharedModel.deleteCell(cellIndex);
                 comm.send({ success: true, cell_id: data.cell_id, cell_index: cellIndex });
                 return;
+              }
+
+              // -- Run an existing cell --
+              if (data.action === 'run_cell' && targetNotebookPanel && cell) {
+                  targetNotebookPanel.content.activeCellIndex = cellIndex;
+                  app.commands.execute('notebook:run-cell');
+                  comm.send({ success: true, cell_id: data.cell_id, cell_index: cellIndex });
+                  return;
+                }
               }
             };
           });
