@@ -22,7 +22,8 @@ from IPython.display import display, HTML
 from comm import create_comm
 import nbformat
 
-from fastcore.utils import patch
+from fastcore.utils import L, patch
+from fastcore.xml import to_xml, Notebook, Note, Prompt, Code, Source, Outputs, User, Assistant, Out
 from toolslm.funccall import get_schema
 
 # %% ../nbs/02_notebook.ipynb 8
@@ -223,7 +224,7 @@ class WordslabNotebook:
     
             return self.result
 
-# %% ../nbs/02_notebook.ipynb 28
+# %% ../nbs/02_notebook.ipynb 29
 @patch
 async def add_cell(
     self: WordslabNotebook,
@@ -249,7 +250,7 @@ async def add_cell(
     elif 'error' in result:
         raise RuntimeError(result['error'])
 
-# %% ../nbs/02_notebook.ipynb 48
+# %% ../nbs/02_notebook.ipynb 49
 @patch
 async def update_cell(
     self: WordslabNotebook,
@@ -270,7 +271,7 @@ async def update_cell(
     elif 'error' in result:
         raise RuntimeError(result['error'])
 
-# %% ../nbs/02_notebook.ipynb 56
+# %% ../nbs/02_notebook.ipynb 57
 @patch
 async def delete_cell(
     self: WordslabNotebook,
@@ -289,7 +290,7 @@ async def delete_cell(
     elif 'error' in result:
         raise RuntimeError(result['error'])
 
-# %% ../nbs/02_notebook.ipynb 59
+# %% ../nbs/02_notebook.ipynb 60
 @patch
 async def run_cell(
     self: WordslabNotebook,
@@ -308,7 +309,7 @@ async def run_cell(
     elif 'error' in result:
         raise RuntimeError(result['error'])
 
-# %% ../nbs/02_notebook.ipynb 63
+# %% ../nbs/02_notebook.ipynb 64
 @patch
 def read_cell(
     self: WordslabNotebook,
@@ -324,7 +325,7 @@ def read_cell(
         raise ValueError(f"Cell not found: {cell_id}")
     return cell.source
 
-# %% ../nbs/02_notebook.ipynb 67
+# %% ../nbs/02_notebook.ipynb 68
 @patch
 def show_variables_and_functions(self: WordslabNotebook):
     """Display the variables and functions defined by the user so far in the notebook."""
@@ -339,7 +340,7 @@ def show_variables_and_functions(self: WordslabNotebook):
     output += "</table>"
     display(HTML(output))
 
-# %% ../nbs/02_notebook.ipynb 69
+# %% ../nbs/02_notebook.ipynb 70
 def _safe_getattr(obj, name):
     try:
         return getattr(obj, name)
@@ -432,7 +433,7 @@ def show_object_members(self: WordslabNotebook, obj):
 
     display(HTML(output))
 
-# %% ../nbs/02_notebook.ipynb 72
+# %% ../nbs/02_notebook.ipynb 73
 @patch
 def get_variables_values(self: WordslabNotebook, var_names: list):
     """Get a safe and serializable representation of variables values."""
@@ -442,3 +443,74 @@ def get_variables_values(self: WordslabNotebook, var_names: list):
 def get_tools_schemas(self: WordslabNotebook, func_names: list):
     """Get a json schema of functions which can be used as tools."""
     return get_ipython().get_tools_schemas(func_names=func_names)
+
+# %% ../nbs/02_notebook.ipynb 83
+def _mime_bundle_to_text(data):
+    "Get text from MIME bundle, preferring markdown over plain"
+    if 'text/markdown' in data:
+        return ('markdown', ''.join(list(data['text/markdown'])))
+    if 'text/html' in data:
+        return ('html', ''.join(list(data['text/html'])))
+    if 'text/plain' in data: 
+        return ('text', ''.join(list(data['text/plain'])))
+
+def _cell_output_to_xml(o):
+    "Convert single notebook output to XML format"
+    # execute_result — the return value of the last expression, or calls to display()
+    if hasattr(o, 'data'):
+        mime, txt = _mime_bundle_to_text(o.data)
+        if txt:
+            return Out(txt, type=mime)
+    # stream — stdout/stderr text (e.g., from print())
+    if hasattr(o, 'text'):
+        txt = o.text if isinstance(o.text, str) else ''.join(o.text)
+        return Out(txt, type=o.get('name', 'stdout'))
+    # Error - exceptions
+    if hasattr(o, 'ename'):
+        return Out(f"{o.ename}: {o.evalue}", type='error')
+
+# %% ../nbs/02_notebook.ipynb 85
+def _cell_to_xml(cell):
+    "Convert notebook cell to concise XML format"
+    src = ''.join(getattr(cell, 'source', ''))
+    if cell.cell_type == 'markdown':
+        return Note(src)
+    elif cell.cell_type == 'code':
+        out_items = L(getattr(cell,'outputs',[])).map(_cell_output_to_xml).filter()
+        is_prompt = "wordslab_cell_type" in cell.metadata and cell.metadata["wordslab_cell_type"] == "prompt"
+        if is_prompt:
+            parts = [User(src)]
+            if out_items:
+                parts.append(Assistant(*out_items))
+            return Prompt(*parts)
+        else:
+            parts = [Source(src)]
+            if out_items:
+                parts.append(Outputs(*out_items))
+            return Code(*parts)
+    else:
+        return None
+
+# %% ../nbs/02_notebook.ipynb 87
+def _cells_to_notebook_xml(cells):
+    cells_xml = [_cell_to_xml(c) for c in cells if c.cell_type in ('code', 'markdown')]
+    return Notebook(*cells_xml)
+
+# %% ../nbs/02_notebook.ipynb 89
+@patch
+def get_context_for_llm(self: WordslabNotebook):
+    # Get current notebook state
+    all_cells = notebook.content.cells
+    current_cell_id = notebook.cell_id
+
+    # Exclude all cells after the previous one
+    previous_cells = all_cells[:next((i for i, c in enumerate(all_cells) if c.id == current_cell_id), len(all_cells))]
+
+    # Then exclude all cells hidden from AI 
+    context_cells = [cell for cell in previous_cells if "wordslab_hide_from_ai" not in cell.metadata]
+
+    # Convert the remaining markdown and code cells to XML
+    notebook_context_xml = _cells_to_notebook_xml(context_cells)
+
+    # Return a XML string version of the notebook
+    return to_xml(notebook_context_xml, do_escape=False)
