@@ -2,14 +2,30 @@
   border-left: 4px solid green;
 }
 
+.jp-Cell.cell-type-note.cell-hidden-from-ai {
+  border-left: 4px dotted green;
+}
+
 .jp-Cell.cell-type-code {
   border-left: 4px solid blue;
+}
+
+.jp-Cell.cell-type-code.cell-hidden-from-ai {
+  border-left: 4px dotted blue;
 }
 
 .jp-Cell.cell-type-prompt {
   border-left: 4px solid red;
 }
 
+.jp-Cell.cell-type-prompt.cell-hidden-from-ai {
+  border-left: 4px dotted red;
+}
+
 .cell-type-prompt .jp-Editor {
   background-color: white !important;
+}
+
+.cell-hidden-from-ai {
+  opacity: 0.6;
 }

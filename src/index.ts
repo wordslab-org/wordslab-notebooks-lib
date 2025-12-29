@@ -4,6 +4,7 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 import { INotebookCellExecutor, runCell } from '@jupyterlab/notebook';
 import { Cell } from '@jupyterlab/cells';
+import { circleEmptyIcon } from '@jupyterlab/ui-components';
 
 const version = "0.0.12";
 
@@ -47,6 +48,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
             cell.editor.model.mimeType = 'text/x-ipython';
           }
         }
+        
+        const isHidden = cell.model.getMetadata('wordslab_hide_from_ai');
+        if(isHidden) {
+          cell.node.classList.add('cell-hidden-from-ai');
+        } else {
+          cell.node.classList.remove('cell-hidden-from-ai');
+        }
     }
 
     // Apply cells styles when ...
@@ -66,7 +74,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
             }
           });
 
-          // ... a new cell is created or its style is changed
+          // ... a new cell is created or its type is changed
           notebook.model!.cells.changed.connect((_, args) => {   
               args.newValues.forEach(cellModel => {
                 const cellWidget = notebook.widgets.find(c => c.model.id === cellModel.id);
@@ -126,6 +134,25 @@ const plugin: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    // Register a toggle-hide-from-ai to exclude select cells from the prompt context
+    app.commands.addCommand('wordslab:toggle-hide-from-ai', {
+      label: "Hide from AI",
+      icon: circleEmptyIcon,
+      execute: () => {
+        const cell = notebookTracker.currentWidget?.content.activeCell;
+        if (cell) {
+          const isHidden = cell.model.getMetadata('wordslab_hide_from_ai');
+          if (isHidden) {
+            cell.model.deleteMetadata('wordslab_hide_from_ai');
+            applyCellStyle(cell);
+          } else {
+            cell.model.setMetadata('wordslab_hide_from_ai', true);
+            applyCellStyle(cell);
+          }
+        }
+      }
+    });
+                 
     // ----------------------------------------------
     // 2. Customize the "prompt" cell execution logic
     // ----------------------------------------------

@@ -1,8 +1,8 @@
 - clean up wordslab.notebook
-  o test run in notebook and frontend extension installed
-  o guard all methods, improve doc, test
-  - add hide from context toggle
-  - add method to get filtered notebook context, with vars and tools
+  x test run in notebook and frontend extension installed
+  x guard all methods, improve doc, test
+  x add hide from context toggle
+  o add method to get filtered notebook context, with vars and tools
   - implement basic chat in wordslab.chat
   - implement nbchat: select model and system prompt
   - one liner to prepare a solveit style notebook

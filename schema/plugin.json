@@ -4,7 +4,8 @@
     "Cell": [
       { "name": "set-note", "command": "wordslab:set-note", "rank": 0 },
       { "name": "set-prompt", "command": "wordslab:set-prompt", "rank": 1 },
-      { "name": "set-code", "command": "wordslab:set-code", "rank": 2 }
+      { "name": "set-code", "command": "wordslab:set-code", "rank": 2 },
+      { "name": "toggle-hide-from-ai", "command": "wordslab:toggle-hide-from-ai", "rank": 3 } 
     ]
   },
   "title": "wordslab-notebooks-lib",
