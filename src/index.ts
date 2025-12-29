@@ -144,7 +144,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       if (placement === 'at_end') return cells.length;
     
       const refIndex = cells.findIndex((c: any) => c.id === cellId);
-      if (refIndex === -1) return cells.length;
+      if (refIndex === -1) return -1;
     
       if (placement === 'add_before') return refIndex;
       if (placement === 'add_after') return refIndex + 1;
@@ -159,7 +159,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       session.kernelChanged.connect((_, args) => {
         const kernel = args.newValue;
         if (kernel) {            
-          kernel.registerCommTarget('wordslab_cells', (comm, openMsg) => {           
+          kernel.registerCommTarget('wordslab_notebooks', (comm, openMsg) => {           
             comm.onMsg = (msg: any) => {
               const data = msg.content.data;
 
@@ -168,7 +168,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
               if(data.notebook_path) {
                 targetNotebookPanel = notebookTracker.find(panel => panel.context.path === data.notebook_path);
                 if (!targetNotebookPanel) {
-                  comm.send({ success: false, error: `Notebook not found: ${data.notebook_path}` });
+                  comm.send({ success: false, error: `Notebook not found: ${data.notebook_path}. Make sure the notebook is opened in Jupyterlab.` });
                   return;
                 }
               }                
@@ -176,6 +176,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
               // -- Add a new cell --  
               if (data.action === 'create_cell' && targetNotebookPanel) {
                 const insertIndex = getInsertIndex(targetNotebookPanel, data.placement, data.cell_id);
+                if (insertIndex === -1) {
+                  comm.send({ success: false, error: `Cell not found: ${data.cell_id}` } );
+                  return;
+                }
                 let cellModel: any;
                 if(data.cell_type === 'prompt') 
                 {
@@ -206,7 +210,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
                 }
                 cell = cells[cellIndex];
               }
-              if(cell && cellIndex)
+              if(cell!=null && cellIndex!=null)
               {
               // -- Update an existing cell --
               if (data.action === 'update_cell' && targetNotebookPanel && cell) {
@@ -219,19 +223,27 @@ const plugin: JupyterFrontEndPlugin<void> = {
               }
 
               // -- Delete an existing cell --
-              if (data.action === 'delete_cell' && targetNotebookPanel && cell) {  
+              if (data.action === 'delete_cell' && targetNotebookPanel) {  
                 targetNotebookPanel.model?.sharedModel.deleteCell(cellIndex);
                 comm.send({ success: true, cell_id: data.cell_id, cell_index: cellIndex });
                 return;
               }
 
               // -- Run an existing cell --
-              if (data.action === 'run_cell' && targetNotebookPanel && cell) {
-                  targetNotebookPanel.content.activeCellIndex = cellIndex;
-                  app.commands.execute('notebook:run-cell');
-                  comm.send({ success: true, cell_id: data.cell_id, cell_index: cellIndex });
-                  return;
+              if (data.action === 'run_cell' && targetNotebookPanel) {
+                // Save the current state before switching
+                const currentActiveCellIndex = targetNotebookPanel.content.activeCellIndex;
+                // Activate the target, run the cell
+                targetNotebookPanel.content.activeCellIndex = cellIndex;
+                app.commands.execute('notebook:run-cell'); 
+                // Switch back
+                if (currentActiveCellIndex !== undefined) {
+                  targetNotebookPanel.content.activeCellIndex = currentActiveCellIndex;
                 }
+                // Send success
+                comm.send({ success: true, cell_id: data.cell_id, cell_index: cellIndex });
+                return;
+              }
               }
             };
           });

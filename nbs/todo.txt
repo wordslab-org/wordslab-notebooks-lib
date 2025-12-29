@@ -1,6 +1,6 @@
 - clean up wordslab.notebook
-  - test run in notebook and frontend extension installed
-  - guard all methods, improve doc, test
+  o test run in notebook and frontend extension installed
+  o guard all methods, improve doc, test
   - add hide from context toggle
   - add method to get filtered notebook context, with vars and tools
   - implement basic chat in wordslab.chat
@@ -16,7 +16,7 @@
   - openrouter integration
   - openwebui integration
 - clean up wordslab-lib
-  - add web, shell, code, files, image, voice, text, rag modules / remove tools module 
+  - add web, shell, code, files, image, voice, docs, text, rag, app, evals modules / remove tools module 
   - lazy load each module
   - add help function
   - add show_tools and use_tools functions
@@ -30,6 +30,8 @@
   - add attached image
   - add screenshot
   - add all missing methods from dialoghelper
+- finalize wordslab.env
+  - regroup all features of the dahsboard
 - implement wordslab.web
   - search_urls
   - read_url
@@ -57,3 +59,9 @@
 - implement wordslab.text
   - zero shot classifier and entity extraction (gliner ?)
   - zero shot structured data extraction (small llm ?)
+- implement wordslab.app module
+  - help using fasthtml and fastlite
+  - help using nbdev
+- implement wordslab.evals
+  - annotation tool
+  - benchmarking tool
