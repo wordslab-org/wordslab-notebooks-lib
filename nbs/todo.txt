@@ -1,0 +1,59 @@
+- clean up wordslab.notebook
+  - test run in notebook and frontend extension installed
+  - guard all methods, improve doc, test
+  - add hide from context toggle
+  - add method to get filtered notebook context, with vars and tools
+  - implement basic chat in wordslab.chat
+  - implement nbchat: select model and system prompt
+  - one liner to prepare a solveit style notebook
+  - implement the custom cell execution, with a guard if output already there (in nbchat ? see line below)
+  - figure out a way to open the resulting ipynb file without the extension (wrap with await nbchat(""" ... """) ?) 
+  - fix files included in package
+  - test package installation on fresh environment
+- implement wordslab.chat
+  - one notebook per provider / follow claudette example 
+  - ollama integration
+  - openrouter integration
+  - openwebui integration
+- clean up wordslab-lib
+  - add web, shell, code, files, image, voice, text, rag modules / remove tools module 
+  - lazy load each module
+  - add help function
+  - add show_tools and use_tools functions
+- create new 2026_01 version
+  - refresh all the latest software versions
+  - replace Cline with kilocode (devstral 2 support ?)
+  - update documentation
+  - prepare, record and upload introductory videos
+  - post to solveit forums and X & Linkedin 
+- finalize wordslab.notebook
+  - add attached image
+  - add screenshot
+  - add all missing methods from dialoghelper
+- implement wordslab.web
+  - search_urls
+  - read_url
+  - other fastai functions 
+- implement wordslab.shell
+  - local isolated shell
+  - remote shell with ssh 
+- implement wordslab.code
+  - inspect 
+  - github
+- implement wordslab.files
+  - fastcore tools
+- implement wordslab.image
+  - local: z-image
+  - remote: openrouter + replicate
+  - zero shot classifier and object detection
+  - zero shot structured data extraction
+- implement wordslab.voice
+  - wrap openwebui stt
+  - wrap unmute
+- implement wordslab.rag
+  - wrap openwebui knowledge
+- implement wortdslab.docs
+  - wrap openwebui doc ingestion ? or docling directly ?
+- implement wordslab.text
+  - zero shot classifier and entity extraction (gliner ?)
+  - zero shot structured data extraction (small llm ?)
