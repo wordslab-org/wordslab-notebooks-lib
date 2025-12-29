@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Access wordslab-notebooks Jupyterlab extension version, current notebook path, json content and cell id, and create or update cells.">
+
+<title>wordslab-notebooks-lib.notebook – wordslab-notebooks-lib</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-000f0825b9c55ed21d14970d810c14a9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="wordslab-notebooks-lib.notebook – wordslab-notebooks-lib">
+<meta property="og:description" content="Access wordslab-notebooks Jupyterlab extension version, current notebook path, json content and cell id, and create or update cells.">
+<meta property="og:site_name" content="wordslab-notebooks-lib">
+<meta name="twitter:title" content="wordslab-notebooks-lib.notebook – wordslab-notebooks-lib">
+<meta name="twitter:description" content="Access wordslab-notebooks Jupyterlab extension version, current notebook path, json content and cell id, and create or update cells.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">wordslab-notebooks-lib</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./notebook.html">wordslab-notebooks-lib.notebook</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.core</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./env.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.env</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./notebook.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">wordslab-notebooks-lib.notebook</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.chat</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.tools</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./docs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">wordslab-notebooks-lib.docs</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#work-together-with-ai-in-a-jupyterlab-notebook---the-solveit-method" id="toc-work-together-with-ai-in-a-jupyterlab-notebook---the-solveit-method" class="nav-link active" data-scroll-target="#work-together-with-ai-in-a-jupyterlab-notebook---the-solveit-method">Work together with AI in a Jupyterlab notebook - the Solveit method</a></li>
+  <li><a href="#install-the-jupyterlab-extension---wordslab-notebooks-lib" id="toc-install-the-jupyterlab-extension---wordslab-notebooks-lib" class="nav-link" data-scroll-target="#install-the-jupyterlab-extension---wordslab-notebooks-lib">Install the Jupyterlab extension - wordslab-notebooks-lib</a></li>
+  <li><a href="#extend-the-ipython-kernel-with-useful-utilities" id="toc-extend-the-ipython-kernel-with-useful-utilities" class="nav-link" data-scroll-target="#extend-the-ipython-kernel-with-useful-utilities">Extend the ipython kernel with useful utilities</a>
+  <ul class="collapse">
+  <li><a href="#interactiveshell.user_items" id="toc-interactiveshell.user_items" class="nav-link" data-scroll-target="#interactiveshell.user_items">InteractiveShell.user_items</a></li>
+  <li><a href="#interactiveshell.get_variables_values" id="toc-interactiveshell.get_variables_values" class="nav-link" data-scroll-target="#interactiveshell.get_variables_values">InteractiveShell.get_variables_values</a></li>
+  <li><a href="#interactiveshell.get_tools_schemas" id="toc-interactiveshell.get_tools_schemas" class="nav-link" data-scroll-target="#interactiveshell.get_tools_schemas">InteractiveShell.get_tools_schemas</a></li>
+  </ul></li>
+  <li><a href="#access-the-notebook-path-cells-content-and-current-cell-id" id="toc-access-the-notebook-path-cells-content-and-current-cell-id" class="nav-link" data-scroll-target="#access-the-notebook-path-cells-content-and-current-cell-id">Access the notebook path, cells content and current cell id</a>
+  <ul class="collapse">
+  <li><a href="#find_var" id="toc-find_var" class="nav-link" data-scroll-target="#find_var">find_var</a></li>
+  <li><a href="#wordslabnotebook" id="toc-wordslabnotebook" class="nav-link" data-scroll-target="#wordslabnotebook">WordslabNotebook</a></li>
+  </ul></li>
+  <li><a href="#create-update-delete-and-run-notebook-messages" id="toc-create-update-delete-and-run-notebook-messages" class="nav-link" data-scroll-target="#create-update-delete-and-run-notebook-messages">Create, update, delete and run notebook messages</a>
+  <ul class="collapse">
+  <li><a href="#wordslabnotebook.add_cell" id="toc-wordslabnotebook.add_cell" class="nav-link" data-scroll-target="#wordslabnotebook.add_cell">WordslabNotebook.add_cell</a></li>
+  <li><a href="#wordslabnotebook.update_cell" id="toc-wordslabnotebook.update_cell" class="nav-link" data-scroll-target="#wordslabnotebook.update_cell">WordslabNotebook.update_cell</a></li>
+  <li><a href="#wordslabnotebook.delete_cell" id="toc-wordslabnotebook.delete_cell" class="nav-link" data-scroll-target="#wordslabnotebook.delete_cell">WordslabNotebook.delete_cell</a></li>
+  <li><a href="#wordslabnotebook.run_cell" id="toc-wordslabnotebook.run_cell" class="nav-link" data-scroll-target="#wordslabnotebook.run_cell">WordslabNotebook.run_cell</a></li>
+  </ul></li>
+  <li><a href="#explore-the-notebook-variables-functions-and-objects" id="toc-explore-the-notebook-variables-functions-and-objects" class="nav-link" data-scroll-target="#explore-the-notebook-variables-functions-and-objects">Explore the notebook variables, functions and objects</a>
+  <ul class="collapse">
+  <li><a href="#wordslabnotebook.display_variables_and_functions" id="toc-wordslabnotebook.display_variables_and_functions" class="nav-link" data-scroll-target="#wordslabnotebook.display_variables_and_functions">WordslabNotebook.display_variables_and_functions</a></li>
+  <li><a href="#wordslabnotebook.display_object_members" id="toc-wordslabnotebook.display_object_members" class="nav-link" data-scroll-target="#wordslabnotebook.display_object_members">WordslabNotebook.display_object_members</a></li>
+  </ul></li>
+  <li><a href="#get-variable-values-and-tool-schemas-referenced-in-prompt-cells" id="toc-get-variable-values-and-tool-schemas-referenced-in-prompt-cells" class="nav-link" data-scroll-target="#get-variable-values-and-tool-schemas-referenced-in-prompt-cells">Get $variable values and &amp;tool schemas referenced in prompt cells</a>
+  <ul class="collapse">
+  <li><a href="#wordslabnotebook.get_tools_schemas" id="toc-wordslabnotebook.get_tools_schemas" class="nav-link" data-scroll-target="#wordslabnotebook.get_tools_schemas">WordslabNotebook.get_tools_schemas</a></li>
+  <li><a href="#wordslabnotebook.get_variables_values" id="toc-wordslabnotebook.get_variables_values" class="nav-link" data-scroll-target="#wordslabnotebook.get_variables_values">WordslabNotebook.get_variables_values</a></li>
+  </ul></li>
+  <li><a href="#develop-a-jupyterlab-frontend-extension" id="toc-develop-a-jupyterlab-frontend-extension" class="nav-link" data-scroll-target="#develop-a-jupyterlab-frontend-extension">Develop a Jupyterlab frontend extension</a>
+  <ul class="collapse">
+  <li><a href="#understand-jupyterlab-kernels-and-frontend-extensions" id="toc-understand-jupyterlab-kernels-and-frontend-extensions" class="nav-link" data-scroll-target="#understand-jupyterlab-kernels-and-frontend-extensions">Understand Jupyterlab kernels and frontend extensions</a></li>
+  <li><a href="#intialize-the-components-of-a-frontend-extension" id="toc-intialize-the-components-of-a-frontend-extension" class="nav-link" data-scroll-target="#intialize-the-components-of-a-frontend-extension">Intialize the components of a frontend extension</a></li>
+  <li><a href="#install-the-jupyterlab-frontend-extension-in-development-mode" id="toc-install-the-jupyterlab-frontend-extension-in-development-mode" class="nav-link" data-scroll-target="#install-the-jupyterlab-frontend-extension-in-development-mode">Install the Jupyterlab frontend extension in development mode</a></li>
+  <li><a href="#test-the-jupyterlab-frontend-extension" id="toc-test-the-jupyterlab-frontend-extension" class="nav-link" data-scroll-target="#test-the-jupyterlab-frontend-extension">Test the Jupyterlab frontend extension</a></li>
+  </ul></li>
+  <li><a href="#explore-the-notebook-format" id="toc-explore-the-notebook-format" class="nav-link" data-scroll-target="#explore-the-notebook-format">Explore the notebook format</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="notebook.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">wordslab-notebooks-lib.notebook</h1>
+</div>
+
+<div>
+  <div class="description">
+    Access wordslab-notebooks Jupyterlab extension version, current notebook path, json content and cell id, and create or update cells.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="work-together-with-ai-in-a-jupyterlab-notebook---the-solveit-method" class="level2">
+<h2 class="anchored" data-anchor-id="work-together-with-ai-in-a-jupyterlab-notebook---the-solveit-method">Work together with AI in a Jupyterlab notebook - the Solveit method</h2>
+<p>A Jupyter notebook is a convenient way to build context for a LLM one cell after the other: you are working in a fully editable conversation, while interacting with AI and with code.</p>
+<p><strong>Jeremy Howard</strong> and his team at <strong>Answer.ai</strong> explored how to work efficiently in this kind of conversation: they developed a method and platform called Solveit.</p>
+<p>https://solve.it.com/</p>
+<p>We would like to replicate this approach to working with AI in a wordslab notebooks environment.</p>
+<p>Here is how we chose to do it: - in a jupyterlab notebook, there are two types of cells: markdown and code - we want to simulate a third type of cell: a “prompt” cell - the content of this cell is a prompt (text in markdown format) which is sent to an llm when the cell is executed, along with the text of all the cells situated above in the notebook (context) - the llm response is streamed just below and formatted as markdown.</p>
+<p>To simulate this “prompt” cell we need to develop a <strong>Jupyterlab frontend extension</strong> which implements the following behaviors : - three buttons are added to the cell toolbar: “note”, “prompt”, “code” - a click on one of these buttons changes the type of the cell - “note” selects a classic markdown cell - “prompt” selects a code cell, modified with the special “prompt behavior” defined below - “code” selects a classic code cell - a “prompt” cell is distinguished from a regular code cell by a metadata property registered in the ipynb file - each cell type is visualized by a specific color in the left border of the cell - “note” cell has a green border - “prompt” cell a red border - “code” cell has a blue border - the “prompt” cell is a code cell with the specific modified behaviors - the code syntax highlighting is replaced by markdown syntax highlighting when the user types text in this cell - when the user executes this cell, the frontend extension does the following - calls the kernel to inject the following variables - __notebook_path with the path and name of the notebook in the workspace - __notebook_content with the full json representation of the notebook - __cell_id with the id of the current cell - then calls the kernel to execute a specific chat(message) python function - where the message parameter is the content of the cell - and the content of the notebook above the current cell is inluded as context - the python chat() function streams the response tokens from the llm to the output section of the code cell, with markdown rendering</p>
+<p>See the section “Develop a Jupyterlab frontend extension” at the bottom of this page to understand how the extension was developed.</p>
+</section>
+<section id="install-the-jupyterlab-extension---wordslab-notebooks-lib" class="level2">
+<h2 class="anchored" data-anchor-id="install-the-jupyterlab-extension---wordslab-notebooks-lib">Install the Jupyterlab extension - wordslab-notebooks-lib</h2>
+<p>If you want to use “prompt” cells, you will first need to install the Jupyterlab frontend extension: - activate your Jupyterlab python virtual environment - <strong>pip install wordslab-notebooks-lib</strong> - restart your Jupyterlab server</p>
+<p>The extension is <strong>already pre-installed in the wordslab-notebooks environment</strong>.</p>
+<p>To be clear: the wordslab-notebooks-lib package contains both: the Javascript Jupyterlab frontend extension AND the python library wich is loaded in the python kernel.</p>
+<p>The Jupyterlab frontend extension is reloaded and re-initialized each time you refresh your browser page: - to check is the extension is installed and running, look at the browser console and llok for the message ‘Wordslab notebooks extension vx.y.z activated’ - hit the refresh button if you encounter a bug and the extension stops working</p>
+</section>
+<section id="extend-the-ipython-kernel-with-useful-utilities" class="level2">
+<h2 class="anchored" data-anchor-id="extend-the-ipython-kernel-with-useful-utilities">Extend the ipython kernel with useful utilities</h2>
+<p>You also need to install the wordslab-notebooks-lib library in the virtual environnement used by the ipython kernel which runs each notebook in which you want to use the Solveit method.</p>
+<p>It is the client of the Jupyterlab extension, and provides many utilties and tools which support this new way of working with AI.</p>
+<p>The main python object used to interact with an ipython kernel is the InteractiveShell. You get an instance of it with the get_ipython() method.</p>
+<div id="a7cf728f-e3b3-425d-b6ea-0d2a7692933c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:11:17.556024Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:11:17.555787Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:11:17.562507Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:11:17.561480Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:11:17.556006Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>shell <span class="op">=</span> get_ipython()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(shell)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>ipykernel.zmqshell.ZMQInteractiveShell</code></pre>
+</div>
+</div>
+<p>We will start by extending this shell with capabilities useful to work in a notebook with the Solveit method. These extensions are inspired by the library <strong>ipykernel_helper</strong> from <strong>Answer.ai</strong>. As of december 2025, this library is not open source, but it is available to users in the solve.it.com environment and is a dependency of other Apache 2.0 libraries, so I think it is OK to use it as an inspiration.</p>
+<div id="746162ba-6e11-4686-9a20-2033b332ad51" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:11:21.133494Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:11:21.133224Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:11:21.152657Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:11:21.151851Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:11:21.133473Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>escape??</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> escape(s, quote<span class="op">=</span><span class="va">True</span>):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Replace special characters "&amp;", "&lt;" and "&gt;" to HTML-safe sequences.</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">    If the optional flag quote is true (the default), the quotation mark</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">    characters, both double quote (") and single quote (') characters are also</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">    translated.</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> s.replace(<span class="st">"&amp;"</span>, <span class="st">"&amp;amp;"</span>) <span class="co"># Must be done first!</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> s.replace(<span class="st">"&lt;"</span>, <span class="st">"&amp;lt;"</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> s.replace(<span class="st">"&gt;"</span>, <span class="st">"&amp;gt;"</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> quote:</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> s.replace(<span class="st">'"'</span>, <span class="st">"&amp;quot;"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> s.replace(<span class="st">'</span><span class="ch">\'</span><span class="st">'</span>, <span class="st">"&amp;#x27;"</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>File:</strong> <code>/home/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/html/__init__.py</code></p>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/notebook.py#L56" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="interactiveshell.user_items" class="level3">
+<h3 class="anchored" data-anchor-id="interactiveshell.user_items">InteractiveShell.user_items</h3>
+<blockquote class="blockquote">
+<pre><code> InteractiveShell.user_items (max_str_len=200, xtra_ignore=())</code></pre>
+</blockquote>
+<p><em>Get an overview of the variables &amp; functions defined by the user so far in the notebook.</em> The value addded by this function is to filter out all internal ipython and wordslab variables. Returns a tuple of dictionaries (user_variables, user_functions): - the keys are the variables or function names - the value is a truncated string representation of the variable value or the function signature The <code>max_str_len</code> parameter is used to truncate the string representation of the variables. The <code>xtra_ignore</code> parameter is used to hide additional names from the result.</p>
+<div id="17e557f5-c6d7-4d95-90dc-e0fc0986c8e2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:11:24.928356Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:11:24.928005Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:11:24.935495Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:11:24.934167Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:11:24.928329Z&quot;}}" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>variables, functions <span class="op">=</span> shell.user_items()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>variables, functions</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>({'shell': '&lt;ipykernel.zmqshell.ZMQInteractiveShell object at 0x7e00c40fc290&gt;',
+  'user_items': 'None'},
+ {'_safe_str': '(obj, max_str_len=200)'})</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/notebook.py#L84" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="interactiveshell.get_variables_values" class="level3">
+<h3 class="anchored" data-anchor-id="interactiveshell.get_variables_values">InteractiveShell.get_variables_values</h3>
+<blockquote class="blockquote">
+<pre><code> InteractiveShell.get_variables_values (var_names:list, literal=True)</code></pre>
+</blockquote>
+<p><em>Get a safe and serializable representation of variables values from the user namespace.</em> This method preserves real Python values when they are safe literals, otherwise it falls back to strings. You can call it in two modes: - literal = True : Preserve actual Python values when safe, best for internal tools - literal = False : Force everything to strings, best for logging / UI display / debug output</p>
+<div id="dcc6e3b0-e546-4f3a-b69b-fe8148ea6e67" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:11:27.160783Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:11:27.160541Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:11:27.166654Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:11:27.165656Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:11:27.160763Z&quot;}}" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>shell.get_variables_values(var_names<span class="op">=</span>[<span class="st">"variables"</span>, <span class="st">"functions"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>{'variables': {'shell': '&lt;ipykernel.zmqshell.ZMQInteractiveShell object at 0x7e00c40fc290&gt;',
+  'user_items': 'None'},
+ 'functions': {'_safe_str': '(obj, max_str_len=200)'}}</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/notebook.py#L112" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="interactiveshell.get_tools_schemas" class="level3">
+<h3 class="anchored" data-anchor-id="interactiveshell.get_tools_schemas">InteractiveShell.get_tools_schemas</h3>
+<blockquote class="blockquote">
+<pre><code> InteractiveShell.get_tools_schemas (func_names:list)</code></pre>
+</blockquote>
+<p><em>Get a json schema of functions defined in the user namespace which can be used as tools.</em></p>
+<div id="00b31ae9-1324-42ea-95e8-a694032f2e74" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:11:29.036424Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:11:29.036152Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:11:29.039737Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:11:29.039189Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:11:29.036402Z&quot;}}" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example tool definition</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> example_sum(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    a: <span class="bu">int</span>,  <span class="co"># First thing to sum</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    b: <span class="bu">int</span> <span class="op">=</span> <span class="dv">1</span>,  <span class="co"># Second thing to sum</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">int</span>:  <span class="co"># The sum of the inputs</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Adds a + b."</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="e1e38efd-ca9c-4857-8caa-764dcc98586c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:11:32.189598Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:11:32.189236Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:11:32.196736Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:11:32.195704Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:11:32.189571Z&quot;}}" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>shell.get_tools_schemas([<span class="st">"example_sum"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>{'example_sum': {'type': 'function',
+  'function': {'name': 'example_sum',
+   'description': 'Adds a + b.\n\nReturns:\n- type: integer',
+   'parameters': {'type': 'object',
+    'properties': {'a': {'type': 'integer',
+      'description': 'First thing to sum'},
+     'b': {'type': 'integer',
+      'description': 'Second thing to sum',
+      'default': 1}},
+    'required': ['a']}}}}</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="access-the-notebook-path-cells-content-and-current-cell-id" class="level2">
+<h2 class="anchored" data-anchor-id="access-the-notebook-path-cells-content-and-current-cell-id">Access the notebook path, cells content and current cell id</h2>
+<p>The 4 variables below are <strong>silently injected by the Jupyterlab frontend extension</strong> before each code cell is executed.</p>
+<p>This will not work if the wordslab-notebooks-lib Jupyterlab extension is not installed.</p>
+<hr>
+<p><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/blob/main/wordslab_notebooks_lib/notebook.py#L127" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="find_var" class="level3">
+<h3 class="anchored" data-anchor-id="find_var">find_var</h3>
+<blockquote class="blockquote">
+<pre><code> find_var (var:str)</code></pre>
+</blockquote>
+<p><em>Search for var in all frames of the call stack</em></p>
+<hr>
+</section>
+<section id="wordslabnotebook" class="level3">
+<h3 class="anchored" data-anchor-id="wordslabnotebook">WordslabNotebook</h3>
+<blockquote class="blockquote">
+<pre><code> WordslabNotebook ()</code></pre>
+</blockquote>
+<p><em>Jupyterlab notebook introspection and metaprogramming.</em></p>
+<div id="16180d26-5d5b-4c01-93d6-60c910f257bf" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:26:47.164994Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:26:47.164888Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:26:47.167268Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:26:47.166681Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:26:47.164986Z&quot;}}" data-execution_count="77">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>notebook <span class="op">=</span> WordslabNotebook()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="13af8845-c7f8-440b-a80f-097c7cf1a541" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:27:00.445382Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:27:00.445151Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:27:00.450733Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:27:00.449507Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:27:00.445364Z&quot;}}" data-execution_count="78">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>notebook.jupyterlab_extension_version</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="78">
+<pre><code>'0.0.12'</code></pre>
+</div>
+</div>
+<div id="2906d67c-0764-4816-92c6-4063f17621aa" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:27:00.797790Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:27:00.797661Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:27:00.801108Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:27:00.800610Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:27:00.797779Z&quot;}}" data-execution_count="79">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>notebook.path</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="79">
+<pre><code>'wordslab-notebooks-lib/nbs/02_notebook.ipynb'</code></pre>
+</div>
+</div>
+<div id="45a764c9-e0ab-415c-947c-bdb12d26a2dd" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:27:01.248423Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:27:01.248305Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:27:01.251702Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:27:01.250948Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:27:01.248414Z&quot;}}" data-execution_count="80">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>notebook.content.metadata</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="80">
+<pre><code>{'kernelspec': {'display_name': 'wordslab-notebooks-lib',
+  'language': 'python',
+  'name': 'wordslab-notebooks-lib'},
+ 'language_info': {'codemirror_mode': {'name': 'ipython', 'version': 3},
+  'file_extension': '.py',
+  'mimetype': 'text/x-python',
+  'name': 'python',
+  'nbconvert_exporter': 'python',
+  'pygments_lexer': 'ipython3',
+  'version': '3.12.12'}}</code></pre>
+</div>
+</div>
+<div id="d16ad869-d651-40bd-af2c-623d82b4edf0" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:27:02.106282Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:27:02.106098Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:27:02.110405Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:27:02.109423Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:27:02.106268Z&quot;}}" data-execution_count="81">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>notebook.cell_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="81">
+<pre><code>'d16ad869-d651-40bd-af2c-623d82b4edf0'</code></pre>
+</div>
+</div>
+<div id="59347d6e-d1f7-4d23-b041-143e42887f6d" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:27:03.265389Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:27:03.265269Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:27:03.268137Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:27:03.267511Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:27:03.265380Z&quot;}}" data-execution_count="82">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>notebook.cell_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="82">
+<pre><code>'59347d6e-d1f7-4d23-b041-143e42887f6d'</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="create-update-delete-and-run-notebook-messages" class="level2">
+<h2 class="anchored" data-anchor-id="create-update-delete-and-run-notebook-messages">Create, update, delete and run notebook messages</h2>
+<hr>
+<section id="wordslabnotebook.add_cell" class="level3">
+<h3 class="anchored" data-anchor-id="wordslabnotebook.add_cell">WordslabNotebook.add_cell</h3>
+<blockquote class="blockquote">
+<pre><code> WordslabNotebook.add_cell (content:str, placement:str='add_after',
+                            cell_id:str=None, cell_type:str='note',
+                            notebook_path:str='')</code></pre>
+</blockquote>
+<p><em>Add a cell to the current notebook or any other opened notebook (<code>notebook_path</code>),</em> at the start/end of the notebook or before/after any cell (<code>placement</code>and <code>cell_id</code>), with a <code>cell_type</code> (note|prompt|code) and <code>content</code> (text). Returns the new cell id.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>content</td>
+<td>str</td>
+<td></td>
+<td>Content of the cell (i.e the prompt, code, or note cell text)</td>
+</tr>
+<tr class="even">
+<td>placement</td>
+<td>str</td>
+<td>add_after</td>
+<td>Can be ‘add_after’, ‘add_before’, ‘at_start’, ‘at_end’</td>
+</tr>
+<tr class="odd">
+<td>cell_id</td>
+<td>str</td>
+<td>None</td>
+<td>id of the cell that placement is relative to (if None, uses current cell)</td>
+</tr>
+<tr class="even">
+<td>cell_type</td>
+<td>str</td>
+<td>note</td>
+<td>Cell type, can be ‘code’, ‘note’, or ‘prompt’</td>
+</tr>
+<tr class="odd">
+<td>notebook_path</td>
+<td>str</td>
+<td></td>
+<td>Notebook to update, defaults to current notebook</td>
+</tr>
+</tbody>
+</table>
+<div id="c5f82d04-da89-467d-824c-6b927d9e4611" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:27:14.064586Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:27:14.064461Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:27:14.194734Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:27:14.194277Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:27:14.064577Z&quot;}}" data-execution_count="84">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test note"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="84">
+<pre><code>'476af417-8310-4c85-941b-f48c30b941d6'</code></pre>
+</div>
+</div>
+<p>Test note</p>
+<div id="0d6cdddf-e3e8-439c-b84c-ad4574904b20" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:56:08.873532Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:56:08.873432Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:56:08.958626Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:56:08.957785Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:56:08.873525Z&quot;}}" data-execution_count="49">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test note 2"</span>, placement<span class="op">=</span><span class="st">"add_after"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="49">
+<pre><code>'5e4e83a0-1c1b-49ef-a3dc-6b878b451a93'</code></pre>
+</div>
+</div>
+<p>Test note 2</p>
+<p>Test note 3</p>
+<div id="c8493a92-de5d-405b-9af0-a61925033f48" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:56:25.142801Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:56:25.142553Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:56:25.232268Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:56:25.231309Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:56:25.142780Z&quot;}}" data-execution_count="50">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test note 3"</span>, placement<span class="op">=</span><span class="st">"add_before"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="50">
+<pre><code>'5e935027-60e1-4ca9-8835-85e40833770d'</code></pre>
+</div>
+</div>
+<div id="df9be2ea-ca6e-493d-b47d-9db553ccc618" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:57:49.086689Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:57:49.086510Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:57:49.184675Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:57:49.182664Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:57:49.086674Z&quot;}}" data-execution_count="53">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test note 4"</span>, placement<span class="op">=</span><span class="st">"at_start"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="53">
+<pre><code>'01d8ebd2-7a4d-479a-939a-d345a9660211'</code></pre>
+</div>
+</div>
+<div id="8b7599ed-71a6-42f4-afef-d1e9fda0282f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:57:51.135527Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:57:51.135227Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:57:51.233821Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:57:51.232123Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:57:51.135506Z&quot;}}" data-execution_count="54">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test note 5"</span>, placement<span class="op">=</span><span class="st">"at_end"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="54">
+<pre><code>'b135d91b-63c0-4a73-8172-d7e73e3a5cf3'</code></pre>
+</div>
+</div>
+<div id="604d0398-12f5-4dca-b4ed-2d318353fd2c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T08:59:31.496204Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T08:59:31.496001Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T08:59:31.594487Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T08:59:31.593514Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T08:59:31.496188Z&quot;}}" data-execution_count="56">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creates a new cell at the end of the notebook</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test note somewhere"</span>, placement<span class="op">=</span><span class="st">"somewhere"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="56">
+<pre><code>'28690fe7-bf10-4781-8067-432f45d18c7f'</code></pre>
+</div>
+</div>
+<div id="ffde7023-6401-4b47-a367-96bb311096ba" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:02:03.060096Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:02:03.059993Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:02:03.145937Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:02:03.144487Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:02:03.060088Z&quot;}}" data-execution_count="58">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test prompt"</span>, cell_type<span class="op">=</span><span class="st">'prompt'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="58">
+<pre><code>'c41b364b-74da-4886-a974-1683e8143864'</code></pre>
+</div>
+</div>
+<div id="c41b364b-74da-4886-a974-1683e8143864" class="cell" data-wordslab_cell_type="prompt">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>Test prompt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="2a7c6ef1-8f1a-42f5-a526-d8598c400b0b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:02:20.573451Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:02:20.573194Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:02:20.671812Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:02:20.670061Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:02:20.573432Z&quot;}}" data-execution_count="59">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test code"</span>, cell_type<span class="op">=</span><span class="st">'code'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="59">
+<pre><code>'cd02e818-4989-40a8-90ce-8e92a99bcd59'</code></pre>
+</div>
+</div>
+<div id="cd02e818-4989-40a8-90ce-8e92a99bcd59" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>Test code</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="63369af0-c559-41e7-8d76-e85298bd2f1d" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:00:44.204371Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:00:44.204255Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:00:44.299712Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:00:44.298750Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:00:44.204363Z&quot;}}" data-execution_count="57">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new cell of type note</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test sometype"</span>, cell_type<span class="op">=</span><span class="st">'sometype'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="57">
+<pre><code>'e80dbc6b-0832-423f-8e33-aacc0ea52039'</code></pre>
+</div>
+</div>
+<p>Test sometype</p>
+<div id="1d8cb999-9bac-461d-a51e-7d3b49280f5b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:17:34.100747Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:17:34.100569Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:17:34.201466Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:17:34.200707Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:17:34.100733Z&quot;}}" data-execution_count="69">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test bad cell id"</span>, cell_id<span class="op">=</span><span class="st">"bad_cell_id"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[69]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span style="font-weight:bold;color:rgb(0,135,0)">await</span> notebook.add_cell(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Test bad cell id</span><span class="ansi-yellow-fg">"</span>, cell_id=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">bad_cell_id</span><span class="ansi-yellow-fg">"</span>)
+
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[65]</span><span class="ansi-green-fg">, line 25</span>, in <span class="ansi-cyan-fg">add_cell</span><span class="ansi-blue-fg">(self, content, placement, cell_id, cell_type, notebook_path)</span>
+<span class="ansi-green-fg">     23</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> result[<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">cell_id</span><span class="ansi-yellow-fg">'</span>]
+<span class="ansi-green-fg">     24</span> <span style="font-weight:bold;color:rgb(0,135,0)">elif</span> <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">error</span><span class="ansi-yellow-fg">'</span> <span style="font-weight:bold;color:rgb(175,0,255)">in</span> result:
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">25</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">RuntimeError</span>(result[<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">error</span><span class="ansi-yellow-fg">'</span>])
+
+<span class="ansi-red-fg">RuntimeError</span>: Cell not found: bad_cell_id</pre>
+</div>
+</div>
+</div>
+<div id="c998d2d3-bd05-4984-bd50-ec02b63119da" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:21:40.717892Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:21:40.717701Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:21:40.763945Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:21:40.763173Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:21:40.717877Z&quot;}}" data-execution_count="73">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test other notebook (bad notebook name)"</span>, placement<span class="op">=</span><span class="st">"at_start"</span>, notebook_path<span class="op">=</span><span class="st">"wordslab-notebooks-lib/nbs/temp.ipynb"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[73]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span style="font-weight:bold;color:rgb(0,135,0)">await</span> notebook.add_cell(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Test other notebook (bad notebook name)</span><span class="ansi-yellow-fg">"</span>, placement=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">at_start</span><span class="ansi-yellow-fg">"</span>, notebook_path=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">wordslab-notebooks-lib/nbs/temp.ipynb</span><span class="ansi-yellow-fg">"</span>)
+
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[65]</span><span class="ansi-green-fg">, line 25</span>, in <span class="ansi-cyan-fg">add_cell</span><span class="ansi-blue-fg">(self, content, placement, cell_id, cell_type, notebook_path)</span>
+<span class="ansi-green-fg">     23</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> result[<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">cell_id</span><span class="ansi-yellow-fg">'</span>]
+<span class="ansi-green-fg">     24</span> <span style="font-weight:bold;color:rgb(0,135,0)">elif</span> <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">error</span><span class="ansi-yellow-fg">'</span> <span style="font-weight:bold;color:rgb(175,0,255)">in</span> result:
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">25</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">RuntimeError</span>(result[<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">error</span><span class="ansi-yellow-fg">'</span>])
+
+<span class="ansi-red-fg">RuntimeError</span>: Notebook not found: wordslab-notebooks-lib/nbs/temp.ipynb. Make sure the notebook is opened in Jupyterlab.</pre>
+</div>
+</div>
+</div>
+<div id="9d5d5ef1-fdc7-4676-afd1-0328811c7044" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:21:56.768587Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:21:56.768406Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:21:56.792078Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:21:56.791331Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:21:56.768572Z&quot;}}" data-execution_count="74">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test other notebook (open)"</span>, placement<span class="op">=</span><span class="st">"at_start"</span>, notebook_path<span class="op">=</span><span class="st">"wordslab-notebooks-lib/nbs/test.ipynb"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="74">
+<pre><code>'637eb2a9-421c-4a7c-99aa-e2426b9eab64'</code></pre>
+</div>
+</div>
+<div id="7a54e677-f926-4014-8913-a5ed25ff13a6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:22:02.557328Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:22:02.557201Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:22:02.606341Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:22:02.605793Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:22:02.557318Z&quot;}}" data-execution_count="75">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.add_cell(<span class="st">"Test other notebook (closed)"</span>, placement<span class="op">=</span><span class="st">"at_start"</span>, notebook_path<span class="op">=</span><span class="st">"wordslab-notebooks-lib/nbs/01_env.ipynb"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[75]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span style="font-weight:bold;color:rgb(0,135,0)">await</span> notebook.add_cell(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Test other notebook (closed)</span><span class="ansi-yellow-fg">"</span>, placement=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">at_start</span><span class="ansi-yellow-fg">"</span>, notebook_path=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">wordslab-notebooks-lib/nbs/01_env.ipynb</span><span class="ansi-yellow-fg">"</span>)
+
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[65]</span><span class="ansi-green-fg">, line 25</span>, in <span class="ansi-cyan-fg">add_cell</span><span class="ansi-blue-fg">(self, content, placement, cell_id, cell_type, notebook_path)</span>
+<span class="ansi-green-fg">     23</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> result[<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">cell_id</span><span class="ansi-yellow-fg">'</span>]
+<span class="ansi-green-fg">     24</span> <span style="font-weight:bold;color:rgb(0,135,0)">elif</span> <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">error</span><span class="ansi-yellow-fg">'</span> <span style="font-weight:bold;color:rgb(175,0,255)">in</span> result:
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">25</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">RuntimeError</span>(result[<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">error</span><span class="ansi-yellow-fg">'</span>])
+
+<span class="ansi-red-fg">RuntimeError</span>: Notebook not found: wordslab-notebooks-lib/nbs/01_env.ipynb. Make sure the notebook is opened in Jupyterlab.</pre>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="wordslabnotebook.update_cell" class="level3">
+<h3 class="anchored" data-anchor-id="wordslabnotebook.update_cell">WordslabNotebook.update_cell</h3>
+<blockquote class="blockquote">
+<pre><code> WordslabNotebook.update_cell (cell_id:str=None, content:str=None,
+                               notebook_path:str='')</code></pre>
+</blockquote>
+<p><em>Update the cell identified by <code>cell_id</code>,</em> in the current notebook or any other opened notebook (<code>notebook_path</code>), with a new <code>content</code>. Returns the updated cell id.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cell_id</td>
+<td>str</td>
+<td>None</td>
+<td>id of the cell to update (if None, uses current cell)</td>
+</tr>
+<tr class="even">
+<td>content</td>
+<td>str</td>
+<td>None</td>
+<td>Content of the cell (i.e the prompt, code, or note cell text)</td>
+</tr>
+<tr class="odd">
+<td>notebook_path</td>
+<td>str</td>
+<td></td>
+<td>Notebook to update, defaults to current notebook</td>
+</tr>
+</tbody>
+</table>
+<div id="41cf27a2-cada-4c03-a3a4-3f9852160afd" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:35:03.381232Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:35:03.380099Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:35:03.466844Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:35:03.465060Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:35:03.381211Z&quot;}}" data-execution_count="98">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>orig_cell_id <span class="op">=</span> <span class="cf">await</span> notebook.add_cell(<span class="st">"original cell content"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>updated cell content</p>
+<div id="d9a7a601-6463-473f-aaae-be68224c7f18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:35:43.689599Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:35:43.689234Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:35:43.763771Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:35:43.763159Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:35:43.689573Z&quot;}}" data-execution_count="99">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.update_cell(cell_id<span class="op">=</span>orig_cell_id, content<span class="op">=</span><span class="st">"updated cell content"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="99">
+<pre><code>'293c77e8-5449-407a-8b4f-0d628c45bfc7'</code></pre>
+</div>
+</div>
+<div id="fdb7129f-e987-4ba1-91f5-973a9a5e86ed" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:34:00.048969Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:34:00.048852Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:34:00.064733Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:34:00.064157Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:34:00.048961Z&quot;}}" data-execution_count="95">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.update_cell(content<span class="op">=</span><span class="st">"no id"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[95]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span style="font-weight:bold;color:rgb(0,135,0)">await</span> notebook.update_cell(content=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">no id</span><span class="ansi-yellow-fg">"</span>)
+
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[94]</span><span class="ansi-green-fg">, line 13</span>, in <span class="ansi-cyan-fg">update_cell</span><span class="ansi-blue-fg">(self, cell_id, content, notebook_path)</span>
+<span class="ansi-green-fg">     11</span> <span style="color:rgb(0,135,0)">self</span>._ensure_jupyterlab_extension()
+<span class="ansi-green-fg">     12</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> cell_id:
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">13</span>      <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">ValueError</span>(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">`cell_id` parameter is mandatory</span><span class="ansi-yellow-fg">"</span>)
+<span class="ansi-green-fg">     14</span> result = <span style="font-weight:bold;color:rgb(0,135,0)">await</span> <span style="color:rgb(0,135,0)">self</span>._comm.send({<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">action</span><span class="ansi-yellow-fg">'</span>: <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">update_cell</span><span class="ansi-yellow-fg">'</span>, <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">cell_id</span><span class="ansi-yellow-fg">'</span>: cell_id, <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">content</span><span class="ansi-yellow-fg">'</span>: content, <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">notebook_path</span><span class="ansi-yellow-fg">'</span>: notebook_path })
+<span class="ansi-green-fg">     15</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">success</span><span class="ansi-yellow-fg">'</span> <span style="font-weight:bold;color:rgb(175,0,255)">in</span> result <span style="font-weight:bold;color:rgb(175,0,255)">and</span> result[<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">success</span><span class="ansi-yellow-fg">'</span>]:
+
+<span class="ansi-red-fg">ValueError</span>: `cell_id` parameter is mandatory</pre>
+</div>
+</div>
+</div>
+<div id="ac044f66-c7d8-4390-a94b-73aad009e22f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:34:01.866645Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:34:01.866285Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:34:01.956088Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:34:01.955304Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:34:01.866613Z&quot;}}" data-execution_count="96">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.update_cell(cell_id<span class="op">=</span><span class="st">"bad_cell_id"</span>, content<span class="op">=</span><span class="st">"bad id"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[96]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span style="font-weight:bold;color:rgb(0,135,0)">await</span> notebook.update_cell(cell_id=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">bad_cell_id</span><span class="ansi-yellow-fg">"</span>, content=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">bad id</span><span class="ansi-yellow-fg">"</span>)
+
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[94]</span><span class="ansi-green-fg">, line 18</span>, in <span class="ansi-cyan-fg">update_cell</span><span class="ansi-blue-fg">(self, cell_id, content, notebook_path)</span>
+<span class="ansi-green-fg">     16</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> result[<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">cell_id</span><span class="ansi-yellow-fg">'</span>]
+<span class="ansi-green-fg">     17</span> <span style="font-weight:bold;color:rgb(0,135,0)">elif</span> <span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">error</span><span class="ansi-yellow-fg">'</span> <span style="font-weight:bold;color:rgb(175,0,255)">in</span> result:
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">18</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">RuntimeError</span>(result[<span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">error</span><span class="ansi-yellow-fg">'</span>])
+
+<span class="ansi-red-fg">RuntimeError</span>: Cell not found: bad_cell_id</pre>
+</div>
+</div>
+</div>
+<div id="e11eeb90-a7b9-482f-9004-f9f3e05e6cd1" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:47:31.598635Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:47:31.598293Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:47:31.633503Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:47:31.632083Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:47:31.598609Z&quot;}}" data-execution_count="106">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>orig_cell_id <span class="op">=</span> <span class="cf">await</span> notebook.add_cell(<span class="st">"original cell content in other notebook"</span>, placement<span class="op">=</span><span class="st">"at_start"</span>, notebook_path<span class="op">=</span><span class="st">"wordslab-notebooks-lib/nbs/test.ipynb"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="3095419b-ea27-4c7f-90ba-9b12ca63d587" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T09:54:58.482116Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T09:54:58.482001Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T09:54:58.516493Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T09:54:58.515248Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T09:54:58.482107Z&quot;}}" data-execution_count="109">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.update_cell(cell_id<span class="op">=</span>orig_cell_id, content<span class="op">=</span><span class="st">"updated cell content in other notebook"</span>, notebook_path<span class="op">=</span><span class="st">"wordslab-notebooks-lib/nbs/test.ipynb"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="109">
+<pre><code>'55d9b34d-7e39-4cb6-9c95-eb0b9e0176f3'</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="wordslabnotebook.delete_cell" class="level3">
+<h3 class="anchored" data-anchor-id="wordslabnotebook.delete_cell">WordslabNotebook.delete_cell</h3>
+<blockquote class="blockquote">
+<pre><code> WordslabNotebook.delete_cell (cell_id:str=None, notebook_path:str='')</code></pre>
+</blockquote>
+<p><em>“Update the cell identified by <code>cell_id</code>,</em> in the current notebook or any other opened notebook (<code>notebook_path</code>). Returns the deleted cell id.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cell_id</td>
+<td>str</td>
+<td>None</td>
+<td>id of cell to delete</td>
+</tr>
+<tr class="even">
+<td>notebook_path</td>
+<td>str</td>
+<td></td>
+<td>Notebook to update, defaults to current notebook</td>
+</tr>
+</tbody>
+</table>
+<div id="828edc62-ff0f-47fa-b8ed-ee174de1be79" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T10:00:55.789171Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T10:00:55.788773Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T10:00:55.873695Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T10:00:55.873111Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T10:00:55.788989Z&quot;}}" data-execution_count="114">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.delete_cell(cell_id<span class="op">=</span><span class="st">"01d8ebd2-7a4d-479a-939a-d345a9660211"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="114">
+<pre><code>'01d8ebd2-7a4d-479a-939a-d345a9660211'</code></pre>
+</div>
+</div>
+<div id="7a90da94-d823-40de-9395-851baa3bb0e3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T10:02:25.009080Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T10:02:25.008953Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T10:02:25.108128Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T10:02:25.106880Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T10:02:25.009071Z&quot;}}" data-execution_count="115">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.delete_cell(cell_id<span class="op">=</span><span class="st">"55d9b34d-7e39-4cb6-9c95-eb0b9e0176f3"</span>, notebook_path<span class="op">=</span><span class="st">"wordslab-notebooks-lib/nbs/test.ipynb"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="115">
+<pre><code>'55d9b34d-7e39-4cb6-9c95-eb0b9e0176f3'</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="wordslabnotebook.run_cell" class="level3">
+<h3 class="anchored" data-anchor-id="wordslabnotebook.run_cell">WordslabNotebook.run_cell</h3>
+<blockquote class="blockquote">
+<pre><code> WordslabNotebook.run_cell (cell_id:str=None)</code></pre>
+</blockquote>
+<p><em>“Adds the cell identified by <code>cell_id</code> to the run queue,</em> only in the current notebook (jupyterlab ‘run-cell’ command limitation). Returns the cell id. DOES NOT return the result of the execution: the target cell will only be run after the current cell execution finishes. Use the <code>read_cell</code> method later with the same <code>cell_id</code> to get the result of the execution.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cell_id</td>
+<td>str</td>
+<td>None</td>
+<td>id of cell to execute</td>
+</tr>
+</tbody>
+</table>
+<div id="bb9dd42c-21ed-468b-847f-e7b5454fd4ae" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T11:05:55.971195Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T11:05:55.971023Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T11:05:56.054780Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T11:05:56.054188Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T11:05:55.971182Z&quot;}}" data-execution_count="145">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>code_cell_id <span class="op">=</span> <span class="cf">await</span> notebook.add_cell(cell_type<span class="op">=</span><span class="st">"code"</span>, content<span class="op">=</span><span class="st">"1+1"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="2a7bc090-ef99-4a21-bf9e-475d24de51c5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T11:05:57.879264Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T11:05:57.879142Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T11:05:57.882385Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T11:05:57.881639Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T11:05:57.879256Z&quot;}}" data-execution_count="147">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="op">+</span><span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="147">
+<pre><code>2</code></pre>
+</div>
+</div>
+<div id="fb39c131-297c-4d91-be99-59fefae1a79b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-29T11:05:57.668793Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-29T11:05:57.668433Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-29T11:05:57.743840Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-29T11:05:57.743216Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-29T11:05:57.668767Z&quot;}}" data-execution_count="146">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> notebook.run_cell(cell_id<span class="op">=</span>code_cell_id)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="146">
+<pre><code>'2a7bc090-ef99-4a21-bf9e-475d24de51c5'</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="explore-the-notebook-variables-functions-and-objects" class="level2">
+<h2 class="anchored" data-anchor-id="explore-the-notebook-variables-functions-and-objects">Explore the notebook variables, functions and objects</h2>
+<hr>
+<section id="wordslabnotebook.display_variables_and_functions" class="level3">
+<h3 class="anchored" data-anchor-id="wordslabnotebook.display_variables_and_functions">WordslabNotebook.display_variables_and_functions</h3>
+<blockquote class="blockquote">
+<pre><code> WordslabNotebook.display_variables_and_functions ()</code></pre>
+</blockquote>
+<p><em>Display the variables and functions defined by the user so far in the notebook.</em></p>
+<div id="75fe1e32-c04d-475f-8632-0cc3d3f93ba8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-27T20:07:19.505935Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-27T20:07:19.505686Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-27T20:07:19.512706Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-27T20:07:19.511539Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-27T20:07:19.505916Z&quot;}}" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>notebook.display_variables_and_functions()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<h4 class="anchored">Variables</h4>
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Name</th>
+<th data-quarto-table-cell-role="th">Value</th>
+</tr>
+<tr class="even">
+<td>shell</td>
+<td>&lt;ipykernel.zmqshell.ZMQInteractiveShell object at 0x72adec178380&gt;</td>
+</tr>
+<tr class="odd">
+<td>user_items</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<td>variables</td>
+<td>{'shell': '&lt;ipykernel.zmqshell.ZMQInteractiveShell object at 0x72adec178380&gt;', 'user_items': 'None'}</td>
+</tr>
+<tr class="odd">
+<td>functions</td>
+<td>{'_safe_str': '(obj, max_str_len=200)'}</td>
+</tr>
+<tr class="even">
+<td>get_variables_values</td>
+<td>None</td>
+</tr>
+<tr class="odd">
+<td>get_tools_schemas</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<td>notebook</td>
+<td>&lt;__main__.JupyterlabNotebook object at 0x72adcdf73dd0&gt;</td>
+</tr>
+<tr class="odd">
+<td>display_variables_and_functions</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<h4 class="anchored">Functions</h4>
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Name</th>
+<th data-quarto-table-cell-role="th">Signature</th>
+</tr>
+<tr class="even">
+<td>_safe_str</td>
+<td>(obj, max_str_len=200)</td>
+</tr>
+<tr class="odd">
+<td>_get_schema</td>
+<td>(ns: dict, t)</td>
+</tr>
+<tr class="even">
+<td>example_sum</td>
+<td>(a: int, b: int = 1) -&gt; int</td>
+</tr>
+<tr class="odd">
+<td>_find_frame_dict</td>
+<td>(var: str)</td>
+</tr>
+<tr class="even">
+<td>find_var</td>
+<td>(var: str)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+</section>
+<section id="wordslabnotebook.display_object_members" class="level3">
+<h3 class="anchored" data-anchor-id="wordslabnotebook.display_object_members">WordslabNotebook.display_object_members</h3>
+<blockquote class="blockquote">
+<pre><code> WordslabNotebook.display_object_members (obj)</code></pre>
+</blockquote>
+<p><em>Display the attributes and methods of a given python object</em></p>
+<div id="b602a192-b7e7-4976-a26d-4fa1854879b4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-27T20:09:35.796992Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-27T20:09:35.796895Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-27T20:09:35.800410Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-27T20:09:35.799720Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-27T20:09:35.796985Z&quot;}}" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>notebook.display_object_members(notebook)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<h3 class="anchored">Object of type: JupyterlabNotebook</h3><pre>Jupyter notebook introspection and metaprogramming.</pre><h4 class="anchored">Attributes</h4>
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Name</th>
+<th data-quarto-table-cell-role="th">Type</th>
+<th data-quarto-table-cell-role="th">Value</th>
+<th data-quarto-table-cell-role="th">Doc</th>
+</tr>
+<tr class="even">
+<td>cell_id</td>
+<td>str</td>
+<td>b602a192-b7e7-4976-a26d-4fa1854879b4</td>
+<td>Unique ID of the current notebook cell, useful to locate the current cell in the full notebook content</td>
+</tr>
+<tr class="odd">
+<td>content</td>
+<td>NotebookNode</td>
+<td>{'metadata': {'kernelspec': {'display_name': 'wordslab-notebooks-lib', 'language': 'python', 'name': 'wordslab-notebooks-lib'}, 'language_info': {'codemirror_mode': {'name': 'ipython', 'version': 3}, …</td>
+<td>Full content of the notebook returned as a NotebookNode object from the nbformat library</td>
+</tr>
+<tr class="even">
+<td>jupyterlab_extension_version</td>
+<td>str</td>
+<td>0.0.11</td>
+<td>wordslab-notebooks-lib version number injected by the Jupyterlab frontend extension</td>
+</tr>
+<tr class="odd">
+<td>path</td>
+<td>str</td>
+<td>wordslab-notebooks-lib/nbs/02_notebook.ipynb</td>
+<td>Relative path of the notebook .ipynb file in the notebook workspace</td>
+</tr>
+</tbody>
+</table>
+<h4 class="anchored">Methods</h4>
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Name</th>
+<th data-quarto-table-cell-role="th">Signatue</th>
+<th data-quarto-table-cell-role="th">Type</th>
+<th data-quarto-table-cell-role="th">Doc</th>
+</tr>
+<tr class="even">
+<td>display_object_members</td>
+<td>(obj)</td>
+<td>instance method</td>
+<td>Display the attributes and methods of a given python object</td>
+</tr>
+<tr class="odd">
+<td>display_variables_and_functions</td>
+<td>()</td>
+<td>instance method</td>
+<td>Display the variables and functions defined by the user so far in the notebook.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="get-variable-values-and-tool-schemas-referenced-in-prompt-cells" class="level2">
+<h2 class="anchored" data-anchor-id="get-variable-values-and-tool-schemas-referenced-in-prompt-cells">Get $variable values and &amp;tool schemas referenced in prompt cells</h2>
+<hr>
+<section id="wordslabnotebook.get_tools_schemas" class="level3">
+<h3 class="anchored" data-anchor-id="wordslabnotebook.get_tools_schemas">WordslabNotebook.get_tools_schemas</h3>
+<blockquote class="blockquote">
+<pre><code> WordslabNotebook.get_tools_schemas (func_names:list)</code></pre>
+</blockquote>
+<p><em>Get a json schema of functions which can be used as tools.</em></p>
+<hr>
+</section>
+<section id="wordslabnotebook.get_variables_values" class="level3">
+<h3 class="anchored" data-anchor-id="wordslabnotebook.get_variables_values">WordslabNotebook.get_variables_values</h3>
+<blockquote class="blockquote">
+<pre><code> WordslabNotebook.get_variables_values (var_names:list)</code></pre>
+</blockquote>
+<p><em>Get a safe and serializable representation of variables values.</em></p>
+<div id="3d5255a8-3b6c-4f0b-b2a5-eff7900e924f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-27T20:27:30.757379Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-27T20:27:30.757269Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-27T20:27:30.760245Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-27T20:27:30.759732Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-27T20:27:30.757366Z&quot;}}" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>notebook.get_variables_values(var_names<span class="op">=</span>[<span class="st">"variables"</span>, <span class="st">"functions"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+<pre><code>{'variables': {'shell': '&lt;ipykernel.zmqshell.ZMQInteractiveShell object at 0x72adec178380&gt;',
+  'user_items': 'None'},
+ 'functions': {'_safe_str': '(obj, max_str_len=200)'}}</code></pre>
+</div>
+</div>
+<div id="8b662c62-553a-416c-89bd-6d77e65b9ddb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-27T20:27:54.501753Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-27T20:27:54.501629Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-27T20:27:54.505243Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-27T20:27:54.504576Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-27T20:27:54.501744Z&quot;}}" data-execution_count="29">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb82"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>notebook.get_tools_schemas([<span class="st">"example_sum"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<pre><code>{'example_sum': {'type': 'function',
+  'function': {'name': 'example_sum',
+   'description': 'Adds a + b.\n\nReturns:\n- type: integer',
+   'parameters': {'type': 'object',
+    'properties': {'a': {'type': 'integer',
+      'description': 'First thing to sum'},
+     'b': {'type': 'integer',
+      'description': 'Second thing to sum',
+      'default': 1}},
+    'required': ['a']}}}}</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="develop-a-jupyterlab-frontend-extension" class="level2">
+<h2 class="anchored" data-anchor-id="develop-a-jupyterlab-frontend-extension">Develop a Jupyterlab frontend extension</h2>
+<section id="understand-jupyterlab-kernels-and-frontend-extensions" class="level3">
+<h3 class="anchored" data-anchor-id="understand-jupyterlab-kernels-and-frontend-extensions">Understand Jupyterlab kernels and frontend extensions</h3>
+<p>Jupyter kernels technical implementation details</p>
+<p>https://chatgpt.com/share/692bea08-4510-8004-b9ab-c02feeb97c08</p>
+<p>Jupyterlab extension development tutorial</p>
+<p>https://jupyterlab.readthedocs.io/en/latest/extension/extension_tutorial.html</p>
+</section>
+<section id="intialize-the-components-of-a-frontend-extension" class="level3">
+<h3 class="anchored" data-anchor-id="intialize-the-components-of-a-frontend-extension">Intialize the components of a frontend extension</h3>
+<p>The source code of the Jupyterlab frontend extension can be found in the following files:</p>
+<p>Typescript source code, dependencies, and compilation config:</p>
+<ul>
+<li><code>src/index.ts</code></li>
+<li><code>package.json</code></li>
+<li><code>tsconfig.json</code></li>
+<li><code>.yarnrc.yml</code></li>
+</ul>
+<p>Extension manifest and Javascript compiled code</p>
+<ul>
+<li>wordslab_notebooks_lib/labextension
+<ul>
+<li>package.json</li>
+<li>static/remoteEntry.97d57e417eaf8ebadeb6.js</li>
+</ul></li>
+</ul>
+<p>This is how the extension files are included in the python package:</p>
+<ul>
+<li><code>MANIFEST.in</code></li>
+</ul>
+<pre><code>include install.json
+include package.json
+recursive-include wordslab_notebooks_lib/labextension *
+
+graft wordslab_notebooks_lib/labextension
+graft src</code></pre>
+<p>This is how the extension files are installed in Jupyterlab extensions directory when the python package is installed:</p>
+<ul>
+<li><code>pyproject.toml</code></li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb85"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[tool.setuptools]</span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="dt">include-package-data</span> <span class="op">=</span> <span class="cn">true</span> </span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a><span class="kw">[tool.setuptools.data-files]</span></span>
+<span id="cb85-5"><a href="#cb85-5" aria-hidden="true" tabindex="-1"></a><span class="dt">"share/jupyter/labextensions/wordslab-notebooks-lib"</span> <span class="op">=</span> <span class="op">[</span></span>
+<span id="cb85-6"><a href="#cb85-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"wordslab_notebooks_lib/labextension/package.json"</span><span class="op">,</span></span>
+<span id="cb85-7"><a href="#cb85-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"install.json"</span></span>
+<span id="cb85-8"><a href="#cb85-8" aria-hidden="true" tabindex="-1"></a><span class="op">]</span></span>
+<span id="cb85-9"><a href="#cb85-9" aria-hidden="true" tabindex="-1"></a><span class="dt">"share/jupyter/labextensions/wordslab-notebooks-lib/static"</span> <span class="op">=</span> <span class="op">[</span></span>
+<span id="cb85-10"><a href="#cb85-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"wordslab_notebooks_lib/labextension/static/*"</span></span>
+<span id="cb85-11"><a href="#cb85-11" aria-hidden="true" tabindex="-1"></a><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This how the command <code>jupyter labextension develop</code> finds the directory where the extension files live:</p>
+<ul>
+<li><code>wordslab_notebooks_lib\__init__.py</code></li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb86"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _jupyter_labextension_paths():</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [{</span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"src"</span>: <span class="st">"labextension"</span>,</span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dest"</span>: <span class="st">"wordslab-notebooks-lib"</span></span>
+<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>    }]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This is how the python package is identified as a Jupyterlab extension in pypi:</p>
+<ul>
+<li><code>pyproject.toml</code></li>
+</ul>
+<pre><code>classifiers = [ "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt" ]</code></pre>
+</section>
+<section id="install-the-jupyterlab-frontend-extension-in-development-mode" class="level3">
+<h3 class="anchored" data-anchor-id="install-the-jupyterlab-frontend-extension-in-development-mode">Install the Jupyterlab frontend extension in development mode</h3>
+<p>Open a Terminal</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb88"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">$WORDSLAB_WORKSPACE</span>/wordslab-notebooks-lib</span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> <span class="va">$JUPYTERLAB_ENV</span>/.venv/bin/activate</span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Install Javascript dependencies</span></span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a><span class="ex">jlpm</span> install</span>
+<span id="cb88-6"><a href="#cb88-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb88-7"><a href="#cb88-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Build TypeScript extension</span></span>
+<span id="cb88-8"><a href="#cb88-8" aria-hidden="true" tabindex="-1"></a><span class="ex">jlpm</span> build</span>
+<span id="cb88-9"><a href="#cb88-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb88-10"><a href="#cb88-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Register the extension with JupyterLab during development</span></span>
+<span id="cb88-11"><a href="#cb88-11" aria-hidden="true" tabindex="-1"></a><span class="co"># jupyter labextension develop . --overwrite</span></span>
+<span id="cb88-12"><a href="#cb88-12" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="va">$JUPYTERLAB_ENV</span>/.venv/share/jupyter/labextensions/wordslab-notebooks-lib</span>
+<span id="cb88-13"><a href="#cb88-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-s</span> <span class="va">$WORDSLAB_WORKSPACE</span>/wordslab-notebooks-lib/wordslab_notebooks_lib/labextension/ <span class="va">$JUPYTERLAB_ENV</span>/.venv/share/jupyter/labextensions/wordslab-notebooks-lib</span>
+<span id="cb88-14"><a href="#cb88-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb88-15"><a href="#cb88-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify extension is found</span></span>
+<span id="cb88-16"><a href="#cb88-16" aria-hidden="true" tabindex="-1"></a><span class="ex">jupyter</span> labextension list</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="test-the-jupyterlab-frontend-extension" class="level3">
+<h3 class="anchored" data-anchor-id="test-the-jupyterlab-frontend-extension">Test the Jupyterlab frontend extension</h3>
+<p>After installing the extension in development mode once, you can iterate fast: - update the code in <code>src/index.ts</code> - build the extension with <code>jlpm build</code></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb89"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">$WORDSLAB_WORKSPACE</span>/wordslab-notebooks-lib</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> <span class="va">$JUPYTERLAB_ENV</span>/.venv/bin/activate</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Build TypeScript extension</span></span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a><span class="ex">jlpm</span> build</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><strong>refresh</strong> the Jupyterlab single page app in your browser</li>
+<li>test the updated extension</li>
+</ul>
+<p>No need to reinstall the extension or to restart Jupyterlab itself, just refresh your browser page.</p>
+</section>
+</section>
+<section id="explore-the-notebook-format" class="level2">
+<h2 class="anchored" data-anchor-id="explore-the-notebook-format">Explore the notebook format</h2>
+<p>https://nbformat.readthedocs.io/en/latest/format_description.html</p>
+<div id="fa0f1ea6-7a2d-4346-acc6-0fd87d27bef9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2025-12-22T22:25:42.621836Z&quot;,&quot;iopub.status.busy&quot;:&quot;2025-12-22T22:25:42.621669Z&quot;,&quot;iopub.status.idle&quot;:&quot;2025-12-22T22:25:42.627674Z&quot;,&quot;shell.execute_reply&quot;:&quot;2025-12-22T22:25:42.627249Z&quot;,&quot;shell.execute_reply.started&quot;:&quot;2025-12-22T22:25:42.621822Z&quot;}}" data-execution_count="45">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb90"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>nb <span class="op">=</span> nbformat.from_dict(__notebook_content)</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>code_language <span class="op">=</span> nb.metadata.language_info.name</span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"&gt; "</span> <span class="op">+</span> code_language <span class="op">+</span> <span class="st">" notebook"</span>)</span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cell <span class="kw">in</span> nb.cells:</span>
+<span id="cb90-7"><a href="#cb90-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> cell.<span class="bu">id</span> <span class="op">==</span> __cell_id: <span class="cf">break</span></span>
+<span id="cb90-8"><a href="#cb90-8" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb90-9"><a href="#cb90-9" aria-hidden="true" tabindex="-1"></a>    is_markdown <span class="op">=</span> cell.cell_type <span class="op">==</span> <span class="st">"markdown"</span></span>
+<span id="cb90-10"><a href="#cb90-10" aria-hidden="true" tabindex="-1"></a>    is_code <span class="op">=</span> cell.cell_type <span class="op">==</span> <span class="st">"code"</span></span>
+<span id="cb90-11"><a href="#cb90-11" aria-hidden="true" tabindex="-1"></a>    is_raw <span class="op">=</span> cell.cell_type <span class="op">==</span> <span class="st">"raw"</span></span>
+<span id="cb90-12"><a href="#cb90-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb90-13"><a href="#cb90-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"---------------------"</span>)</span>
+<span id="cb90-14"><a href="#cb90-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"cell"</span>, cell.<span class="bu">id</span>, cell.cell_type)</span>
+<span id="cb90-15"><a href="#cb90-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"---------------------"</span>)</span>
+<span id="cb90-16"><a href="#cb90-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> is_markdown:</span>
+<span id="cb90-17"><a href="#cb90-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(cell.source[:<span class="dv">100</span>])</span>
+<span id="cb90-18"><a href="#cb90-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> is_code:</span>
+<span id="cb90-19"><a href="#cb90-19" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"```</span><span class="sc">{</span>code_language<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span> <span class="op">+</span> cell.source[:<span class="dv">100</span>] <span class="op">+</span> <span class="st">"</span><span class="ch">\n</span><span class="st">```"</span>)</span>
+<span id="cb90-20"><a href="#cb90-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> is_raw:</span>
+<span id="cb90-21"><a href="#cb90-21" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(cell.source[:<span class="dv">100</span>])</span>
+<span id="cb90-22"><a href="#cb90-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> is_code <span class="kw">and</span> cell.execution_count<span class="op">&gt;</span><span class="dv">0</span> <span class="kw">and</span> <span class="bu">len</span>(cell.outputs)<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb90-23"><a href="#cb90-23" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"---------------------"</span>)</span>
+<span id="cb90-24"><a href="#cb90-24" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"cell outputs"</span>, cell.<span class="bu">id</span>, cell.execution_count)</span>
+<span id="cb90-25"><a href="#cb90-25" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"---------------------"</span>)</span>
+<span id="cb90-26"><a href="#cb90-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> output <span class="kw">in</span> cell.outputs:</span>
+<span id="cb90-27"><a href="#cb90-27" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> output.output_type <span class="op">==</span> <span class="st">"stream"</span>:</span>
+<span id="cb90-28"><a href="#cb90-28" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"&lt;</span><span class="sc">{</span>output<span class="sc">.</span>name<span class="sc">}</span><span class="ss">&gt;"</span>)</span>
+<span id="cb90-29"><a href="#cb90-29" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(output.text[:<span class="dv">100</span>])</span>
+<span id="cb90-30"><a href="#cb90-30" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"&lt;/</span><span class="sc">{</span>output<span class="sc">.</span>name<span class="sc">}</span><span class="ss">&gt;"</span>)</span>
+<span id="cb90-31"><a href="#cb90-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> output.output_type <span class="op">==</span> <span class="st">"display_data"</span>:</span>
+<span id="cb90-32"><a href="#cb90-32" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;display&gt;"</span>)</span>
+<span id="cb90-33"><a href="#cb90-33" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="st">"data"</span> <span class="kw">in</span> output:</span>
+<span id="cb90-34"><a href="#cb90-34" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;data&gt;"</span>)</span>
+<span id="cb90-35"><a href="#cb90-35" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">repr</span>(output.data)</span>
+<span id="cb90-36"><a href="#cb90-36" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;/data&gt;"</span>)</span>
+<span id="cb90-37"><a href="#cb90-37" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="st">"metadata"</span> <span class="kw">in</span> output <span class="kw">and</span> <span class="bu">len</span>(output.metadata)<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb90-38"><a href="#cb90-38" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;metadata&gt;"</span>)</span>
+<span id="cb90-39"><a href="#cb90-39" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">repr</span>(output.metadata)</span>
+<span id="cb90-40"><a href="#cb90-40" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;/metadata&gt;"</span>)</span>
+<span id="cb90-41"><a href="#cb90-41" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;/display&gt;"</span>)</span>
+<span id="cb90-42"><a href="#cb90-42" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> output.output_type <span class="op">==</span> <span class="st">"execute_result"</span>:</span>
+<span id="cb90-43"><a href="#cb90-43" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;result&gt;"</span>)</span>
+<span id="cb90-44"><a href="#cb90-44" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="st">"data"</span> <span class="kw">in</span> output:</span>
+<span id="cb90-45"><a href="#cb90-45" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;data&gt;"</span>)</span>
+<span id="cb90-46"><a href="#cb90-46" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(output.data)</span>
+<span id="cb90-47"><a href="#cb90-47" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;/data&gt;"</span>)</span>
+<span id="cb90-48"><a href="#cb90-48" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="st">"metadata"</span> <span class="kw">in</span> output <span class="kw">and</span> <span class="bu">len</span>(output.metadata)<span class="op">&gt;</span><span class="dv">0</span>:</span>
+<span id="cb90-49"><a href="#cb90-49" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;metadata&gt;"</span>)</span>
+<span id="cb90-50"><a href="#cb90-50" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(output.metadata)</span>
+<span id="cb90-51"><a href="#cb90-51" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="st">"  &lt;/metadata&gt;"</span>)</span>
+<span id="cb90-52"><a href="#cb90-52" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;/result&gt;"</span>)</span>
+<span id="cb90-53"><a href="#cb90-53" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> output.output_type <span class="op">==</span> <span class="st">"error"</span>:</span>
+<span id="cb90-54"><a href="#cb90-54" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;error&gt;"</span>)</span>
+<span id="cb90-55"><a href="#cb90-55" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(output.ename)</span>
+<span id="cb90-56"><a href="#cb90-56" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(output.evalue)</span>
+<span id="cb90-57"><a href="#cb90-57" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> frame <span class="kw">in</span> output.traceback:</span>
+<span id="cb90-58"><a href="#cb90-58" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(frame)</span>
+<span id="cb90-59"><a href="#cb90-59" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">"&lt;/error&gt;"</span>)</span>
+<span id="cb90-60"><a href="#cb90-60" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"---------------------"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&gt; python notebook
+---------------------
+cell 9d8a6aa0-8f58-4860-bcc1-2bfbdcb438b6 markdown
+---------------------
+# wordslab-notebooks-lib.jupyterlab
+
+&gt; Access wordslab-notebooks Jupyterlab extension version, curre
+---------------------
+cell 68f3493d-c252-4eb4-844b-abbd68ed3a70 markdown
+---------------------
+## Work together with AI in a Jupyterlab notebook - the Solveit method
+
+A Jupyter notebook is a conv
+---------------------
+cell 0ff6fbdc-4a54-4e29-acbb-07529df8cfdd markdown
+---------------------
+## Install the Jupyterlab extension - wordslab-notebooks-lib
+
+If you want to use "prompt" cells, you
+---------------------
+cell 65cd4cf8-d77b-4026-b428-bbd9550ea971 markdown
+---------------------
+## Communicate with the Jupyterlab extension
+---------------------
+cell ece4d545-8f78-4232-82fb-e837ea0185e4 code
+---------------------
+```python
+#| export
+import nbformat
+```
+---------------------
+cell af2f3f45-f0da-4d37-9e39-b37d19ba5650 code
+---------------------
+```python
+class JupyterlabNotebook:
+    def __init__(self):
+        if not "__wordslab_extension_version" in g
+```
+---------------------
+cell 16180d26-5d5b-4c01-93d6-60c910f257bf code
+---------------------
+```python
+notebook = JupyterlabNotebook()
+```
+---------------------
+cell 13af8845-c7f8-440b-a80f-097c7cf1a541 code
+---------------------
+```python
+notebook.jupyterlab_extension_version
+```
+---------------------
+cell outputs 13af8845-c7f8-440b-a80f-097c7cf1a541 39
+---------------------
+&lt;result&gt;
+  &lt;data&gt;
+{'text/plain': "'0.0.11'"}
+  &lt;/data&gt;
+&lt;/result&gt;
+---------------------
+---------------------
+cell 2906d67c-0764-4816-92c6-4063f17621aa code
+---------------------
+```python
+notebook.path
+```
+---------------------
+cell outputs 2906d67c-0764-4816-92c6-4063f17621aa 40
+---------------------
+&lt;result&gt;
+  &lt;data&gt;
+{'text/plain': "'wordslab-notebooks-lib/nbs/02_jupyterlab.ipynb'"}
+  &lt;/data&gt;
+&lt;/result&gt;
+---------------------
+---------------------
+cell 45a764c9-e0ab-415c-947c-bdb12d26a2dd code
+---------------------
+```python
+notebook.content.metadata
+```
+---------------------
+cell outputs 45a764c9-e0ab-415c-947c-bdb12d26a2dd 41
+---------------------
+&lt;result&gt;
+  &lt;data&gt;
+{'text/plain': "{'kernelspec': {'display_name': 'wordslab-notebooks-lib',\n  'language': 'python',\n  'name': 'wordslab-notebooks-lib'},\n 'language_info': {'codemirror_mode': {'name': 'ipython', 'version': 3},\n  'file_extension': '.py',\n  'mimetype': 'text/x-python',\n  'name': 'python',\n  'nbconvert_exporter': 'python',\n  'pygments_lexer': 'ipython3',\n  'version': '3.12.12'}}"}
+  &lt;/data&gt;
+&lt;/result&gt;
+---------------------
+---------------------
+cell d16ad869-d651-40bd-af2c-623d82b4edf0 code
+---------------------
+```python
+notebook.cell_id
+```
+---------------------
+cell outputs d16ad869-d651-40bd-af2c-623d82b4edf0 42
+---------------------
+&lt;result&gt;
+  &lt;data&gt;
+{'text/plain': "'d16ad869-d651-40bd-af2c-623d82b4edf0'"}
+  &lt;/data&gt;
+&lt;/result&gt;
+---------------------
+---------------------
+cell 59347d6e-d1f7-4d23-b041-143e42887f6d code
+---------------------
+```python
+notebook.cell_id
+```
+---------------------
+cell outputs 59347d6e-d1f7-4d23-b041-143e42887f6d 43
+---------------------
+&lt;result&gt;
+  &lt;data&gt;
+{'text/plain': "'59347d6e-d1f7-4d23-b041-143e42887f6d'"}
+  &lt;/data&gt;
+&lt;/result&gt;
+---------------------
+---------------------
+cell 9843c2c4-ac54-46d6-9725-0e957e944e3a markdown
+---------------------
+## Develop a Jupyterlab frontend extension
+---------------------
+cell 4178ac20-4612-4c8d-8d48-0fd2d2605aa9 markdown
+---------------------
+### Understand Jupyterlab kernels and frontend extensions
+
+Jupyter kernels technical implementation 
+---------------------
+cell da7ecd61-80f6-4a00-a795-6866d62b32bb markdown
+---------------------
+### Intialize the components of a frontend extension
+
+The source code of the Jupyterlab frontend ext
+---------------------
+cell 7a4146ce-96e0-4c13-9296-67374c833560 markdown
+---------------------
+### Install the Jupyterlab frontend extension in development mode
+
+Open a Terminal
+
+```bash
+cd $WORD
+---------------------
+cell 6a891df5-84b9-4579-a1ec-18fd7a13ebc2 markdown
+---------------------
+### Test the Jupyterlab frontend extension 
+
+After installing the extension in development mode once
+---------------------
+cell 61a8b5d6-7821-4c76-acde-9080fb8ad95b markdown
+---------------------
+## Explore the notebook format
+---------------------
+cell bfe108e4-6b27-403d-b5d7-fde736c1f01c markdown
+---------------------
+https://nbformat.readthedocs.io/en/latest/format_description.html</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/wordslab-org\.github\.io\/wordslab-notebooks-lib");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/wordslab-org/wordslab-notebooks-lib/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
