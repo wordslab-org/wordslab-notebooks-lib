@@ -8,6 +8,7 @@ __all__ = ['prompt_template', 'FUNC_RE', 'VAR_RE', 'find_var', 'WordslabNotebook
 # %% ../nbs/02_notebook.ipynb 2
 from ast import literal_eval
 import asyncio
+from functools import partial
 from html import escape
 from inspect import currentframe, getattr_static, getdoc, isfunction, ismethod, signature
 import re
@@ -28,6 +29,8 @@ from fastcore.xml import to_xml, Note, Prompt, Code, Source, Outputs, User, Assi
 from toolslm.funccall import get_schema
 
 from ollama import chat, ChatResponse
+
+from .env import WordslabNotebooksEnv
 
 # %% ../nbs/02_notebook.ipynb 8
 @patch
@@ -116,7 +119,7 @@ def _get_schema(ns: dict, t):
         return f"`{t}`: {e}."
 
 @patch
-def get_tools_schemas_and_functionss(self: InteractiveShell, func_names: list):
+def get_tools_schemas_and_functions(self: InteractiveShell, func_names: list):
     """Get a json schema and a function object for the functions defined in the user namespace which can be used as tools."""
     ns = self.user_ns
     return {f: (_get_schema(ns, f), ns[f]) for f in func_names if f in ns}
@@ -154,6 +157,10 @@ class WordslabNotebook:
         # Initialize a communication channel with the frontend extension
         if self.jupyterlab_extension_installed:
             self._comm = WordslabNotebook.JupyterlabExtensionComm()
+
+        # Default notebook assistant config
+        self.chat_model = WordslabNotebooksEnv().default_model_code
+        self.chat_thinking = True
 
     def _ensure_jupyterlab_extension(self):
         if not self.jupyterlab_extension_installed:
@@ -497,7 +504,7 @@ def _cell_to_xml(cell):
 # %% ../nbs/02_notebook.ipynb 87
 def _cells_to_notebook_xml(cells):
     cells_xml = [_cell_to_xml(c) for c in cells if c.cell_type in ('code', 'markdown')]
-    return "\n".join(L(cells_xml).map(to_xml))
+    return "\n".join(L(cells_xml).map(partial(to_xml, do_escape=False)))
 
 # %% ../nbs/02_notebook.ipynb 89
 @patch
@@ -550,16 +557,15 @@ You receive this instruction in the following context :
 - the content of the previous cells is also provided below, you must interpret it as a CONVERSATION HISTORY
 - your answer will be rendered as an output of the prompt cell in markdown format
 The "code" cells of the notebook are backed by a python kernel which maintains state with functions and variables. 
-The user can optionnaly provide some of these python functions as tools for you:
+The user can optionnaly provide a set of python functions for you to use as tools:
 - if the user mentions the function with this very specific syntax `&myfunc` somewhere in the notebook (backticks mandatory)
 - then the description of the function myfunc and its parameters will be provided to you as a tool you can call
-Be careful, only call these tools if you are sure that it makes sense in the context of the user instruction.
-They can be mentioned sometime in the conversation and be completely irrevelant later.
-You can also generate and display code blocks in your response, and then the user can review them, copy the code block in a new "code" cell to execute it.
+Be careful to always check first if you could call these tools to better ground your answer, instead of trying to guess based on your pretraining knwoledge.
+Only if you were not provided with the right tool, you can also generate and display code blocks in your response, that the user will be able to review and copy in a new "code" cell to execute it.
 The user can optionnaly provide some of the python variables values as information for you:
 - if the user mentions the variable with this very specific syntax `$myvar` somewhere in the notebook (backticks mandatory)
 - then the value of the variable myvar will be provided to you as information to use to execute the user instruction
-Same remark: only use this information to answer the user question if it makes sense in the context of the current conversation.
+Same remark: prioritize using this information to ground your answer to the user question instead of trying to guess.
 </execution_context_info>
 
 <prompt_format_spec>
@@ -577,14 +583,16 @@ According to this execution context information, the prompt will be structured w
 - referenced_variables -> optional
   - var name=... -> value of python variable referenced by the user (may be truncated if too long)
 - user_instruction -> the very last user instruction written in a prompt cell you need to execute 
+The definitions of the tools you can call are injected through the API.
 </prompt_format_spec>
 
 <output_format_spec>
-The GOLDEN RULE: make sure you always answer in the same language as the user instruction.
-For example, if the user_instruction below is written in french, answer in french, if it is written in german, anwer in german.
+Make sure you always give the FINAL answer in the same language as the user instruction.
+For example, if the user_instruction below is written in french, answer in french, if it is written in german, answer in german.
+But off course, for the intermediate turns in an agentic loop, this rule doesn't apply: you can generate as many tool calls as needed before generating the FINAL answer.
 Try to be concise: just provide the answer, don't explain the obvious unless explicity prompted to do so.
 Assume the user is intelligent and has no time to waste reading too long answers.
-Always generate code inside markdown fenced blocks.
+When you generate code, make sure to do it inside markdown fenced blocks.
 </system_instructions>
 
 <conversation_history>
@@ -610,20 +618,21 @@ Always generate code inside markdown fenced blocks.
 FUNC_RE = re.compile(r"`&([a-zA-Z_][a-zA-Z0-9_]*)`")
 VAR_RE  = re.compile(r"`\$([a-zA-Z_][a-zA-Z0-9_]*)`")
 
-# %% ../nbs/02_notebook.ipynb 112
+# %% ../nbs/02_notebook.ipynb 114
 @patch
 async def chat(self: WordslabNotebook, user_instruction: str):
     # Get notebook context
     notebook_context = notebook.get_context_for_llm()
     # Extract referenced tools and variables
-    funcs_names = FUNC_RE.findall(context)
-    vars_names = VAR_RE.findall(context)
+    funcs_names = FUNC_RE.findall(notebook_context)
+    vars_names = VAR_RE.findall(notebook_context)
     # Get tools schemas 
-    tools = notebook.get_tools_schemas_and_funcs(func_names)
+    tools = notebook.get_tools_schemas_and_functions(funcs_names)
     tools_schemas = [t[0] for t in tools.values()]
+    print(f"TOOLS available: {str(tools_schemas)}")
     # Get variables values
-    var_values = notebook.get_variables_values(var_names)
-    referenced_variables = "\n".join(L([Var(value, name=name) for name,value in var_values.items()]).map(to_xml))
+    vars_values = notebook.get_variables_values(vars_names)
+    referenced_variables = "\n".join(L([Var(value, name=name) for name,value in vars_values.items()]).map(to_xml))
 
     # Format the prompt
     prompt = prompt_template.format(notebook_context=notebook_context, 
@@ -633,20 +642,24 @@ async def chat(self: WordslabNotebook, user_instruction: str):
     # ollama agentic loop
     messages = [{'role': 'user', 'content': prompt}]
     while True:
+        print(f"CHAT - called ollama: {len(messages)} messages")
         response: ChatResponse = chat(
-            model='qwen3:30b',
+            model=self.chat_model,
             messages=messages,
             tools=tools_schemas,
-            think=True,
+            think=self.chat_thinking,
         )
         messages.append(response.message)
-        print("Thinking: ", response.message.thinking)
-        print("Content: ", response.message.content)
+        print(f"CHAT - ollama answered: {len(messages)} messages")
+        if response.message.thinking:
+            print("Thinking: ", response.message.thinking)
+        if response.message.content:
+            print("Content: ", response.message.content)
         if response.message.tool_calls:
             for tc in response.message.tool_calls:
+                print(f"TOOL - model wants to call: {tc.function.name} with arguments {tc.function.arguments}")
                 if tc.function.name in available_functions:
-                    print(f"TOOL - model wants to call: {tc.function.name} with arguments {tc.function.arguments}")
-                    result = tools[tc.function.name](**tc.function.arguments)
+                    result = tools[tc.function.name][1](**tc.function.arguments)
                     print(f"TOOL - agent sends result: {result}")
                     # add the tool result to the messages
                     messages.append({'role': 'tool', 'tool_name': tc.function.name, 'content': str(result)})
