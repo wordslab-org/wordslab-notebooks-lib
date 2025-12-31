@@ -35,7 +35,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
         if (cellType === 'prompt') {
           cell.node.classList.add('cell-type-prompt');
           if (cell.editor) {
-            cell.editor.model.mimeType = 'text/x-markdown';
+            cell.editor.model.mimeType = 'text/plain';
           }
         } else if (cellType === 'markdown') {
           cell.node.classList.add('cell-type-note');
@@ -70,7 +70,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
             // Need to reapply the mimeType for prompt cells after the editor is initialized
             const cellType = cell.model.getMetadata('wordslab_cell_type');
             if (cellType === 'prompt' && cell.editor) {
-              cell.editor.model.mimeType = 'text/x-markdown';
+              cell.editor.model.mimeType = 'text/plain';
             }
           });
 
@@ -342,21 +342,24 @@ const cellExecutorPlugin: JupyterFrontEndPlugin<INotebookCellExecutor> = {
                  
                 // Prompt cell => use the text of the cell as a prompt and send it to notebook.chat   
                 if (cellType === 'prompt') {
-                  const notebook_import_code = `
+                  const cell = options.cell as CodeCell;
+                  const outputArea = cell.outputArea;
+                  if(outputArea.model.length == 0)
+                  {
+                    const notebook_import_code = `
 if not (("notebook" in globals()) and ("WordslabNotebook" in str(type(notebook)))): 
     try: from wordslab_notebooks_lib.notebook import WordslabNotebook; notebook = WordslabNotebook()
     except Exception: print("Error: you need to install 'wordslab-notebooks-lib' before you can execute prompt cells")
 `;
-                  await kernel.requestExecute({ code: notebook_import_code, store_history: false }).done;
+                    await kernel.requestExecute({ code: notebook_import_code, store_history: false }).done;
                     
-                  const promptText = options.cell.model.sharedModel.source;
-                  const notebook_chat_code = `notebook.chat(${JSON.stringify(promptText)})`;
-                  const future = kernel.requestExecute({ code: notebook_chat_code, store_history: true });          
-                  const cell = options.cell as CodeCell;
-                  const outputArea = cell.outputArea;
-                  outputArea.future = future;
-                  await future.done;
-
+                    const promptText = options.cell.model.sharedModel.source;
+                    const notebook_chat_code = `notebook.chat(${JSON.stringify(promptText)})`;
+                    const future = kernel.requestExecute({ code: notebook_chat_code, store_history: true });          
+                  // This line is critical to wire display() calls   
+                    outputArea.future = future;
+                    await future.done;
+                  }
                   return Promise.resolve(true);
                 }
               }

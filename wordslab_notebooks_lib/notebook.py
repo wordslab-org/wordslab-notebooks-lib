@@ -661,7 +661,7 @@ class ChatTurn:
                 output += "> [Thinking]\n>\n> "
                 output += ("".join(self.thinking_chunks)).replace("\n\n","\n>\n> ").replace("\n- ","\n - ") + "\n\n"
             else:
-                output += f"> [Thinking] ... thought in {len("".join(self.thinking_chunks).split(' '))} words\n\n"
+                output += f"> [Thinking] ... thought in {sum(s.count(' ') + s.count('\n') for s in self.thinking_chunks)} words\n\n"
         if len(self.content_chunks) > 0:
             output += "".join(self.content_chunks) + "\n\n"
         if len(self.tool_calls.keys()) > 0:
