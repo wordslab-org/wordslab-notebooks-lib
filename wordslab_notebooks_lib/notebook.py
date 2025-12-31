@@ -8,6 +8,7 @@ __all__ = ['prompt_template', 'FUNC_RE', 'VAR_RE', 'find_var', 'WordslabNotebook
 # %% ../nbs/02_notebook.ipynb 2
 from ast import literal_eval
 import asyncio
+from datetime import datetime
 from functools import partial
 from html import escape
 from inspect import currentframe, getattr_static, getdoc, isfunction, ismethod, signature
@@ -20,7 +21,7 @@ import typing
 from IPython.core.getipython import get_ipython
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.oinspect import Inspector
-from IPython.display import display, HTML
+from IPython.display import display, HTML, Markdown, clear_output
 from comm import create_comm
 import nbformat
 
@@ -510,8 +511,8 @@ def _cells_to_notebook_xml(cells):
 @patch
 def get_context_for_llm(self: WordslabNotebook):
     # Get current notebook state
-    all_cells = notebook.content.cells
-    current_cell_id = notebook.cell_id
+    all_cells = self.content.cells
+    current_cell_id = self.cell_id
 
     # Exclude all cells after the previous one
     previous_cells = all_cells[:next((i for i, c in enumerate(all_cells) if c.id == current_cell_id), len(all_cells))]
@@ -618,11 +619,7 @@ When you generate code, make sure to do it inside markdown fenced blocks.
 FUNC_RE = re.compile(r"`&([a-zA-Z_][a-zA-Z0-9_]*)`")
 VAR_RE  = re.compile(r"`\$([a-zA-Z_][a-zA-Z0-9_]*)`")
 
-# %% ../nbs/02_notebook.ipynb 113
-def _display_chat(thinking, content, tool_calls):
-    clear_output(wait=True)
-    display(Markdown(streamed_text))
-
+# %% ../nbs/02_notebook.ipynb 112
 class ChatTurn:
     def __init__(self):
         self.thinking_chunks = []
@@ -657,10 +654,10 @@ class ChatTurn:
     def end_turn(self):
         self.turn_finished = True
     
-    def to_markdown(self, clear_thinking:bool=True, clear_tool_calls:bool=True):
+    def to_markdown(self, hide_thinking:bool=True, hide_tool_calls:bool=True):
         output = ""
         if len(self.thinking_chunks) > 0:
-            if not (clear_thinking and (len(self.content_chunks) > 0 or len(self.tool_calls.keys()) > 0)):
+            if not hide_thinking:
                 output += "> [Thinking]\n>\n> "
                 output += ("".join(self.thinking_chunks)).replace("\n\n","\n>\n> ").replace("\n- ","\n - ") + "\n\n"
             else:
@@ -668,7 +665,7 @@ class ChatTurn:
         if len(self.content_chunks) > 0:
             output += "".join(self.content_chunks) + "\n\n"
         if len(self.tool_calls.keys()) > 0:
-            if not (clear_tool_calls and self.turn_finished):
+            if not hide_tool_calls:
                 for tool_name in self.tool_calls.keys():
                     output += "> [Tool call]\n"
                     tool_call = self.tool_calls[tool_name]
@@ -682,11 +679,17 @@ class ChatTurn:
                     output += "\n"
             else:
                 for tool_name in self.tool_calls.keys():
-                    result = self.tool_calls[tool_name]["result"]
-                    output += f"> [Tool call] ... `{tool_name}` returned `{result if len(result)<=50 else result[:47]+'...'}`\n\n"
+                    tool_call = self.tool_calls[tool_name]
+                    if "end_time" in tool_call:
+                        result = self.tool_calls[tool_name]["result"]
+                        output += f"> [Tool call] ... `{tool_name}` returned `{result if len(result)<=50 else result[:47]+'...'}`\n\n"
+                    elif "start_time" in tool_call:                        
+                        output += f"> [Tool call] ... agent is calling `{tool_name}`\n\n"
+                    elif "params" in tool_call:                        
+                        output += f"> [Tool call] ... model wants to call `{tool_name}`\n\n"
         return output       
 
-# %% ../nbs/02_notebook.ipynb 117
+# %% ../nbs/02_notebook.ipynb 116
 def _refresh_display(chat_turns):
     clear_output(wait=True)
     output = ""
@@ -697,15 +700,15 @@ def _refresh_display(chat_turns):
 @patch
 async def chat(self: WordslabNotebook, user_instruction: str):
     # Get notebook context
-    notebook_context = notebook.get_context_for_llm()
+    notebook_context = self.get_context_for_llm()
     # Extract referenced tools and variables
     funcs_names = FUNC_RE.findall(notebook_context)
     vars_names = VAR_RE.findall(notebook_context)
     # Get tools schemas 
-    tools = notebook.get_tools_schemas_and_functions(funcs_names)
+    tools = self.get_tools_schemas_and_functions(funcs_names)
     tools_schemas = [t[0] for t in tools.values()]
     # Get variables values
-    vars_values = notebook.get_variables_values(vars_names)
+    vars_values = self.get_variables_values(vars_names)
     referenced_variables = "\n".join(L([Var(value, name=name) for name,value in vars_values.items()]).map(to_xml))
 
     # Format the prompt

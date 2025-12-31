@@ -330,24 +330,38 @@ const cellExecutorPlugin: JupyterFrontEndPlugin<INotebookCellExecutor> = {
           
         // Code or Prompt cell => inject variables in the python kernel describing the notebook context 
         if (cellType === 'code' || cellType === 'prompt') {
-          const kernel = options.sessionContext?.session?.kernel;
-          if (kernel) {
-            await this.injectVariable(kernel, '__wordslab_extension_version', version);
-            const notebookPath = options.sessionContext?.path || '';
-            await this.injectVariable(kernel, '__notebook_path', notebookPath);
-            const notebookContent = options.notebook.toJSON();            
-            await this.injectVariable(kernel, '__notebook_content', notebookContent);
-            const cellId = options.cell.model.id;
-            await this.injectVariable(kernel, '__cell_id', cellId);
-          }
-        }
-          
-        // Prompt cell => use the text of the cell as a prompt and send it to nbchat    
-        if (cellType === 'prompt') {
-          const promptText = options.cell.model.sharedModel.source;
-          const code = `nbchat(${JSON.stringify(promptText)})`;
-          console.log('Executing:', code);
-          return Promise.resolve(true);
+              const kernel = options.sessionContext?.session?.kernel;
+              if (kernel) {
+                await this.injectVariable(kernel, '__wordslab_extension_version', version);
+                const notebookPath = options.sessionContext?.path || '';
+                await this.injectVariable(kernel, '__notebook_path', notebookPath);
+                const notebookContent = options.notebook.toJSON();            
+                await this.injectVariable(kernel, '__notebook_content', notebookContent);
+                const cellId = options.cell.model.id;
+                await this.injectVariable(kernel, '__cell_id', cellId);
+                 
+                // Prompt cell => use the text of the cell as a prompt and send it to notebook.chat   
+                if (cellType === 'prompt') {
+                  const notebook_import_code = `
+if not (("notebook" in globals()) and ("WordslabNotebook" in str(type(notebook)))): 
+    try: from wordslab_notebooks_lib.notebook import WordslabNotebook; notebook = WordslabNotebook()
+    except Exception: print("Error: you need to install 'wordslab-notebooks-lib' before you can execute prompt cells")
+`;
+                  console.log(notebook_import_code);
+                  await kernel.requestExecute({ code: notebook_import_code, store_history: false }).done;
+                    
+                  const promptText = options.cell.model.sharedModel.source;
+                  const notebook_chat_code = `
+import IPython
+async def _run():
+    await notebook.chat(${JSON.stringify(promptText)})
+IPython.get_ipython().run_cell_async(_run())
+`;
+                  await kernel.requestExecute({ code: notebook_chat_code, store_history: false }).done;
+                  console.log(notebook_chat_code);            
+                  return Promise.resolve(true);
+                }
+              }
         }
 
         // Other cells
