@@ -698,7 +698,7 @@ def _refresh_display(chat_turns):
     display(Markdown(output))
 
 @patch
-async def chat(self: WordslabNotebook, user_instruction: str):
+def chat(self: WordslabNotebook, user_instruction: str):
     # Get notebook context
     notebook_context = self.get_context_for_llm()
     # Extract referenced tools and variables

@@ -3,7 +3,7 @@ import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application'
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 import { INotebookCellExecutor, runCell } from '@jupyterlab/notebook';
-import { Cell } from '@jupyterlab/cells';
+import { Cell, CodeCell } from '@jupyterlab/cells';
 import { circleEmptyIcon } from '@jupyterlab/ui-components';
 
 const version = "0.0.12";
@@ -347,18 +347,16 @@ if not (("notebook" in globals()) and ("WordslabNotebook" in str(type(notebook))
     try: from wordslab_notebooks_lib.notebook import WordslabNotebook; notebook = WordslabNotebook()
     except Exception: print("Error: you need to install 'wordslab-notebooks-lib' before you can execute prompt cells")
 `;
-                  console.log(notebook_import_code);
                   await kernel.requestExecute({ code: notebook_import_code, store_history: false }).done;
                     
                   const promptText = options.cell.model.sharedModel.source;
-                  const notebook_chat_code = `
-import IPython
-async def _run():
-    await notebook.chat(${JSON.stringify(promptText)})
-IPython.get_ipython().run_cell_async(_run())
-`;
-                  await kernel.requestExecute({ code: notebook_chat_code, store_history: false }).done;
-                  console.log(notebook_chat_code);            
+                  const notebook_chat_code = `notebook.chat(${JSON.stringify(promptText)})`;
+                  const future = kernel.requestExecute({ code: notebook_chat_code, store_history: true });          
+                  const cell = options.cell as CodeCell;
+                  const outputArea = cell.outputArea;
+                  outputArea.future = future;
+                  await future.done;
+
                   return Promise.resolve(true);
                 }
               }
