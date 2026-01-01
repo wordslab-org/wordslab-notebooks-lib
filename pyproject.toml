@@ -33,6 +33,9 @@ include-package-data = true
 "share/jupyter/labextensions/wordslab-notebooks-lib/static" = [
   "wordslab_notebooks_lib/labextension/static/*"
 ]
+"share/jupyter/labextensions/wordslab-notebooks-lib/schemas" = [
+  "wordslab_notebooks_lib/labextension/schemas/*"
+]
 
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { file = "settings.ini" }, { file = "setup.py" }]

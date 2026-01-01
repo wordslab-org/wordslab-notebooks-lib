@@ -31,7 +31,7 @@ from toolslm.funccall import get_schema
 
 from ollama import chat, ChatResponse
 
-from .env import WordslabNotebooksEnv
+from .env import WordslabEnv
 
 # %% ../nbs/02_notebook.ipynb 8
 @patch
@@ -160,7 +160,7 @@ class WordslabNotebook:
             self._comm = WordslabNotebook.JupyterlabExtensionComm()
 
         # Default notebook assistant config
-        self.chat_model = WordslabNotebooksEnv().default_model_code
+        self.chat_model = WordslabEnv().default_model_code
         self.chat_thinking = True
 
     def _ensure_jupyterlab_extension(self):

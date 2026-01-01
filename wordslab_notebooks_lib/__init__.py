@@ -1,5 +1,8 @@
-__version__ = "0.0.11"
-__all__ = []
+from .core import Wordslab
+from .notebook import WordslabNotebook
+
+__version__ = "0.0.12"
+__all__ = ["Wordslab", "WordslabNotebook"]
 
 def _jupyter_labextension_paths():
     return [{
