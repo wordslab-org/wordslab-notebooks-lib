@@ -19,7 +19,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
              settingRegistry: ISettingRegistry | null) => {
                  
     console.log(`Wordslab notebooks extension v${version} activated`);
-          
+                 
     // -------------------------------------
     // 1. Introduce a new "prompt" cell type
     // -------------------------------------

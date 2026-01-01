@@ -698,7 +698,7 @@ def _refresh_display(chat_turns):
     display(Markdown(output))
 
 @patch
-def chat(self: WordslabNotebook, user_instruction: str):
+def chat(self: WordslabNotebook, user_instruction: str):    
     # Get notebook context
     notebook_context = self.get_context_for_llm()
     # Extract referenced tools and variables
@@ -710,12 +710,15 @@ def chat(self: WordslabNotebook, user_instruction: str):
     # Get variables values
     vars_values = self.get_variables_values(vars_names)
     referenced_variables = "\n".join(L([Var(value, name=name) for name,value in vars_values.items()]).map(to_xml))
-
+    
     # Format the prompt
     prompt = prompt_template.format(notebook_context=notebook_context,
                                     referenced_variables=referenced_variables,
                                     user_instruction=user_instruction)
 
+    # Immediate user feedback
+    display(Markdown(f"Processing {prompt.count(' ') + prompt.count('\n')} words (prompt+context) with `{self.chat_model}` ..."))
+    
     # ollama agentic loop
 
     chat_turns = []

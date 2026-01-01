@@ -2,12 +2,19 @@
   "jupyter.lab.toolbarRegistry": true,
   "jupyter.lab.toolbars": {
     "Cell": [
-      { "name": "set-note", "command": "wordslab:set-note", "rank": 0 },
-      { "name": "set-prompt", "command": "wordslab:set-prompt", "rank": 1 },
-      { "name": "set-code", "command": "wordslab:set-code", "rank": 2 },
-      { "name": "toggle-hide-from-ai", "command": "wordslab:toggle-hide-from-ai", "rank": 3 } 
+      { "name": "set-note", "caption": "m -> note cell", "command": "wordslab:set-note", "rank": 0 },
+      { "name": "set-prompt", "caption": "p -> prompt cell", "command": "wordslab:set-prompt", "rank": 1 },
+      { "name": "set-code", "caption": "y -> code cell", "command": "wordslab:set-code", "rank": 2 },
+      { "name": "toggle-hide-from-ai", "caption": "Hide from AI", "command": "wordslab:toggle-hide-from-ai", "rank": 3 } 
     ]
   },
+  "jupyter.lab.shortcuts": [
+    {
+      "command": "wordslab:set-prompt",
+      "keys": ["P"],
+      "selector": ".jp-Notebook.jp-mod-commandMode:not(.jp-mod-readWrite) :focus"
+    }
+  ],
   "title": "wordslab-notebooks-lib",
   "description": "Settings for wordslab-notebooks-lib",
   "type": "object",
