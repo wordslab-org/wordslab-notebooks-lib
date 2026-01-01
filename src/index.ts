@@ -6,7 +6,7 @@ import { INotebookCellExecutor, runCell } from '@jupyterlab/notebook';
 import { Cell, CodeCell } from '@jupyterlab/cells';
 import { circleEmptyIcon } from '@jupyterlab/ui-components';
 
-const version = "0.0.12";
+const version = "0.0.13";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'wordslab-notebooks-lib:plugin',    

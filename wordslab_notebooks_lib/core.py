@@ -7,7 +7,7 @@ __all__ = ['Wordslab']
 
 # %% ../nbs/00_core.ipynb 3
 try:
-    from . import __version__
+    from wordslab_notebooks_lib import __version__
 except:
     __version__ = "0.0.1"
 
