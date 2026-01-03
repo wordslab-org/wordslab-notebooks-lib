@@ -6,7 +6,11 @@
 __all__ = ['WordslabEnv']
 
 # %% ../nbs/01_env.ipynb 2
-import os
+import os, re, subprocess
+from pathlib import Path
+from typing import Optional
+
+from fastcore.utils import patch
 
 # %% ../nbs/01_env.ipynb 5
 class WordslabEnv:
@@ -71,3 +75,190 @@ class WordslabEnv:
         self.default_model_embedding = os.environ["OLLAMA_EMBED_MODEL"]
         self.default_model_code = os.environ["OLLAMA_CODE_MODEL"]
         self.default_model_autocomplete = os.environ["OLLAMA_COMPLETION_MODEL"]
+
+        # external cloud services - api keys
+        # Note: you need to reload the WordslabEnv() object after you define one of these environment variables
+        self.cloud_openrouter_api_key_var = "OPENROUTER_API_KEY"
+        self.cloud_openrouter_api_key = os.environ.get(self.cloud_openrouter_api_key_var)
+        self.cloud_replicate_api_token_var = "REPLICATE_API_TOKEN"
+        self.cloud_replicate_api_token = os.environ.get(self.cloud_replicate_api_token_var)
+        self.cloud_googlepse_api_key_var = "GOOGLE_PSE_API_KEY"
+        self.cloud_googlepse_api_key = os.environ.get(self.cloud_googlepse_api_key_var)
+        self.cloud_googlepse_search_engine_id_var = "GOOGLE_PSE_ID"
+        self.cloud_googlepse_search_engine_id = os.environ.get(self.cloud_googlepse_search_engine_id_var)
+        self.cloud_huggingface_access_token_var = "HF_TOKEN"
+        self.cloud_huggingface_access_token = os.environ.get(self.cloud_huggingface_access_token_var)
+
+# %% ../nbs/01_env.ipynb 62
+_ENV_REF_PATTERN = re.compile(
+    r"""
+    \$(\w+)|           # $VAR
+    \${([^}]+)}        # ${VAR}
+    """,
+    re.VERBOSE,
+)
+
+
+def _expand_with_current_env(value: str) -> str:
+    """
+    Expand $VAR and ${VAR} using os.environ.
+    Unknown variables are left unchanged.
+    """
+
+    def replacer(match: re.Match) -> str:
+        var_name = match.group(1) or match.group(2)
+        return os.environ.get(var_name, match.group(0))
+
+    return _ENV_REF_PATTERN.sub(replacer, value)
+
+@patch
+def write_user_env_var(self: WordslabEnv, var_name: str, var_value: str) -> None:
+    """
+    Write or update an environment variable in
+    $WORDSLAB_WORKSPACE/.secrets/user-env.bashrc
+
+    The file is created if it doesn't exist.
+    The variable is created if it doesn't exist and updated if it already exist.
+    The value is safely quoted for Bash while preserving $VAR references.
+
+    The new variable value is automatically injected in the current python process.
+    The environment variable will be automatically loaded each time you start a new shell.
+    But you need to restart all the currently running shells and other processes to see the new variable or value.
+    """
+
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", var_name):
+        raise ValueError(f"Invalid environment variable name: {var_name}")
+
+    workspace = os.environ.get("WORDSLAB_WORKSPACE")
+    if not workspace:
+        raise EnvironmentError("WORDSLAB_WORKSPACE is not set")
+
+    env_file = Path(workspace) / ".secrets" / "user-env.bashrc"
+    env_file.parent.mkdir(parents=True, exist_ok=True)
+
+    # Escape value for double-quoted Bash string (but keep $ unescaped)
+    escaped_value = (
+        var_value
+        .replace("\\", "\\\\")
+        .replace('"', '\\"')
+        .replace("`", "\\`")
+    )
+
+    new_line = f'{var_name}="{escaped_value}"'
+
+    if env_file.exists():
+        lines = env_file.read_text().splitlines()
+    else:
+        lines = []
+
+    var_pattern = re.compile(rf"^\s*{re.escape(var_name)}\s*=")
+    updated = False
+
+    for i, line in enumerate(lines):
+        if var_pattern.match(line):
+            lines[i] = new_line
+            updated = True
+            break
+
+    if not updated:
+        if lines and lines[-1].strip() != "":
+            lines.append("")
+        lines.append(new_line)
+
+    env_file.write_text("\n".join(lines) + "\n")
+
+    expanded_value = _expand_with_current_env(var_value)
+    os.environ[var_name] = expanded_value
+
+# %% ../nbs/01_env.ipynb 63
+@patch
+def read_user_env_var(self: WordslabEnv, var_name: str) -> Optional[str]:
+    """
+    Read a variable value from
+    $WORDSLAB_WORKSPACE/.secrets/user-env.bashrc
+
+    Returns the raw (unexpanded) value, or None if not found.
+    """
+
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", var_name):
+        raise ValueError(f"Invalid environment variable name: {var_name}")
+
+    workspace = os.environ.get("WORDSLAB_WORKSPACE")
+    if not workspace:
+        raise EnvironmentError("WORDSLAB_WORKSPACE is not set")
+
+    env_file = Path(workspace) / ".secrets" / "user-env.bashrc"
+    if not env_file.exists():
+        return None
+
+    pattern = re.compile(
+        rf"""
+        ^\s*
+        {re.escape(var_name)}
+        \s*=\s*
+        (?:
+            "(?P<dq>(?:\\.|[^"])*)" |
+            (?P<bare>[^\s#]+)
+        )
+        """,
+        re.VERBOSE,
+    )
+
+    for line in env_file.read_text().splitlines():
+        if line.strip().startswith("#"):
+            continue
+
+        match = pattern.match(line)
+        if match:
+            if match.group("dq") is not None:
+                return bytes(match.group("dq"), "utf-8").decode("unicode_escape")
+            return match.group("bare")
+
+    return None
+
+# %% ../nbs/01_env.ipynb 70
+@patch
+def setup_openrouter(self: WordslabEnv, openrouter_api_key: str) -> None:
+    self.write_user_env_var(self.cloud_openrouter_api_key_var, openrouter_api_key)
+
+# %% ../nbs/01_env.ipynb 74
+@patch
+def setup_replicate(self: WordslabEnv, replicate_api_token: str) -> None:
+    self.write_user_env_var(self.cloud_replicate_api_token_var, replicate_api_token)
+
+# %% ../nbs/01_env.ipynb 78
+@patch
+def setup_googlepse(self: WordslabEnv, googlepse_api_key: str, search_engine_id: str) -> None:
+    self.write_user_env_var(self.cloud_googlepse_api_key_var, googlepse_api_key)
+    self.write_user_env_var(self.cloud_googlepse_search_engine_id_var, search_engine_id)
+
+# %% ../nbs/01_env.ipynb 82
+@patch
+def setup_github(self: WordslabEnv, git_user_name: str, git_user_email: str, github_username: str, github_access_token: str) -> None:
+    # Set global Git user name and email
+    subprocess.run(["git", "config", "--global", "user.name", git_user_name], check=True)
+    subprocess.run(["git", "config", "--global", "user.email", git_user_email], check=True)
+    # Enable Git credential store
+    subprocess.run(["git", "config", "--global", "credential.helper", "store"], check=True)
+    # Store credentials in ~/.git-credentials
+    credentials_file = Path.home() / ".git-credentials"
+    credential_line = f"https://{github_username}:{github_access_token}@github.com\n"
+    with open(credentials_file, "w") as f:
+        f.write(credential_line)
+    print("Wrote Github credentials");
+
+# %% ../nbs/01_env.ipynb 85
+@patch
+def setup_huggingface(self: WordslabEnv, huggingface_access_token: str) -> None:
+    self.write_user_env_var(self.cloud_huggingface_access_token_var, huggingface_access_token)
+
+# %% ../nbs/01_env.ipynb 89
+@patch
+def setup_pypi(self: WordslabEnv, pypi_api_token: str) -> None:
+    pypirc_path = Path.home() / ".pypirc"
+    content = f"""[pypi]
+username = __token__
+password = {pypi_api_token}
+"""
+    pypirc_path.write_text(content)
+    print("Wrote Pypi credentials");
