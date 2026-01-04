@@ -86,6 +86,8 @@ class WordslabEnv:
         self.cloud_googlepse_api_key = os.environ.get(self.cloud_googlepse_api_key_var)
         self.cloud_googlepse_search_engine_id_var = "GOOGLE_PSE_ID"
         self.cloud_googlepse_search_engine_id = os.environ.get(self.cloud_googlepse_search_engine_id_var)
+        self.cloud_ollama_api_key_var = "OLLAMA_API_KEY"
+        self.cloud_ollama_api_key = os.environ.get(self.cloud_ollama_api_key_var)
         self.cloud_huggingface_access_token_var = "HF_TOKEN"
         self.cloud_huggingface_access_token = os.environ.get(self.cloud_huggingface_access_token_var)
 
@@ -97,7 +99,6 @@ _ENV_REF_PATTERN = re.compile(
     """,
     re.VERBOSE,
 )
-
 
 def _expand_with_current_env(value: str) -> str:
     """
@@ -144,14 +145,14 @@ def write_user_env_var(self: WordslabEnv, var_name: str, var_value: str) -> None
         .replace("`", "\\`")
     )
 
-    new_line = f'{var_name}="{escaped_value}"'
+    new_line = f'export {var_name}="{escaped_value}"'
 
     if env_file.exists():
         lines = env_file.read_text().splitlines()
     else:
         lines = []
 
-    var_pattern = re.compile(rf"^\s*{re.escape(var_name)}\s*=")
+    var_pattern = re.compile(rf"^\s*(?:export\s+)?{re.escape(var_name)}\s*=")
     updated = False
 
     for i, line in enumerate(lines):
@@ -194,6 +195,7 @@ def read_user_env_var(self: WordslabEnv, var_name: str) -> Optional[str]:
     pattern = re.compile(
         rf"""
         ^\s*
+        (?:export\s+)?
         {re.escape(var_name)}
         \s*=\s*
         (?:
@@ -234,6 +236,11 @@ def setup_googlepse(self: WordslabEnv, googlepse_api_key: str, search_engine_id:
 
 # %% ../nbs/01_env.ipynb 82
 @patch
+def setup_ollamacloud(self: WordslabEnv, ollama_api_key: str) -> None:
+    self.write_user_env_var(self.cloud_ollama_api_key_var, ollama_api_key)
+
+# %% ../nbs/01_env.ipynb 86
+@patch
 def setup_github(self: WordslabEnv, git_user_name: str, git_user_email: str, github_username: str, github_access_token: str) -> None:
     # Set global Git user name and email
     subprocess.run(["git", "config", "--global", "user.name", git_user_name], check=True)
@@ -247,12 +254,12 @@ def setup_github(self: WordslabEnv, git_user_name: str, git_user_email: str, git
         f.write(credential_line)
     print("Wrote Github credentials");
 
-# %% ../nbs/01_env.ipynb 85
+# %% ../nbs/01_env.ipynb 89
 @patch
 def setup_huggingface(self: WordslabEnv, huggingface_access_token: str) -> None:
     self.write_user_env_var(self.cloud_huggingface_access_token_var, huggingface_access_token)
 
-# %% ../nbs/01_env.ipynb 89
+# %% ../nbs/01_env.ipynb 93
 @patch
 def setup_pypi(self: WordslabEnv, pypi_api_token: str) -> None:
     pypirc_path = Path.home() / ".pypirc"
