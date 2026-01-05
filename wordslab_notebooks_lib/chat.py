@@ -9,9 +9,9 @@ __all__ = ['ChatTurn', 'ChatTurns', 'get_tools_schemas_and_functions', 'ToolExec
 # %% ../nbs/02_chat.ipynb 2
 from abc import ABC, abstractmethod
 from collections.abc import Sequence as SequenceType
-from typing import Callable, Optional, Union, Sequence, Mapping, Any
+from typing import Callable, Optional, Union, Sequence, Mapping, Any, Literal
 from datetime import datetime
-import inspect, re, time, traceback
+import inspect, json, re, time, traceback
 
 from toolslm.funccall import get_schema, call_func
 from IPython.display import display, Markdown, clear_output
@@ -68,8 +68,8 @@ class ChatTurn:
         output = ""
         if len(self.thinking_chunks) > 0:
             if not hide_thinking:
-                output += "> [Thinking]\n>\n> "
-                output += ("".join(self.thinking_chunks)).replace("\n\n","\n>\n> ").replace("\n- ","\n - ") + "\n\n"
+                output += "> [Thinking]\n\n"
+                output += "\n".join(f"> {line}" for line in "".join(self.thinking_chunks).splitlines())
             else:
                 output += f"> [Thinking] ... thought in {sum(s.count(' ') + s.count('\n') for s in self.thinking_chunks)} words\n\n"
         if len(self.content_chunks) > 0:
@@ -115,7 +115,7 @@ class ChatTurns:
         clear_output(wait=True)
         output = ""
         for turn in self.chat_turns:
-            output += turn.to_markdown()
+            output += turn.to_markdown(self.hide_thinking, self.hide_tool_calls)
         display(Markdown(output))
 
 # %% ../nbs/02_chat.ipynb 14
@@ -228,7 +228,7 @@ class OllamaModelClient(ModelClient):
             env = WordslabEnv()
             api_key = env.cloud_ollama_api_key
         if api_key:
-            headers = {'Authorization': 'Bearer ' + os.environ.get('OLLAMA_API_KEY')}
+            headers = {'Authorization': 'Bearer ' + api_key}
         else:            
             headers = {}
         self.client = Client(host=self.base_url, headers=headers)
@@ -319,15 +319,14 @@ class OpenRouterModelClient(ModelClient):
         super().__init__(model, base_url, api_key, context_size)
 
         # Initialize API client
-        if api_key:
-            headers = {'Authorization': 'Bearer ' + os.environ.get('OLLAMA_API_KEY')}
-        else:
-            headers = {}
-        self.client = Client(host=self.base_url, headers=headers)
+        if not api_key:
+            env = WordslabEnv()
+            api_key = env.cloud_openrouter_api_key
+        self.client = OpenAI(base_url=base_url, api_key=api_key)
         
-        # Load model in memory with the right context length
-        print(f"ollama: loading model {self.model} with context size {self.context_size} ... ", end="");
-        self.client.chat(model=self.model, messages=[{'role': 'user', 'content': 'say yes'}], options=Options(num_ctx=self.context_size, num_predict=1))
+        # Check connection
+        print(f"openrouter: testing model {self.model} ... ", end="");
+        self.client.chat.completions.create(model=self.model, messages=[{'role': 'user', 'content': 'say yes'}], max_tokens=1)
         print(f"ok");
 
     def __call__(
@@ -339,45 +338,78 @@ class OpenRouterModelClient(ModelClient):
         max_new_tokens: Optional[int] = None,
         seed: Optional[int] = None,
         temperature: Optional[float] = None,
-        top_k: Optional[int] = None,
+        top_k: Optional[int] = None,  # Ignored, not supported by the openai chat completions API
         top_p: Optional[float] = None,
-        min_p: Optional[float] = None,      
+        min_p: Optional[float] = None,  # Ignored, not supported by the openai chat completions API
     ) -> bool:
         # Check tools parameter type
         if tools and not isinstance(tools, Tools):
             raise TypeError("Argument tools must be of type wordslab_notebooks_lib.chat.Tools. Create a tools object with the syntax: Tools([func1, func2, func3]), where the parameters are documented python functions.")
         
         # Immediate user feedback
-        print(f"ollama: processing {_messages_words(messages)} words with `{self.model}` ...")
+        print(f"openrouter: processing {_messages_words(messages)} words with `{self.model}` ...")
         
         # Observable conversation turn
         chat_turn = chat_turns.new_turn()
         
-        stream = self.client.chat(
-            model = self.model,
-            messages = messages,
+        # Map "think" → reasoning_effort
+        reasoning = None
+        if think is True:
+            reasoning = {"reasoning": {"enabled": True}} 
+        elif think in ("low", "medium", "high"):
+            reasoning = {"reasoning": {"effort": think}} # Can be "xhigh", "high", "medium", "low", "minimal" or "none" (OpenAI-style)
+
+        stream = self.client.chat.completions.create(
+            model=self.model,
+            messages=messages,
             tools = tools.get_schemas() if tools else None,
-            stream = True,
-            think = think,
-            options = Options(num_ctx = self.context_size, num_predict = max_new_tokens, seed = seed,
-                              temperature = temperature, top_k=top_k, top_p=top_p, min_p=min_p)
+            stream=True,
+            extra_body= reasoning,
+            max_tokens=max_new_tokens,
+            seed=seed,
+            temperature=temperature,
+            top_p=top_p,
         )
     
         # Streaming: accumulate the partial fields
-        tool_calls = []        
+        tool_calls = {}       
         for chunk in stream:
-            if chunk.message.thinking:
-                chat_turn.append_thinking(chunk.message.thinking)                
-            if chunk.message.content:
-                chat_turn.append_content(chunk.message.content)
-            if chunk.message.tool_calls:
-                tool_calls.extend(chunk.message.tool_calls)
-                for tc in chunk.message.tool_calls:
-                    chat_turn.append_tool_call(tc.function.name, tc.function.arguments)
+            delta = chunk.choices[0].delta
+            if hasattr(delta, "reasoning") and delta.reasoning:
+                chat_turn.append_thinking(delta.reasoning)                
+            if hasattr(delta, "content") and delta.content:
+                chat_turn.append_content(delta.content)
+            if hasattr(delta, "tool_calls") and delta.tool_calls:
+                for tool_call in delta.tool_calls:
+                    call_id = tool_call.id        
+                    if call_id not in tool_calls:
+                        tool_calls[call_id] = {
+                            "name": tool_call.function.name,
+                            "arguments": ""
+                        }
+                    # arguments arrive as a JSON string fragment
+                    tool_calls[call_id]["arguments"] += (tool_call.function.arguments or "")
+        # We need to wait the end of the stream to make sure the tool calls are complete
+        for tc in tool_calls.values():
+            chat_turn.append_tool_call(tc["name"], tc["arguments"])
         
         # append accumulated fields to the messages
         if chat_turn.thinking or chat_turn.content or tool_calls:
-            messages.append({'role': 'assistant', 'thinking': chat_turn.thinking, 'content': chat_turn.content, 'tool_calls': tool_calls})
+            messages.append({
+                "role": "assistant",
+                "content": chat_turn.content,
+                "tool_calls": [
+                    {
+                        "id": call_id,
+                        "type": "function",
+                        "function": {
+                            "name": call["name"],
+                            "arguments": call["arguments"]
+                        }
+                    }
+                    for call_id, call in tool_calls.items()
+                ]
+            })
     
         # end the loop if there is no more tool calls
         if not tool_calls: 
@@ -385,16 +417,16 @@ class OpenRouterModelClient(ModelClient):
             
         # execute tool calls  
         else:    
-            for tc in tool_calls:
-                if tools.has_tool(tc.function.name):
-                    chat_turn.start_tool_call(tc.function.name)
-                    result = tools.call(tc.function.name, tc.function.arguments)
-                    chat_turn.end_tool_call(tc.function.name, result)
+            for tc_id, tc in tool_calls.items():
+                if tools.has_tool(tc["name"]):
+                    chat_turn.start_tool_call(tc["name"])
+                    result = tools.call(tc["name"], json.loads(tc["arguments"]))
+                    chat_turn.end_tool_call(tc["name"], result)
                 else:
                     result = 'Unknown tool'
         
                 # append tool call result to the messages 
-                messages.append({'role': 'tool', 'tool_name': tc.function.name, 'content': str(result)})
+                messages.append({"role": "tool", "tool_call_id": call_id, "content": str(result)})
 
         # continue the loop after tool calls
         return True
