@@ -326,7 +326,7 @@ class OpenRouterModelClient(ModelClient):
         
         # Check connection
         print(f"openrouter: testing model {self.model} ... ", end="");
-        self.client.chat.completions.create(model=self.model, messages=[{'role': 'user', 'content': 'say yes'}], max_tokens=1)
+        self.client.chat.completions.create(model=self.model, messages=[{'role': 'user', 'content': 'say yes'}], max_tokens=16)
         print(f"ok");
 
     def __call__(
@@ -334,7 +334,7 @@ class OpenRouterModelClient(ModelClient):
         messages: Sequence[Mapping[str, Any]],
         chat_turns: ChatTurns,
         tools: Tools = None,
-        think: Union[bool, Literal["low", "medium", "high"], None] = None,
+        think: Union[bool, Literal["xhigh", "high", "medium", "low", "minimal", "none"], int, None] = None,
         max_new_tokens: Optional[int] = None,
         seed: Optional[int] = None,
         temperature: Optional[float] = None,
@@ -352,13 +352,15 @@ class OpenRouterModelClient(ModelClient):
         # Observable conversation turn
         chat_turn = chat_turns.new_turn()
         
-        # Map "think" → reasoning_effort
+        # Map "think" → reasoning_effort / max_tokens
         reasoning = None
         if think is True:
-            reasoning = {"reasoning": {"enabled": True}} 
+            reasoning = {"reasoning": {"enabled": True}} # reasoning on/off
         elif think in ("low", "medium", "high"):
-            reasoning = {"reasoning": {"effort": think}} # Can be "xhigh", "high", "medium", "low", "minimal" or "none" (OpenAI-style)
-
+            reasoning = {"reasoning": {"effort": think}} # "xhigh", "high", "medium", "low", "minimal" or "none" (OpenAI-style)
+        elif isinstance(think, int):
+            reasoning = {"reasoning": {"max_tokens": think}} # specified token budget for extended thinking (Anthropic-style)
+        
         stream = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
@@ -381,33 +383,38 @@ class OpenRouterModelClient(ModelClient):
                 chat_turn.append_content(delta.content)
             if hasattr(delta, "tool_calls") and delta.tool_calls:
                 for tool_call in delta.tool_calls:
-                    call_id = tool_call.id        
-                    if call_id not in tool_calls:
-                        tool_calls[call_id] = {
+                    idx = tool_call.index
+                    # First tool call chunk
+                    if idx not in tool_calls:
+                        tool_calls[idx] = {
+                            "id": tool_call.id,  # only present in first chunk
                             "name": tool_call.function.name,
                             "arguments": ""
-                        }
-                    # arguments arrive as a JSON string fragment
-                    tool_calls[call_id]["arguments"] += (tool_call.function.arguments or "")
+                        }       
+                    # Append streamed argument fragments
+                    tool_calls[idx]["arguments"] += (
+                        tool_call.function.arguments or ""
+                    )
+                    
         # We need to wait the end of the stream to make sure the tool calls are complete
         for tc in tool_calls.values():
             chat_turn.append_tool_call(tc["name"], tc["arguments"])
         
-        # append accumulated fields to the messages
-        if chat_turn.thinking or chat_turn.content or tool_calls:
+        # Append accumulated fields to the messages
+        if chat_turn.content or tool_calls:
             messages.append({
                 "role": "assistant",
                 "content": chat_turn.content,
                 "tool_calls": [
                     {
-                        "id": call_id,
+                        "id": tc["id"],
                         "type": "function",
                         "function": {
-                            "name": call["name"],
-                            "arguments": call["arguments"]
+                            "name": tc["name"],
+                            "arguments": tc["arguments"]
                         }
                     }
-                    for call_id, call in tool_calls.items()
+                    for tc in tool_calls.values()
                 ]
             })
     
@@ -417,7 +424,7 @@ class OpenRouterModelClient(ModelClient):
             
         # execute tool calls  
         else:    
-            for tc_id, tc in tool_calls.items():
+            for tc in tool_calls.values():
                 if tools.has_tool(tc["name"]):
                     chat_turn.start_tool_call(tc["name"])
                     result = tools.call(tc["name"], json.loads(tc["arguments"]))
@@ -426,7 +433,7 @@ class OpenRouterModelClient(ModelClient):
                     result = 'Unknown tool'
         
                 # append tool call result to the messages 
-                messages.append({"role": "tool", "tool_call_id": call_id, "content": str(result)})
+                messages.append({"role": "tool", "tool_call_id": tc["id"], "content": str(result)})
 
         # continue the loop after tool calls
         return True
