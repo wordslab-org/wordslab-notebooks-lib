@@ -250,64 +250,65 @@ class OllamaModelClient(ModelClient):
         top_k: Optional[int] = None,
         top_p: Optional[float] = None,
         min_p: Optional[float] = None,      
-    ) -> bool:
+        max_tool_calls:int = 20
+    ) -> None:
         # Check tools parameter type
         if tools and not isinstance(tools, Tools):
             raise TypeError("Argument tools must be of type wordslab_notebooks_lib.chat.Tools. Create a tools object with the syntax: Tools([func1, func2, func3]), where the parameters are documented python functions.")
-        
-        # Immediate user feedback
-        print(f"ollama: processing {_messages_words(messages)} words with `{self.model}` ...")
-        
-        # Observable conversation turn
-        chat_turn = chat_turns.new_turn()
-        
-        stream = self.client.chat(
-            model = self.model,
-            messages = messages,
-            tools = tools.get_schemas() if tools else None,
-            stream = True,
-            think = think,
-            options = Options(num_ctx = self.context_size, num_predict = max_new_tokens, seed = seed,
-                              temperature = temperature, top_k=top_k, top_p=top_p, min_p=min_p)
-        )
-    
-        # Streaming: accumulate the partial fields
-        tool_calls = []        
-        for chunk in stream:
-            if chunk.message.thinking:
-                chat_turn.append_thinking(chunk.message.thinking)                
-            if chunk.message.content:
-                chat_turn.append_content(chunk.message.content)
-            if chunk.message.tool_calls:
-                tool_calls.extend(chunk.message.tool_calls)
-                for tc in chunk.message.tool_calls:
-                    chat_turn.append_tool_call(tc.function.name, tc.function.arguments)
-        
-        # append accumulated fields to the messages
-        if chat_turn.thinking or chat_turn.content or tool_calls:
-            messages.append({'role': 'assistant', 'thinking': chat_turn.thinking, 'content': chat_turn.content, 'tool_calls': tool_calls})
-    
-        # end the loop if there is no more tool calls
-        if not tool_calls: 
-            return False      
+
+        for i in range(max_tool_calls):
+            # Immediate user feedback
+            print(f"ollama: processing {_messages_words(messages)} words with `{self.model}` ...")
             
-        # execute tool calls  
-        else:    
-            for tc in tool_calls:
-                if tools.has_tool(tc.function.name):
-                    chat_turn.start_tool_call(tc.function.name)
-                    result = tools.call(tc.function.name, tc.function.arguments)
-                    chat_turn.end_tool_call(tc.function.name, result)
-                else:
-                    result = 'Unknown tool'
+            # Observable conversation turn
+            chat_turn = chat_turns.new_turn()
+            
+            stream = self.client.chat(
+                model = self.model,
+                messages = messages,
+                tools = tools.get_schemas() if tools else None,
+                stream = True,
+                think = think,
+                options = Options(num_ctx = self.context_size, num_predict = max_new_tokens, seed = seed,
+                                  temperature = temperature, top_k=top_k, top_p=top_p, min_p=min_p)
+            )
         
-                # append tool call result to the messages 
-                messages.append({'role': 'tool', 'tool_name': tc.function.name, 'content': str(result)})
+            # Streaming: accumulate the partial fields
+            tool_calls = []        
+            for chunk in stream:
+                if chunk.message.thinking:
+                    chat_turn.append_thinking(chunk.message.thinking)                
+                if chunk.message.content:
+                    chat_turn.append_content(chunk.message.content)
+                if chunk.message.tool_calls:
+                    tool_calls.extend(chunk.message.tool_calls)
+                    for tc in chunk.message.tool_calls:
+                        chat_turn.append_tool_call(tc.function.name, tc.function.arguments)
+            
+            # append accumulated fields to the messages
+            if chat_turn.thinking or chat_turn.content or tool_calls:
+                messages.append({'role': 'assistant', 'thinking': chat_turn.thinking, 'content': chat_turn.content, 'tool_calls': tool_calls})
+        
+            # end the loop if there is no more tool calls
+            if not tool_calls: 
+                return     
+                
+            # execute tool calls  
+            else:    
+                for tc in tool_calls:
+                    if tools.has_tool(tc.function.name):
+                        chat_turn.start_tool_call(tc.function.name)
+                        result = tools.call(tc.function.name, tc.function.arguments)
+                        chat_turn.end_tool_call(tc.function.name, result)
+                    else:
+                        result = 'Unknown tool'
+            
+                    # append tool call result to the messages 
+                    messages.append({'role': 'tool', 'tool_name': tc.function.name, 'content': str(result)})
+    
+            # continue the loop after tool calls
 
-        # continue the loop after tool calls
-        return True
-
-# %% ../nbs/02_chat.ipynb 43
+# %% ../nbs/02_chat.ipynb 42
 class OpenRouterModelClient(ModelClient):
     def __init__(
         self,
@@ -340,100 +341,101 @@ class OpenRouterModelClient(ModelClient):
         temperature: Optional[float] = None,
         top_k: Optional[int] = None,  # Ignored, not supported by the openai chat completions API
         top_p: Optional[float] = None,
-        min_p: Optional[float] = None,  # Ignored, not supported by the openai chat completions API
-    ) -> bool:
+        min_p: Optional[float] = None,  # Ignored, not supported by the openai chat completions API   
+        max_tool_calls:int = 20
+    ) -> None:
         # Check tools parameter type
         if tools and not isinstance(tools, Tools):
             raise TypeError("Argument tools must be of type wordslab_notebooks_lib.chat.Tools. Create a tools object with the syntax: Tools([func1, func2, func3]), where the parameters are documented python functions.")
-        
-        # Immediate user feedback
-        print(f"openrouter: processing {_messages_words(messages)} words with `{self.model}` ...")
-        
-        # Observable conversation turn
-        chat_turn = chat_turns.new_turn()
-        
-        # Map "think" → reasoning_effort / max_tokens
-        reasoning = None
-        if think is True:
-            reasoning = {"reasoning": {"enabled": True}} # reasoning on/off
-        elif think in ("low", "medium", "high"):
-            reasoning = {"reasoning": {"effort": think}} # "xhigh", "high", "medium", "low", "minimal" or "none" (OpenAI-style)
-        elif isinstance(think, int):
-            reasoning = {"reasoning": {"max_tokens": think}} # specified token budget for extended thinking (Anthropic-style)
-        
-        stream = self.client.chat.completions.create(
-            model=self.model,
-            messages=messages,
-            tools = tools.get_schemas() if tools else None,
-            stream=True,
-            extra_body= reasoning,
-            max_tokens=max_new_tokens,
-            seed=seed,
-            temperature=temperature,
-            top_p=top_p,
-        )
-    
-        # Streaming: accumulate the partial fields
-        tool_calls = {}       
-        for chunk in stream:
-            delta = chunk.choices[0].delta
-            if hasattr(delta, "reasoning") and delta.reasoning:
-                chat_turn.append_thinking(delta.reasoning)                
-            if hasattr(delta, "content") and delta.content:
-                chat_turn.append_content(delta.content)
-            if hasattr(delta, "tool_calls") and delta.tool_calls:
-                for tool_call in delta.tool_calls:
-                    idx = tool_call.index
-                    # First tool call chunk
-                    if idx not in tool_calls:
-                        tool_calls[idx] = {
-                            "id": tool_call.id,  # only present in first chunk
-                            "name": tool_call.function.name,
-                            "arguments": ""
-                        }       
-                    # Append streamed argument fragments
-                    tool_calls[idx]["arguments"] += (
-                        tool_call.function.arguments or ""
-                    )
-                    
-        # We need to wait the end of the stream to make sure the tool calls are complete
-        for tc in tool_calls.values():
-            chat_turn.append_tool_call(tc["name"], tc["arguments"])
-        
-        # Append accumulated fields to the messages
-        if chat_turn.content or tool_calls:
-            messages.append({
-                "role": "assistant",
-                "content": chat_turn.content,
-                "tool_calls": [
-                    {
-                        "id": tc["id"],
-                        "type": "function",
-                        "function": {
-                            "name": tc["name"],
-                            "arguments": tc["arguments"]
-                        }
-                    }
-                    for tc in tool_calls.values()
-                ]
-            })
-    
-        # end the loop if there is no more tool calls
-        if not tool_calls: 
-            return False      
-            
-        # execute tool calls  
-        else:    
-            for tc in tool_calls.values():
-                if tools.has_tool(tc["name"]):
-                    chat_turn.start_tool_call(tc["name"])
-                    result = tools.call(tc["name"], json.loads(tc["arguments"]))
-                    chat_turn.end_tool_call(tc["name"], result)
-                else:
-                    result = 'Unknown tool'
-        
-                # append tool call result to the messages 
-                messages.append({"role": "tool", "tool_call_id": tc["id"], "content": str(result)})
 
-        # continue the loop after tool calls
-        return True
+        for i in range(max_tool_calls):
+            # Immediate user feedback
+            print(f"openrouter: processing {_messages_words(messages)} words with `{self.model}` ...")
+            
+            # Observable conversation turn
+            chat_turn = chat_turns.new_turn()
+            
+            # Map "think" → reasoning_effort / max_tokens
+            reasoning = None
+            if think is True:
+                reasoning = {"reasoning": {"enabled": True}} # reasoning on/off
+            elif think in ("low", "medium", "high"):
+                reasoning = {"reasoning": {"effort": think}} # "xhigh", "high", "medium", "low", "minimal" or "none" (OpenAI-style)
+            elif isinstance(think, int):
+                reasoning = {"reasoning": {"max_tokens": think}} # specified token budget for extended thinking (Anthropic-style)
+            
+            stream = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                tools = tools.get_schemas() if tools else None,
+                stream=True,
+                extra_body= reasoning,
+                max_tokens=max_new_tokens,
+                seed=seed,
+                temperature=temperature,
+                top_p=top_p,
+            )
+        
+            # Streaming: accumulate the partial fields
+            tool_calls = {}       
+            for chunk in stream:
+                delta = chunk.choices[0].delta
+                if hasattr(delta, "reasoning") and delta.reasoning:
+                    chat_turn.append_thinking(delta.reasoning)                
+                if hasattr(delta, "content") and delta.content:
+                    chat_turn.append_content(delta.content)
+                if hasattr(delta, "tool_calls") and delta.tool_calls:
+                    for tool_call in delta.tool_calls:
+                        idx = tool_call.index
+                        # First tool call chunk
+                        if idx not in tool_calls:
+                            tool_calls[idx] = {
+                                "id": tool_call.id,  # only present in first chunk
+                                "name": tool_call.function.name,
+                                "arguments": ""
+                            }       
+                        # Append streamed argument fragments
+                        tool_calls[idx]["arguments"] += (
+                            tool_call.function.arguments or ""
+                        )
+                        
+            # We need to wait the end of the stream to make sure the tool calls are complete
+            for tc in tool_calls.values():
+                chat_turn.append_tool_call(tc["name"], tc["arguments"])
+            
+            # Append accumulated fields to the messages
+            if chat_turn.content or tool_calls:
+                messages.append({
+                    "role": "assistant",
+                    "content": chat_turn.content,
+                    "tool_calls": [
+                        {
+                            "id": tc["id"],
+                            "type": "function",
+                            "function": {
+                                "name": tc["name"],
+                                "arguments": tc["arguments"]
+                            }
+                        }
+                        for tc in tool_calls.values()
+                    ]
+                })
+        
+            # end the loop if there is no more tool calls
+            if not tool_calls: 
+                return      
+                
+            # execute tool calls  
+            else:    
+                for tc in tool_calls.values():
+                    if tools.has_tool(tc["name"]):
+                        chat_turn.start_tool_call(tc["name"])
+                        result = tools.call(tc["name"], json.loads(tc["arguments"]))
+                        chat_turn.end_tool_call(tc["name"], result)
+                    else:
+                        result = 'Unknown tool'
+            
+                    # append tool call result to the messages 
+                    messages.append({"role": "tool", "tool_call_id": tc["id"], "content": str(result)})
+    
+            # continue the loop after tool calls
