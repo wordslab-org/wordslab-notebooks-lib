@@ -239,8 +239,10 @@ class OllamaModelClient(ModelClient):
             env = WordslabEnv()
             api_key = env.cloud_ollama_api_key
         if api_key:
+            self.has_api_key = True
             headers = {'Authorization': 'Bearer ' + api_key}
-        else:            
+        else:
+            self.has_api_key = False
             headers = {}
         self.client = Client(host=self.base_url, headers=headers)
         
@@ -259,6 +261,7 @@ class OllamaModelClient(ModelClient):
         tools: Tools = None,             
         max_tool_calls:int = 20,
         think: Union[bool, Literal["low", "medium", "high"], None] = None,
+        web_search: bool = False,
         output_model: Type[BaseModel] = None,
         max_new_tokens: Optional[int] = None,
         seed: Optional[int] = None,
@@ -268,12 +271,22 @@ class OllamaModelClient(ModelClient):
         min_p: Optional[float] = None, 
         refresh_display: Optional[Callable] = refresh_notebook_display()
     ) -> None:
+        # Reset response field
+        self.response = None
+        
         # Check parameters type
         if user_images and not isinstance(user_images, Images):
             raise TypeError("Argument user_images must be of type wordslab_notebooks_lib.chat.Images. Create an images object with the syntax: Images('file.jpg') or Images('https://example.com/file.jpg') or Images(image_bytes).")
         if tools and not isinstance(tools, Tools):
             raise TypeError("Argument tools must be of type wordslab_notebooks_lib.chat.Tools. Create a tools object with the syntax: Tools([func1, func2, func3]), where the parameters are documented python functions.")
-        
+        if output_model and not (isinstance(output_model, type) and issubclass(output_model, BaseModel)):
+            raise TypeError("Argument output_model must be a pydantic model - a subclass of pydantic.BaseModel.")
+        if web_search:
+            if self.has_api_key:
+                tools = Tools([self.client.web_search, self.client.web_fetch] + (tools if tools else []))
+            else:
+                raise RuntimeError("Web search requires an api_key in OllamaModelClient constructor.")
+
         # Manage messages
         if messages is None:
             messages = []
@@ -312,6 +325,7 @@ class OllamaModelClient(ModelClient):
                 tools = tools.get_schemas() if tools else None,
                 stream = True,
                 think = think,
+                format = output_model.model_json_schema() if output_model else None,
                 options = Options(num_ctx = self.context_size, num_predict = max_new_tokens, seed = seed,
                                   temperature = temperature, top_k=top_k, top_p=top_p, min_p=min_p)
             )
@@ -334,7 +348,10 @@ class OllamaModelClient(ModelClient):
         
             # end the loop if there is no more tool calls
             if not tool_calls: 
-                return     
+                # Set response field
+                if 'content' in messages[-1]:
+                    self.response = messages[-1]['content']
+                return 
                 
             # execute tool calls  
             else:    
@@ -351,7 +368,7 @@ class OllamaModelClient(ModelClient):
     
             # continue the loop after tool calls
 
-# %% ../nbs/02_chat.ipynb 54
+# %% ../nbs/02_chat.ipynb 59
 class OpenRouterModelClient(ModelClient):
     def __init__(
         self,
