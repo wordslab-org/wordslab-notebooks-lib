@@ -4,7 +4,7 @@
 
 # %% auto 0
 __all__ = ['ChatTurn', 'ChatTurns', 'refresh_notebook_display', 'get_tools_schemas_and_functions', 'ToolExecutionError', 'Tools',
-           'ModelClient', 'OllamaModelClient', 'OpenRouterModelClient']
+           'Images', 'ModelClient', 'OllamaModelClient', 'OpenRouterModelClient']
 
 # %% ../nbs/02_chat.ipynb 2
 from abc import ABC, abstractmethod
@@ -107,7 +107,7 @@ class ChatTurn:
  
 
 class ChatTurns:
-    def __init__(self, refresh_display:Callable[ChatTurns,Callable] = None):
+    def __init__(self, refresh_display:Callable = None):
         self.chat_turns = []
         self.refresh_display = refresh_display(self.chat_turns)
 
@@ -184,14 +184,72 @@ class Tools:
             tb = traceback.format_exc()
             raise ToolExecutionError(f"Tool '{tool_name}' raised an exception: {e}")
 
+# %% ../nbs/02_chat.ipynb 26
+class Images:
+    def __init__(self, image:Union[str,Path,bytes] = None):
+        self.images = []
+        self.urls = []
+        
+        if isinstance(image, bytes):
+            self.add_bytes(image)
+        elif isinstance(image, Path):
+            self.add_file_path(image)
+        elif isinstance(image, str):
+            if Images.is_web_url(image):
+                self.add_web_url(image)
+            else:
+                self.add_file_path(image)
+        else:
+            raise ValueError(f'Image must be a string, Path or bytes object')
+
+    def add_bytes(self, image_bytes: bytes):
+        self.images.append(b64encode(image_bytes).decode())
+        self.urls.append(False)
+    
+    def add_file_path(self, image_path: Union[str, Path]):
+        if isinstance(image_path, str):
+            image_path = Path(image_path)
+        if isinstance(image_path, Path):
+            if image_path.is_file():
+                self.add_bytes(image_path.read_bytes())
+            else:
+                raise ValueError(f'Invalid image file path: {image_path}')
+        else:
+            raise ValueError(f'Image file path must be a string or a Path object')
+
+    def is_web_url(image_url: str):
+        try:
+            parsed = urlparse(image_url)
+            return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+        except Exception:
+            return False
+    
+    def add_web_url(self, image_url: str): 
+        if Images.is_web_url(image_url):
+            self.images.append(image_url)
+            self.urls.append(True)
+        else:
+            raise ValueError(f'Invalid image web url: {image_url}')
+
+    def get_base64_data_or_url(self):
+        return zip(self.images,self.urls)
+
+    def get_base64_data(self):
+        for i in range(len(self.images)):
+            if not self.urls[i]:
+                yield self.images[i]
+            else:
+                with urlopen(self.images[i], timeout=30) as response:
+                    yield b64encode(response.read()).decode()
+
 # %% ../nbs/02_chat.ipynb 33
 class ModelClient(ABC):
     def __init__(
         self,
-        model: str,
+        model: str,        
+        context_size: Optional[int] = None,
         base_url: Optional[str] = None,
         api_key: Optional[str] = None,
-        context_size: Optional[int] = None,
     ):
         self.model = model
         self.base_url = base_url
@@ -279,7 +337,7 @@ class OllamaModelClient(ModelClient):
         base_url: str = "http://localhost:11434",
         api_key: Optional[str] = None,  # If not provided, the optional key will be pulled from WordslabEnv
     ):
-        super().__init__(model, base_url, api_key, context_size)
+        super().__init__(model, context_size, base_url, api_key)
 
         # Initialize API client
         if not api_key:
@@ -412,7 +470,7 @@ class OpenRouterModelClient(ModelClient):
         base_url: str = "https://openrouter.ai/api/v1",
         api_key: Optional[str] = None, # If not provided, the mandatory key will be pulled from WordslabEnv
     ):
-        super().__init__(model, base_url, api_key, context_size)
+        super().__init__(model, context_size, base_url, api_key)
 
         # Initialize API client
         if not api_key:
