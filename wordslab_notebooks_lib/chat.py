@@ -9,7 +9,7 @@ __all__ = ['ChatTurn', 'ChatTurns', 'refresh_notebook_display', 'get_tools_schem
 # %% ../nbs/02_chat.ipynb 2
 from abc import ABC, abstractmethod
 from collections.abc import Sequence as SequenceType
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Callable, Optional, Union, Sequence, Mapping, Any, Literal, Type
 
 from base64 import b64decode, b64encode
@@ -201,28 +201,75 @@ class ModelClient(ABC):
     @abstractmethod
     def __call__(
         self,
-        messages: Sequence[Mapping[str, Any]],
-        chat_turns: ChatTurns,
-        tools: Tools = None,
-        think: Union[bool, Literal["low", "medium", "high"], None] = None,
+        messages: Sequence[Mapping[str, Any]] = None,
+        system_prompt: str = None,
+        user_prompt: str = None,
+        user_images: Images = None,
+        assistant_prefill: str = None,
+        tools: Tools = None,             
+        max_tool_calls:int = 20,
+        think: Union[bool, Literal["xhigh", "high", "medium", "low", "minimal", "none"], int, None] = None,
+        web_search: bool = False,
+        output_model: Type[BaseModel] = None,
         max_new_tokens: Optional[int] = None,
         seed: Optional[int] = None,
         temperature: Optional[float] = None,
         top_k: Optional[int] = None,
         top_p: Optional[float] = None,
-        min_p: Optional[float] = None,      
-        max_tool_calls:int = 20
-    ) -> bool:
+        min_p: Optional[float] = None, 
+        refresh_display: Optional[Callable] = refresh_notebook_display()
+    ) -> None:
         """
         Execute a model call and return the model response.
         """
         raise NotImplementedError
 
+    def _check_call_parameters_type(self, user_images, tools, output_model):
+        if user_images and not isinstance(user_images, Images):
+            raise TypeError("Argument user_images must be of type wordslab_notebooks_lib.chat.Images. Create an images object with the syntax: Images('file.jpg') or Images('https://example.com/file.jpg') or Images(image_bytes).")
+        if tools and not isinstance(tools, Tools):
+            raise TypeError("Argument tools must be of type wordslab_notebooks_lib.chat.Tools. Create a tools object with the syntax: Tools([func1, func2, func3]), where the parameters are documented python functions.")
+        if output_model and not (isinstance(output_model, type) and issubclass(output_model, BaseModel)):
+            raise TypeError("Argument output_model must be a pydantic model - a subclass of pydantic.BaseModel.")
+
+    def _manage_messages(self, messages, system_prompt, user_prompt, images_value, assistant_prefill):
+        if system_prompt:
+            system_message = {'role': 'system', 'content': system_prompt}
+            if len(messages) == 0:                
+                messages.append(system_message) 
+            elif messages[0]['role'] == 'system':
+                messages[0] = system_message
+            else:
+                messages.insert(0, system_message)
+        if user_prompt or images_value:
+            ollama_format = False
+            if images_value:
+                ollama_format = isinstance(images_value[0], str)
+            user_message = {'role': 'user'}  
+            if (not images_value or ollama_format):
+                if user_prompt:
+                    user_message['content'] = user_prompt
+                if images_value:
+                    user_message['images'] = images_value
+            else:
+                content_list = []
+                if user_prompt:  
+                    content_list.append({"type": "text", "text": user_prompt})
+                for image_data,is_url in images_value:
+                    if is_url:
+                        content_list.append({"type": "image_url", "image_url": { "url": image_data }})
+                    else:
+                        content_list.append({"type": "image_url", "image_url": { "url":f"data:image/jpeg;base64,{image_data}" }})
+                user_message['content'] = content_list
+            messages.append(user_message)
+        if assistant_prefill:
+            messages.append({'role': 'assistant', 'content': assistant_prefill}) 
+
 # %% ../nbs/02_chat.ipynb 35
 _whitespace_pattern = re.compile(r"\s+")
 
 def _messages_words(messages):
-    return sum([len(_whitespace_pattern.findall(message["content"])) for message in messages if message["role"] in {"user", "assitant"}])
+    return sum([len(_whitespace_pattern.findall(message["content"][0]["text"])) if isinstance(message["content"], list) else len(_whitespace_pattern.findall(message["content"])) for message in messages if message["role"] in {"system", "user", "assistant", "tool"}])
 
 class OllamaModelClient(ModelClient):
     def __init__(
@@ -275,39 +322,25 @@ class OllamaModelClient(ModelClient):
         self.response = None
         
         # Check parameters type
-        if user_images and not isinstance(user_images, Images):
-            raise TypeError("Argument user_images must be of type wordslab_notebooks_lib.chat.Images. Create an images object with the syntax: Images('file.jpg') or Images('https://example.com/file.jpg') or Images(image_bytes).")
-        if tools and not isinstance(tools, Tools):
-            raise TypeError("Argument tools must be of type wordslab_notebooks_lib.chat.Tools. Create a tools object with the syntax: Tools([func1, func2, func3]), where the parameters are documented python functions.")
-        if output_model and not (isinstance(output_model, type) and issubclass(output_model, BaseModel)):
-            raise TypeError("Argument output_model must be a pydantic model - a subclass of pydantic.BaseModel.")
+        super()._check_call_parameters_type(user_images, tools, output_model)
+
+        # Images
+        images_value = None
+        if user_images:
+            images_value = list(user_images.get_base64_data())
+
+        # Messages
+        if messages is None:
+            messages = []
+        super()._manage_messages(messages, system_prompt, user_prompt, images_value, assistant_prefill)        
+
+        # Web search
         if web_search:
             if self.has_api_key:
                 tools = Tools([self.client.web_search, self.client.web_fetch] + (tools if tools else []))
             else:
                 raise RuntimeError("Web search requires an api_key in OllamaModelClient constructor.")
-
-        # Manage messages
-        if messages is None:
-            messages = []
-        if system_prompt:
-            system_message = {'role': 'system', 'content': system_prompt}
-            if len(messages) == 0:                
-                messages.append(system_message) 
-            elif messages[0]['role'] == 'system':
-                messages[0] = system_message
-            else:
-                messages.insert(0, system_message)
-        if user_prompt or user_images:
-            user_message = {'role': 'user'}
-            if user_prompt:
-                user_message['content'] = user_prompt
-            if user_images:
-                user_message['images'] = [image for image in user_images.get_base64_data()]
-            messages.append(user_message)
-        if assistant_prefill:
-            messages.append({'role': 'assistant', 'content': assistant_prefill}) 
-
+                
         chat_turns = ChatTurns(refresh_display)
         
         for i in range(max_tool_calls):
@@ -351,6 +384,8 @@ class OllamaModelClient(ModelClient):
                 # Set response field
                 if 'content' in messages[-1]:
                     self.response = messages[-1]['content']
+                if output_model:
+                    self.response = output_model.model_validate_json(self.response)
                 return 
                 
             # execute tool calls  
@@ -368,7 +403,7 @@ class OllamaModelClient(ModelClient):
     
             # continue the loop after tool calls
 
-# %% ../nbs/02_chat.ipynb 59
+# %% ../nbs/02_chat.ipynb 60
 class OpenRouterModelClient(ModelClient):
     def __init__(
         self,
@@ -392,58 +427,102 @@ class OpenRouterModelClient(ModelClient):
 
     def __call__(
         self,
-        messages: Sequence[Mapping[str, Any]],
-        chat_turns: ChatTurns,
-        tools: Tools = None,
+        messages: Sequence[Mapping[str, Any]] = None,
+        system_prompt: str = None,
+        user_prompt: str = None,
+        user_images: Images = None,
+        assistant_prefill: str = None,
+        tools: Tools = None,             
+        max_tool_calls:int = 20,
         think: Union[bool, Literal["xhigh", "high", "medium", "low", "minimal", "none"], int, None] = None,
+        web_search: bool = False,
+        output_model: Type[BaseModel] = None,
         max_new_tokens: Optional[int] = None,
         seed: Optional[int] = None,
         temperature: Optional[float] = None,
-        top_k: Optional[int] = None,  # Ignored, not supported by the openai chat completions API
+        top_k: Optional[int] = None,
         top_p: Optional[float] = None,
-        min_p: Optional[float] = None,  # Ignored, not supported by the openai chat completions API   
-        max_tool_calls:int = 20
+        min_p: Optional[float] = None, 
+        refresh_display: Optional[Callable] = refresh_notebook_display()
     ) -> None:
-        # Check tools parameter type
-        if tools and not isinstance(tools, Tools):
-            raise TypeError("Argument tools must be of type wordslab_notebooks_lib.chat.Tools. Create a tools object with the syntax: Tools([func1, func2, func3]), where the parameters are documented python functions.")
+        # Reset response field
+        self.response = None
+        self.annotations = None
+        
+        # Check parameters type
+        super()._check_call_parameters_type(user_images, tools, output_model)
 
+        # Images
+        images_value = None
+        if user_images:
+            images_value = list(user_images.get_base64_data_or_url())
+        
+        # Messages
+        if messages is None:
+            messages = []
+        super()._manage_messages(messages, system_prompt, user_prompt, images_value, assistant_prefill)
+
+        # Map "think" → reasoning > enabled / reasoning > effort / resoning > max_tokens
+        reasoning = None
+        if think is True:
+            reasoning = {"reasoning": {"enabled": True}} # reasoning on/off
+        elif think in ("low", "medium", "high"):
+            reasoning = {"reasoning": {"effort": think}} # "xhigh", "high", "medium", "low", "minimal" or "none" (OpenAI-style)
+        elif isinstance(think, int):
+            reasoning = {"reasoning": {"max_tokens": think}} # specified token budget for extended thinking (Anthropic-style)
+
+        # Structured outputs
+        response_format = None
+        if output_model:
+            schema = output_model.model_json_schema()
+            schema["additionalProperties"] = False
+            response_format = {
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": output_model.__name__,
+                        "schema": schema,
+                        "strict": True,
+                    },
+                }
+        
+        chat_turns = ChatTurns(refresh_display)
+        
         for i in range(max_tool_calls):
             # Immediate user feedback
-            print(f"openrouter: processing {_messages_words(messages)} words with `{self.model}` ...")
+            print(f"openrouter: processing {_messages_words(messages)} words with `{self.model + (":online" if web_search else "")}` ...")
+            if web_search:
+                print("-> web search activated")
             
             # Observable conversation turn
             chat_turn = chat_turns.new_turn()
-            
-            # Map "think" → reasoning_effort / max_tokens
-            reasoning = None
-            if think is True:
-                reasoning = {"reasoning": {"enabled": True}} # reasoning on/off
-            elif think in ("low", "medium", "high"):
-                reasoning = {"reasoning": {"effort": think}} # "xhigh", "high", "medium", "low", "minimal" or "none" (OpenAI-style)
-            elif isinstance(think, int):
-                reasoning = {"reasoning": {"max_tokens": think}} # specified token budget for extended thinking (Anthropic-style)
+            if assistant_prefill and len(chat_turns.chat_turns) == 1:
+                chat_turn.append_content(assistant_prefill)            
             
             stream = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
+                model = self.model + (":online" if web_search else ""),
+                messages = messages,
                 tools = tools.get_schemas() if tools else None,
-                stream=True,
-                extra_body= reasoning,
-                max_tokens=max_new_tokens,
-                seed=seed,
-                temperature=temperature,
-                top_p=top_p,
+                stream = True,
+                extra_body = reasoning,
+                response_format = response_format,
+                max_tokens = max_new_tokens,
+                seed = seed,
+                temperature = temperature,
+                top_p = top_p,
             )
         
             # Streaming: accumulate the partial fields
-            tool_calls = {}       
+            tool_calls = {} 
+            annotations = None
             for chunk in stream:
                 delta = chunk.choices[0].delta
                 if hasattr(delta, "reasoning") and delta.reasoning:
                     chat_turn.append_thinking(delta.reasoning)                
                 if hasattr(delta, "content") and delta.content:
                     chat_turn.append_content(delta.content)
+                # web search results - standardized by openrouter
+                if hasattr(delta, "annotations") and delta.annotations:
+                    annotations = delta.annotations
                 if hasattr(delta, "tool_calls") and delta.tool_calls:
                     for tool_call in delta.tool_calls:
                         idx = tool_call.index
@@ -480,9 +559,16 @@ class OpenRouterModelClient(ModelClient):
                         for tc in tool_calls.values()
                     ]
                 })
-        
+                
             # end the loop if there is no more tool calls
             if not tool_calls: 
+                # Set response field
+                if 'content' in messages[-1]:
+                    self.response = messages[-1]['content']
+                if annotations:
+                    self.annotations = annotations
+                if output_model:
+                    self.response = output_model.model_validate_json(self.response)
                 return      
                 
             # execute tool calls  
