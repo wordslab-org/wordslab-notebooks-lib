@@ -461,7 +461,7 @@ class OllamaModelClient(ModelClient):
     
             # continue the loop after tool calls
 
-# %% ../nbs/02_chat.ipynb 60
+# %% ../nbs/02_chat.ipynb 63
 class OpenRouterModelClient(ModelClient):
     def __init__(
         self,
