@@ -652,7 +652,7 @@ def set_openrouter_chat_model(self: WordslabNotebook,
 def chat(self: WordslabNotebook, user_instruction: str):    
     # Ensure the model client is initialized
     if not hasattr(self,"chat_model_client"):
-        default_model = WordslabEnv().default_model_code
+        default_model = WordslabEnv().default_model_agent
         self.set_ollama_chat_model(default_model, think=True)
     
     # Get notebook cont.ext

@@ -14,7 +14,7 @@ from urllib.parse import urljoin, urlparse
 import re
 from textwrap import dedent
 
-# %% ../nbs/03_tools.ipynb 6
+# %% ../nbs/03_tools.ipynb 9
 def view(path:str,  # The path to the file or directory to view
          view_range:tuple[int,int]=None, # Optional array of two integers specifying the start and end line numbers to view. Line numbers are 1-indexed, and -1 for the end line means read to the end of the file. This parameter only applies when viewing files, not directories.
          nums:bool=False # Optionally prefix all lines of the file with a line number
@@ -40,7 +40,7 @@ def view(path:str,  # The path to the file or directory to view
     except Exception as e: return f'Error viewing file: {str(e)}'
      
 
-# %% ../nbs/03_tools.ipynb 8
+# %% ../nbs/03_tools.ipynb 11
 def create(path: str, # The path where the new file should be created
            file_text: str, # The text content to write to the new file
            overwrite:bool=False # Allows overwriting an existing file
@@ -55,7 +55,7 @@ def create(path: str, # The path where the new file should be created
         return f'Created file {p} containing:\n{file_text}'
     except Exception as e: return f'Error creating file: {str(e)}'     
 
-# %% ../nbs/03_tools.ipynb 10
+# %% ../nbs/03_tools.ipynb 13
 def insert(path: str,  # The path to the file to modify
            insert_line: int, # The line number after which to insert the text (0 for beginning of file)
            new_str: str # The text to insert
@@ -74,7 +74,7 @@ def insert(path: str,  # The path to the file to modify
         return f'Inserted text at line {insert_line} in {p}.\nNew contents:\n{new_content}'
     except Exception as e: return f'Error inserting text: {str(e)}'
 
-# %% ../nbs/03_tools.ipynb 12
+# %% ../nbs/03_tools.ipynb 15
 def str_replace(path: str, # The path to the file to modify
                 old_str: str, # The text to replace (must match exactly, including whitespace and indentation)
                 new_str: str # The new text to insert in place of the old text
@@ -95,7 +95,7 @@ def str_replace(path: str, # The path to the file to modify
         return f'Replaced text in {p}.\nNew contents:\n{new_content}'
     except Exception as e: return f'Error replacing text: {str(e)}'
 
-# %% ../nbs/03_tools.ipynb 20
+# %% ../nbs/03_tools.ipynb 23
 def _absolutify_imgs(md, base_url):
     """This function rewrites Markdown image links so their URLs become absolute, using a base URL.
     - md: a Markdown string
@@ -108,7 +108,7 @@ def _absolutify_imgs(md, base_url):
     return re.sub(r'!\[(.*?)\]\((.*?)\)', fix, md)
 
 
-# %% ../nbs/03_tools.ipynb 21
+# %% ../nbs/03_tools.ipynb 24
 def _convert_math(soup, mode):
     """This function walks an HTML/XML document, finds MathML math elements, and replaces them with TeX/LaTeX markup suitable for text-based math renderers (like Markdown, MathJax, or KaTeX).
     - soup: a BeautifulSoup object representing parsed HTML/XML
@@ -128,7 +128,7 @@ def _convert_math(soup, mode):
             wrap = f'$${tex}$$' if display else f'\\({tex}\\)'
         math.replace_with(wrap)
 
-# %% ../nbs/03_tools.ipynb 22
+# %% ../nbs/03_tools.ipynb 25
 def scrape_url(url):
     "Get the html content of a web page using the cloudscraper library to bypass Cloudflare's anti-bot page."
     return create_scraper().get(url)
@@ -188,5 +188,5 @@ def read_url(url: str, as_md: bool = True, extract_section: bool = True, selecto
 
     return res
 
-# %% ../nbs/03_tools.ipynb 40
+# %% ../nbs/03_tools.ipynb 43
 # import ...

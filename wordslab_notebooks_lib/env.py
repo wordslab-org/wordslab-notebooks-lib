@@ -74,7 +74,7 @@ class WordslabEnv:
         self.default_model_chat = os.environ["OLLAMA_CHAT_MODEL"]
         self.default_model_embedding = os.environ["OLLAMA_EMBED_MODEL"]
         self.default_model_code = os.environ["OLLAMA_CODE_MODEL"]
-        self.default_model_autocomplete = os.environ["OLLAMA_COMPLETION_MODEL"]
+        self.default_model_agent = os.environ["OLLAMA_AGENT_MODEL"]
 
         # external cloud services - api keys
         # Note: you need to reload the WordslabEnv() object after you define one of these environment variables
@@ -82,10 +82,8 @@ class WordslabEnv:
         self.cloud_openrouter_api_key = os.environ.get(self.cloud_openrouter_api_key_var)
         self.cloud_replicate_api_token_var = "REPLICATE_API_TOKEN"
         self.cloud_replicate_api_token = os.environ.get(self.cloud_replicate_api_token_var)
-        self.cloud_googlepse_api_key_var = "GOOGLE_PSE_API_KEY"
-        self.cloud_googlepse_api_key = os.environ.get(self.cloud_googlepse_api_key_var)
-        self.cloud_googlepse_search_engine_id_var = "GOOGLE_PSE_ID"
-        self.cloud_googlepse_search_engine_id = os.environ.get(self.cloud_googlepse_search_engine_id_var)
+        self.cloud_tavily_api_key_var = "TAVILY_API_KEY"
+        self.cloud_tavily_api_key = os.environ.get(self.cloud_tavily_api_key_var)
         self.cloud_ollama_api_key_var = "OLLAMA_API_KEY"
         self.cloud_ollama_api_key = os.environ.get(self.cloud_ollama_api_key_var)
         self.cloud_huggingface_access_token_var = "HF_TOKEN"
@@ -230,9 +228,8 @@ def setup_replicate(self: WordslabEnv, replicate_api_token: str) -> None:
 
 # %% ../nbs/01_env.ipynb 78
 @patch
-def setup_googlepse(self: WordslabEnv, googlepse_api_key: str, search_engine_id: str) -> None:
-    self.write_user_env_var(self.cloud_googlepse_api_key_var, googlepse_api_key)
-    self.write_user_env_var(self.cloud_googlepse_search_engine_id_var, search_engine_id)
+def setup_tavily(self: WordslabEnv, tavily_api_key: str) -> None:
+    self.write_user_env_var(self.cloud_tavily_api_key_var, tavily_api_key)
 
 # %% ../nbs/01_env.ipynb 82
 @patch
