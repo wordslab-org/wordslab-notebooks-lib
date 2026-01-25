@@ -655,7 +655,7 @@ def chat(self: WordslabNotebook, user_instruction: str):
         env = WordslabEnv()
         agent_model = env.default_model_agent
         context_length = env.default_model_context_length
-        self.set_ollama_chat_model(agent_model, think=True, context_size=context_length)
+        self.set_ollama_chat_model(agent_model, context_size=context_length)
     
     # Get notebook cont.ext
     notebook_context = self.get_context_for_llm()

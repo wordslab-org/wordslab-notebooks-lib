@@ -1,7 +1,7 @@
 from .core import Wordslab
 from .notebook import WordslabNotebook
 
-__version__ = "0.0.15"
+__version__ = "0.0.16"
 __all__ = ["Wordslab", "WordslabNotebook"]
 
 def _jupyter_labextension_paths():
