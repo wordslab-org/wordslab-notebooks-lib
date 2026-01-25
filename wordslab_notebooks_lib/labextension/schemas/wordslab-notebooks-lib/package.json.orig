@@ -15,7 +15,7 @@
   "license": "Apache-2.0",
   "author": "Laurent Prud'hon",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",    
+  "types": "lib/index.d.ts",
   "styleModule": "style/index.css",
   "repository": {
     "type": "git",
@@ -45,7 +45,9 @@
     "access": "public"
   },
   "jupyterlab": {
-    "disabledExtensions": ["@jupyterlab/notebook-extension:cell-executor"],
+    "disabledExtensions": [
+      "@jupyterlab/notebook-extension:cell-executor"
+    ],
     "extension": true,
     "schemaDir": "schema",
     "outputDir": "wordslab_notebooks_lib/labextension"

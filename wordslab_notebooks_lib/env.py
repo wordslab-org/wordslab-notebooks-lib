@@ -72,9 +72,10 @@ class WordslabEnv:
         
         # wordslab-notebooks default models
         self.default_model_chat = os.environ["OLLAMA_CHAT_MODEL"]
-        self.default_model_embedding = os.environ["OLLAMA_EMBED_MODEL"]
         self.default_model_code = os.environ["OLLAMA_CODE_MODEL"]
-        self.default_model_agent = os.environ["OLLAMA_AGENT_MODEL"]
+        self.default_model_agent = os.environ["OLLAMA_AGENT_MODEL"]        
+        self.default_model_embedding = os.environ["OLLAMA_EMBED_MODEL"]
+        self.default_model_context_length = os.environ["OLLAMA_CONTEXT_LENGTH"]
 
         # external cloud services - api keys
         # Note: you need to reload the WordslabEnv() object after you define one of these environment variables
@@ -89,7 +90,7 @@ class WordslabEnv:
         self.cloud_huggingface_access_token_var = "HF_TOKEN"
         self.cloud_huggingface_access_token = os.environ.get(self.cloud_huggingface_access_token_var)
 
-# %% ../nbs/01_env.ipynb 62
+# %% ../nbs/01_env.ipynb 63
 _ENV_REF_PATTERN = re.compile(
     r"""
     \$(\w+)|           # $VAR
@@ -169,7 +170,7 @@ def write_user_env_var(self: WordslabEnv, var_name: str, var_value: str) -> None
     expanded_value = _expand_with_current_env(var_value)
     os.environ[var_name] = expanded_value
 
-# %% ../nbs/01_env.ipynb 63
+# %% ../nbs/01_env.ipynb 64
 @patch
 def read_user_env_var(self: WordslabEnv, var_name: str) -> Optional[str]:
     """
@@ -216,27 +217,27 @@ def read_user_env_var(self: WordslabEnv, var_name: str) -> Optional[str]:
 
     return None
 
-# %% ../nbs/01_env.ipynb 70
+# %% ../nbs/01_env.ipynb 71
 @patch
 def setup_openrouter(self: WordslabEnv, openrouter_api_key: str) -> None:
     self.write_user_env_var(self.cloud_openrouter_api_key_var, openrouter_api_key)
 
-# %% ../nbs/01_env.ipynb 74
+# %% ../nbs/01_env.ipynb 75
 @patch
 def setup_replicate(self: WordslabEnv, replicate_api_token: str) -> None:
     self.write_user_env_var(self.cloud_replicate_api_token_var, replicate_api_token)
 
-# %% ../nbs/01_env.ipynb 78
+# %% ../nbs/01_env.ipynb 79
 @patch
 def setup_tavily(self: WordslabEnv, tavily_api_key: str) -> None:
     self.write_user_env_var(self.cloud_tavily_api_key_var, tavily_api_key)
 
-# %% ../nbs/01_env.ipynb 82
+# %% ../nbs/01_env.ipynb 83
 @patch
 def setup_ollamacloud(self: WordslabEnv, ollama_api_key: str) -> None:
     self.write_user_env_var(self.cloud_ollama_api_key_var, ollama_api_key)
 
-# %% ../nbs/01_env.ipynb 86
+# %% ../nbs/01_env.ipynb 87
 @patch
 def setup_github(self: WordslabEnv, git_user_name: str, git_user_email: str, github_username: str, github_access_token: str) -> None:
     # Set global Git user name and email
@@ -251,12 +252,12 @@ def setup_github(self: WordslabEnv, git_user_name: str, git_user_email: str, git
         f.write(credential_line)
     print("Wrote Github credentials");
 
-# %% ../nbs/01_env.ipynb 89
+# %% ../nbs/01_env.ipynb 90
 @patch
 def setup_huggingface(self: WordslabEnv, huggingface_access_token: str) -> None:
     self.write_user_env_var(self.cloud_huggingface_access_token_var, huggingface_access_token)
 
-# %% ../nbs/01_env.ipynb 93
+# %% ../nbs/01_env.ipynb 94
 @patch
 def setup_pypi(self: WordslabEnv, pypi_api_token: str) -> None:
     pypirc_path = Path.home() / ".pypirc"
