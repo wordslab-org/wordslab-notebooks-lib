@@ -652,8 +652,10 @@ def set_openrouter_chat_model(self: WordslabNotebook,
 def chat(self: WordslabNotebook, user_instruction: str):    
     # Ensure the model client is initialized
     if not hasattr(self,"chat_model_client"):
-        default_model = WordslabEnv().default_model_agent
-        self.set_ollama_chat_model(default_model, think=True)
+        env = WordslabEnv()
+        agent_model = env.default_model_agent
+        context_length = env.default_model_context_length
+        self.set_ollama_chat_model(agent_model, think=True, context_size=context_length)
     
     # Get notebook cont.ext
     notebook_context = self.get_context_for_llm()
@@ -661,7 +663,7 @@ def chat(self: WordslabNotebook, user_instruction: str):
     funcs_names = FUNC_RE.findall(notebook_context)
     vars_names = VAR_RE.findall(notebook_context)
     # Get tools schemas 
-    tools_schemas_and_functions = notebook.get_tools_schemas_and_functions(funcs_names)
+    tools_schemas_and_functions = self.get_tools_schemas_and_functions(funcs_names)
     tools = Tools([t[1] for t in tools_schemas_and_functions.values()])
     # Get variables values
     vars_values = self.get_variables_values(vars_names)
