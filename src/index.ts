@@ -6,7 +6,7 @@ import { INotebookCellExecutor, runCell } from '@jupyterlab/notebook';
 import { Cell, CodeCell } from '@jupyterlab/cells';
 import { circleEmptyIcon } from '@jupyterlab/ui-components';
 
-const version = "0.0.16";
+const version = "0.0.17";
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'wordslab-notebooks-lib:plugin',    
@@ -316,9 +316,54 @@ const cellExecutorPlugin: JupyterFrontEndPlugin<INotebookCellExecutor> = {
     // Define a custom cell executor
     class WordslabCellExecutor implements INotebookCellExecutor {
         
-        private async injectVariable(kernel: any, name: string, value: any): Promise<void> {
-          const code = `import json; ${name} = json.loads(${JSON.stringify(JSON.stringify(value))})`;
-          await kernel.requestExecute({ code, store_history: false }).done;
+        private async injectVariable(kernel: any, name: string, value: any): Promise<boolean> {
+          try {
+            const code = `import json; ${name} = json.loads(${JSON.stringify(JSON.stringify(value))})`;
+            await kernel.requestExecute({ code, store_history: false }).done;
+            return true;
+          } catch (e) {
+            console.warn(`wordslab-notebooks-lib: failed to inject variable ${name}:`, e);
+            return false;
+          }
+        }
+
+        // Safely extract notebook content as nbformat-compatible JSON,
+        // with graceful fallback for race conditions during initial load.
+        private getNotebookContent(notebook: any): any {
+          try {
+            if (notebook.toJSON) {
+              return notebook.toJSON();
+            }
+            if (notebook.sharedModel?.toJSON) {
+              return notebook.sharedModel.toJSON();
+            }
+            if (notebook.cells) {
+              return { cells: Array.from(notebook.cells).map(
+                (c: any) => c.toJSON?.() ?? { cell_type: c.type ?? 'code', source: c.sharedModel?.source ?? '' }
+              )};
+            }
+          } catch (e) {
+            console.warn('wordslab-notebooks-lib: toJSON failed, falling back to empty:', e);
+          }
+          return { cells: [] };
+        }
+        
+        // Safely get cell source from either shared model or classic model
+        private getCellSource(cellModel: any): string {
+          try {
+            if (cellModel.sharedModel?.source !== undefined) {
+              return cellModel.sharedModel.source;
+            }
+            if (typeof cellModel.getSource === 'function') {
+              return cellModel.getSource();
+            }
+            if (typeof cellModel.sharedModel?.toString === 'function') {
+              return cellModel.sharedModel.toString();
+            }
+          } catch (e) {
+            console.warn('wordslab-notebooks-lib: getCellSource failed:', e);
+          }
+          return '';
         }
         
       async runCell(options: INotebookCellExecutor.IRunCellOptions): Promise<boolean> {
@@ -335,16 +380,16 @@ const cellExecutorPlugin: JupyterFrontEndPlugin<INotebookCellExecutor> = {
                 await this.injectVariable(kernel, '__wordslab_extension_version', version);
                 const notebookPath = options.sessionContext?.path || '';
                 await this.injectVariable(kernel, '__notebook_path', notebookPath);
-                const notebookContent = options.notebook.toJSON();            
+                const notebookContent = this.getNotebookContent(options.notebook);
                 await this.injectVariable(kernel, '__notebook_content', notebookContent);
                 const cellId = options.cell.model.id;
                 await this.injectVariable(kernel, '__cell_id', cellId);
                  
-                // Prompt cell => use the text of the cell as a prompt and send it to notebook.chat   
+                // Prompt cell => use the text of the cell as a prompt and send it to notebook.chat  
                 if (cellType === 'prompt') {
                   const cell = options.cell as CodeCell;
                   const outputArea = cell.outputArea;
-                  if(outputArea.model.length == 0)
+                  if(outputArea && outputArea.model && outputArea.model.length == 0)
                   {
                     const notebook_import_code = `
 if not (("notebook" in globals()) and ("WordslabNotebook" in str(type(notebook)))): 
@@ -353,7 +398,7 @@ if not (("notebook" in globals()) and ("WordslabNotebook" in str(type(notebook))
 `;
                     await kernel.requestExecute({ code: notebook_import_code, store_history: false }).done;
                     
-                    const promptText = options.cell.model.sharedModel.source;
+                    const promptText = this.getCellSource(options.cell.model);
                     const notebook_chat_code = `notebook.chat(${JSON.stringify(promptText)})`;
                     const future = kernel.requestExecute({ code: notebook_chat_code, store_history: true });          
                   // This line is critical to wire display() calls   

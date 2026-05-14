@@ -395,7 +395,7 @@ class OllamaModelClient(ModelClient):
         # Web search
         if web_search:
             if self.has_api_key:
-                tools = Tools([self.client.web_search, self.client.web_fetch] + (tools if tools else []))
+                tools = Tools([self.client.web_search, self.client.web_fetch] + (tools.get_functions() if tools else []))
             else:
                 raise RuntimeError("Web search requires an api_key in OllamaModelClient constructor.")
                 
@@ -461,7 +461,7 @@ class OllamaModelClient(ModelClient):
     
             # continue the loop after tool calls
 
-# %% ../nbs/02_chat.ipynb 63
+# %% ../nbs/02_chat.ipynb 62
 class OpenRouterModelClient(ModelClient):
     def __init__(
         self,

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64.0"]
+requires = ["setuptools==80.10.2"] # IMPORTANT: v82.0.0 deprecated pkg_resources
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -50,7 +50,8 @@ wordslab-notebooks-lib = { workspace = true, editable = true }
 
 [dependency-groups]
 dev = [
-    "nbdev>=2.4.6",
+    "execnb==0.1.18", #IMPORTANT: v0.2.0 moved nbio to fastcore
+    "nbdev>=2.4.6,<3", # IMPORTANT: nbdev v3 is a breaking release which changes everything
     "twine>=6.2.0",
     "wordslab-notebooks-lib",
 ]

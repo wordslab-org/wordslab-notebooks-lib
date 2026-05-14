@@ -24,13 +24,14 @@ class WordslabEnv:
         self.url_openwebui = os.environ["OPENWEBUI_URL"]
         self.url_jupyterlab = os.environ["JUPYTERLAB_URL"]
         self.url_vscode = os.environ["VSCODE_URL"]
+        self.url_hermesagent = os.environ["HERMESAGENT_URL"]
         self.url_userapp1 = os.environ["USER_APP1_URL"]
         self.url_userapp2 = os.environ["USER_APP2_URL"]
         self.url_userapp3 = os.environ["USER_APP3_URL"]
         self.url_userapp4 = os.environ["USER_APP4_URL"]
-        self.url_userapp5 = os.environ["USER_APP5_URL"]
 
         # wordslab-notebooks internal ports
+        self.port_hermesagent_api = 8642
         self.port_ollama = 11434
         self.port_vllm = 8000
         self.port_docling = 5001   
@@ -38,7 +39,6 @@ class WordslabEnv:
         self.port_userapp2 = os.environ["USER_APP2_PORT"]
         self.port_userapp3 = os.environ["USER_APP3_PORT"]
         self.port_userapp4 = os.environ["USER_APP4_PORT"]
-        self.port_userapp5 = os.environ["USER_APP5_PORT"]
         
         # wordslab-notebooks install directories
         self.dir_home = os.environ["WORDSLAB_HOME"]
@@ -51,13 +51,15 @@ class WordslabEnv:
         self.dir_openwebui = os.environ["OPENWEBUI_ENV"]
         self.dir_jupyterlab = os.environ["JUPYTERLAB_ENV"]
         self.dir_vscode = os.environ["VSCODE_DIR"]
+        self.dir_hermesagent = os.environ["HERMES_INSTALL_DIR"]
         self.dir_ollama = os.environ["OLLAMA_DIR"]
         self.dir_docling = os.environ["DOCLING_ENV"]  
-
+        
         # wordslab-notebooks applications data directories
         self.dir_openwebui_data = os.environ["OPENWEBUI_DATA"]
         self.dir_jupyterlab_data = os.environ["JUPYTER_DATA"]
         self.dir_vscode_data = os.environ["VSCODE_DATA"]
+        self.dir_hermesagent_data = os.environ["HERMES_HOME"]
         self.dir_docling_data = os.environ["DOCLING_DATA"]
         
         # wordslab-notebooks models directories
@@ -72,11 +74,14 @@ class WordslabEnv:
         
         # wordslab-notebooks default models
         self.default_model_chat = os.environ["OLLAMA_CHAT_MODEL"]
-        self.default_model_code = os.environ["OLLAMA_CODE_MODEL"]
-        self.default_model_agent = os.environ["OLLAMA_AGENT_MODEL"]        
+        self.default_model_chat_context = os.getenv("OLLAMA_CHAT_CONTEXT", 0)
+        self.default_model_fast = os.environ["OLLAMA_FAST_MODEL"]
+        self.default_model_fast_context = os.getenv("OLLAMA_FAST_CONTEXT", 0)
+        self.default_model_agent = os.environ["OLLAMA_AGENT_MODEL"]    
+        self.default_model_agent_context = os.getenv("OLLAMA_AGENT_CONTEXT" ,0)
         self.default_model_embedding = os.environ["OLLAMA_EMBED_MODEL"]
-        self.default_model_context_length = os.environ["OLLAMA_CONTEXT_LENGTH"]
-
+        self.default_model_ocr = os.environ["OLLAMA_OCR_MODEL"]
+        
         # external cloud services - api keys
         # Note: you need to reload the WordslabEnv() object after you define one of these environment variables
         self.cloud_openrouter_api_key_var = "OPENROUTER_API_KEY"
@@ -90,7 +95,7 @@ class WordslabEnv:
         self.cloud_huggingface_access_token_var = "HF_TOKEN"
         self.cloud_huggingface_access_token = os.environ.get(self.cloud_huggingface_access_token_var)
 
-# %% ../nbs/01_env.ipynb 63
+# %% ../nbs/01_env.ipynb 68
 _ENV_REF_PATTERN = re.compile(
     r"""
     \$(\w+)|           # $VAR
@@ -170,7 +175,7 @@ def write_user_env_var(self: WordslabEnv, var_name: str, var_value: str) -> None
     expanded_value = _expand_with_current_env(var_value)
     os.environ[var_name] = expanded_value
 
-# %% ../nbs/01_env.ipynb 64
+# %% ../nbs/01_env.ipynb 69
 @patch
 def read_user_env_var(self: WordslabEnv, var_name: str) -> Optional[str]:
     """
@@ -217,27 +222,27 @@ def read_user_env_var(self: WordslabEnv, var_name: str) -> Optional[str]:
 
     return None
 
-# %% ../nbs/01_env.ipynb 71
+# %% ../nbs/01_env.ipynb 76
 @patch
 def setup_openrouter(self: WordslabEnv, openrouter_api_key: str) -> None:
     self.write_user_env_var(self.cloud_openrouter_api_key_var, openrouter_api_key)
 
-# %% ../nbs/01_env.ipynb 75
+# %% ../nbs/01_env.ipynb 80
 @patch
 def setup_replicate(self: WordslabEnv, replicate_api_token: str) -> None:
     self.write_user_env_var(self.cloud_replicate_api_token_var, replicate_api_token)
 
-# %% ../nbs/01_env.ipynb 79
+# %% ../nbs/01_env.ipynb 84
 @patch
 def setup_tavily(self: WordslabEnv, tavily_api_key: str) -> None:
     self.write_user_env_var(self.cloud_tavily_api_key_var, tavily_api_key)
 
-# %% ../nbs/01_env.ipynb 83
+# %% ../nbs/01_env.ipynb 88
 @patch
 def setup_ollamacloud(self: WordslabEnv, ollama_api_key: str) -> None:
     self.write_user_env_var(self.cloud_ollama_api_key_var, ollama_api_key)
 
-# %% ../nbs/01_env.ipynb 87
+# %% ../nbs/01_env.ipynb 92
 @patch
 def setup_github(self: WordslabEnv, git_user_name: str, git_user_email: str, github_username: str, github_access_token: str) -> None:
     # Set global Git user name and email
@@ -252,12 +257,12 @@ def setup_github(self: WordslabEnv, git_user_name: str, git_user_email: str, git
         f.write(credential_line)
     print("Wrote Github credentials");
 
-# %% ../nbs/01_env.ipynb 90
+# %% ../nbs/01_env.ipynb 95
 @patch
 def setup_huggingface(self: WordslabEnv, huggingface_access_token: str) -> None:
     self.write_user_env_var(self.cloud_huggingface_access_token_var, huggingface_access_token)
 
-# %% ../nbs/01_env.ipynb 94
+# %% ../nbs/01_env.ipynb 99
 @patch
 def setup_pypi(self: WordslabEnv, pypi_api_token: str) -> None:
     pypirc_path = Path.home() / ".pypirc"

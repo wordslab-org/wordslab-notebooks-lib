@@ -12,6 +12,7 @@ from datetime import datetime
 from functools import partial
 from html import escape
 from inspect import currentframe, getattr_static, getdoc, isfunction, ismethod, signature
+import os
 import re
 from textwrap import dedent
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
@@ -31,6 +32,7 @@ from fastcore.xml import to_xml, Note, Prompt, Code, Source, Outputs, User, Assi
 from toolslm.funccall import get_schema
 
 from .env import WordslabEnv
+from .tools import read_file_tool, write_file_tool, grep_tool, search_replace_tool, tavily_search_tool, tavily_extract_tool, tavily_research_tool
 from .chat import OllamaModelClient, OpenRouterModelClient, Tools
 
 # %% ../nbs/04_notebook.ipynb 8
@@ -554,15 +556,14 @@ You receive this instruction in the following context :
 - the content of the previous cells is also provided below, you must interpret it as a CONVERSATION HISTORY
 - your answer will be rendered as an output of the prompt cell in markdown format
 The "code" cells of the notebook are backed by a python kernel which maintains state with functions and variables. 
-The user can optionnaly provide a set of python functions for you to use as tools:
-- if the user mentions the function with this very specific syntax `&myfunc` somewhere in the notebook (backticks mandatory)
-- then the description of the function myfunc and its parameters will be provided to you as a tool you can call
-Be careful to always check first if you could call these tools to better ground your answer, instead of trying to guess based on your pretraining knwoledge.
+The user can optionnaly let you call some python functions, which you will receive in the list of tools you can call in your standard template.
+Be careful to always check first if you could call these tools to better ground your answer, instead of trying to guess based on your pretraining knowledge.
+If the user asks how to define a new tool, explain that he just needs to mention a Python function with the syntax `&function` (backticks mandatory) in its message.
 Only if you were not provided with the right tool, you can also generate and display code blocks in your response, that the user will be able to review and copy in a new "code" cell to execute it.
-The user can optionnaly provide some of the python variables values as information for you:
-- if the user mentions the variable with this very specific syntax `$myvar` somewhere in the notebook (backticks mandatory)
-- then the value of the variable myvar will be provided to you as information to use to execute the user instruction
-Same remark: prioritize using this information to ground your answer to the user question instead of trying to guess.
+The user can optionnaly give you access to the value of some python variables by mentioning them with the syntax `$variable` (backticks mandatory), which you will receive in the <referenced_variables> section of the prompt below.
+Prioritize using this information to ground your answer to the user question instead of trying to guess.
+If the user asks how to share a variable value, explain that he just needs to mention a Python variable with the syntax `$variable` (backticks mandatory) in its message.
+If the user asks how he can see your thinking or tools calls, explain that he can just execute "notebook.chat_hide_thinking = False" or "notebook.chat_hide_toolcalls = False" in a code cell.
 </execution_context_info>
 
 <prompt_format_spec>
@@ -648,23 +649,36 @@ def set_openrouter_chat_model(self: WordslabNotebook,
     self.chat_model_web_search = web_search
 
 # %% ../nbs/04_notebook.ipynb 108
+from .chat import refresh_notebook_display
+
 @patch
 def chat(self: WordslabNotebook, user_instruction: str):    
     # Ensure the model client is initialized
     if not hasattr(self,"chat_model_client"):
         env = WordslabEnv()
         agent_model = env.default_model_agent
-        context_length = env.default_model_context_length
+        context_length = env.default_model_agent_context
         self.set_ollama_chat_model(agent_model, context_size=context_length)
+        self.chat_hide_thinking = True
+        self.chat_hide_toolcalls = True
+
+    # Ensure the default tools are registered
+    if not hasattr(self,"chat_default_tools"):
+        # Register file tools
+        self.chat_default_tools = [read_file_tool, write_file_tool, grep_tool, search_replace_tool]
+        # Register
+        if os.environ.get('TAVILY_API_KEY'):
+            self.chat_model_web_search = False
+            self.chat_default_tools += [tavily_search_tool, tavily_extract_tool, tavily_research_tool]
     
-    # Get notebook cont.ext
+    # Get notebook context
     notebook_context = self.get_context_for_llm()
     # Extract referenced tools and variables
     funcs_names = FUNC_RE.findall(notebook_context)
     vars_names = VAR_RE.findall(notebook_context)
     # Get tools schemas 
     tools_schemas_and_functions = self.get_tools_schemas_and_functions(funcs_names)
-    tools = Tools([t[1] for t in tools_schemas_and_functions.values()])
+    tools = Tools(self.chat_default_tools + [t[1] for t in tools_schemas_and_functions.values()])
     # Get variables values
     vars_values = self.get_variables_values(vars_names)
     referenced_variables = "\n".join(L([Var(value, name=name) for name,value in vars_values.items()]).map(to_xml))
@@ -675,4 +689,4 @@ def chat(self: WordslabNotebook, user_instruction: str):
                                     user_instruction=user_instruction)
 
     # Model agentic loop
-    self.chat_model_client(user_prompt=prompt, think=self.chat_model_think, tools=tools, web_search=self.chat_model_web_search)
+    self.chat_model_client(user_prompt=prompt, think=self.chat_model_think, tools=tools, web_search=self.chat_model_web_search, refresh_display=refresh_notebook_display(hide_thinking=self.chat_hide_thinking, hide_tool_calls=self.chat_hide_toolcalls))
